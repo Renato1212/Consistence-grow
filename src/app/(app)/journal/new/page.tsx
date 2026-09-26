@@ -1,19 +1,15 @@
 import type { Metadata } from "next";
-import { Plus } from "lucide-react";
 
-import { EmptyState, PageHeader } from "@/components/shell/empty-state";
+import { TradeEditorClient } from "@/components/trade/editor-client";
+import { loadEditorData } from "@/lib/data/editor";
 
 export const metadata: Metadata = { title: "Log trade" };
 
-export default function NewTradePage() {
+export default async function NewTradePage({ searchParams }: PageProps<"/journal/new">) {
+  const params = await searchParams;
+  const restoreId = typeof params.restore === "string" ? params.restore : undefined;
+  const data = await loadEditorData();
   return (
-    <>
-      <PageHeader title="Log trade" />
-      <EmptyState
-        icon={Plus}
-        title="Trade logging arrives in Phase 2"
-        description="The quick form (instrument, direction, entry, exit, size, domain — under 60 seconds) with autosave and screenshot paste will live here."
-      />
-    </>
+    <TradeEditorClient key={restoreId ?? "new"} data={data} mode="new" restoreId={restoreId} />
   );
 }

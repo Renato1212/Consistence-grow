@@ -64,11 +64,13 @@ describe("RLS isolation on every user table", () => {
   it("the trade_facts view respects RLS", async () => {
     const mine = await me.client
       .from("trade_facts")
-      .select("id, user_id, tag_names")
+      .select("id, user_id, tag_names, currency, media_count")
       .eq("id", fixture.tradeId)
       .single();
     expect(mine.error).toBeNull();
     expect((mine.data!.tag_names as string[]).length).toBe(1);
+    expect(mine.data!.currency).toBe("USD");
+    expect(mine.data!.media_count).toBe(1);
 
     const theirs = await intruder.client.from("trade_facts").select("id").eq("user_id", me.userId);
     expect(theirs.data).toHaveLength(0);

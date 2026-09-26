@@ -35,3 +35,19 @@ Format: date — decision — reason.
 - 2026-09-26 — Media bucket: private, 50 MB limit (Free plan), images/videos only (png, jpeg, webp, gif, heic/heif, mp4, mov, webm); access only under `user_id/…` paths.
 - 2026-09-26 — Migrations are applied to production with the Supabase MCP; local files are renamed to the versions production recorded so `supabase db push`/history stay consistent.
 - 2026-09-26 — Treasury prices accept decimal, `110'16`, `110-16`, `110'16.5`, `110'16+` and CME 3-digit (`110'165`, ZT eighths `…'161`); display uses the CME 3-digit form for sub-32nd contracts.
+
+## Phase 2 — Trade logging
+
+- 2026-09-26 — New trades get their UUID in the browser before the first save; every autosave is an idempotent `upsert`. — A retried save after a lost response can never create a duplicate trade.
+- 2026-09-26 — Autosave engine (`src/lib/autosave/controller.ts`): 1 s debounce, ordered saves, backoff retries 2→30 s, manual retry, every unconfirmed snapshot mirrored to localStorage and cleared only after server confirmation; flush on tab hide; `beforeunload` guard. Incomplete drafts (DB-required fields missing) are kept on the device and offered back ("Restore") on the next /journal/new.
+- 2026-09-26 — The trade editor renders client-only (`next/dynamic`, `ssr:false`): it generates the id, reads "now" and local drafts, so server rendering would only cause hydration mismatches.
+- 2026-09-26 — A trade is saved as soon as instrument, direction, entry time/price (and size unless observed) are valid; exit and domain are spec-required but may be filled after (open trade). Missing fields are listed next to the save status.
+- 2026-09-26 — Prices accept `,` as decimal separator (Portuguese keyboards) and are validated against the instrument tick; Treasuries use the 32nds parser.
+- 2026-09-26 — Native `<select>` for dropdowns (OS picker on phones, fully accessible) instead of a custom popover select.
+- 2026-09-26 — New deps: `react-hook-form` (+ resolvers) for the form, `@tanstack/react-table` **v9** (current major; `useTable` + explicit `rowSortingFeature`), `tus-js-client` for resumable video uploads (Supabase TUS endpoint, 6 MB chunks).
+- 2026-09-26 — Images: original + client-side 480 px WebP thumbnail in the private bucket; HEIC thumbnails are skipped where the browser can't decode them. Videos: TUS resumable upload with progress; files > 50 MB are refused before upload with a link suggestion (YouTube unlisted / Drive). Media pasted before the first save is queued and uploaded as soon as the trade exists.
+- 2026-09-26 — Signed URLs (1 h) for private media; YouTube links embed via youtube-nocookie.
+- 2026-09-26 — Journal detail opens via `?trade=<id>` (server-loaded, shareable, survives reload). Heatmap sums USD and EUR separately (never mixed) and R only over trades with a stop.
+- 2026-09-26 — Trash shows trades deleted in the last 30 days; the hard purge of older items is part of the Phase 8 backup cron (needs the service key).
+- 2026-09-26 — The floating "Log trade" button hides on the log/edit pages where it would only cover the form.
+- 2026-09-26 — Instrument fees are round-turn per contract and apply to trades saved afterwards (existing trades keep their stored fees until edited). Tick size/value editing is behind an explicit unlock with a warning.
