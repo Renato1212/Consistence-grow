@@ -6,9 +6,10 @@ import type { Database } from "@/lib/supabase/database.types";
 
 /**
  * Paths reachable without a session. `/api/ingest` and `/api/ai` authenticate
- * with a personal API token instead (checked in the database).
+ * with a personal API token instead (checked in the database); `/api/cron`
+ * with CRON_SECRET.
  */
-const PUBLIC_PATHS = ["/login", "/auth", "/api/ingest", "/api/ai"];
+const PUBLIC_PATHS = ["/login", "/auth", "/api/ingest", "/api/ai", "/api/cron"];
 
 function isPublic(pathname: string) {
   return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));

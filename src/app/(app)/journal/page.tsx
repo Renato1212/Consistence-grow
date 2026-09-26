@@ -35,7 +35,7 @@ export default async function JournalPage({ searchParams }: PageProps<"/journal"
           </Link>
         </Button>
       </PageHeader>
-      <JournalView trades={trades} truncated={truncated} />
+      <JournalView trades={trades} truncated={truncated} initialReview={params.review === "1"} />
       <TradeDetailSheet trade={detail} media={detailId ? (media[detailId] ?? []) : []} />
     </>
   );

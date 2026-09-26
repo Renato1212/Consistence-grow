@@ -46,9 +46,18 @@ type Filters = {
   domain: "" | DomainCode;
   from: string;
   to: string;
+  review: boolean;
 };
 
-const EMPTY: Filters = { q: "", kind: "", symbol: "", domain: "", from: "", to: "" };
+const EMPTY: Filters = {
+  q: "",
+  kind: "",
+  symbol: "",
+  domain: "",
+  from: "",
+  to: "",
+  review: false,
+};
 
 function isTypingTarget(t: EventTarget | null) {
   return (
@@ -60,6 +69,7 @@ function isTypingTarget(t: EventTarget | null) {
 export function applyFilters(trades: JournalTrade[], f: Filters): JournalTrade[] {
   const q = f.q.trim().toLowerCase();
   return trades.filter((t) => {
+    if (f.review && !t.needs_review) return false;
     if (f.kind && t.kind !== f.kind) return false;
     if (f.symbol && t.symbol !== f.symbol) return false;
     if (f.domain && t.primary_domain !== f.domain && !t.secondary_domains.includes(f.domain))
@@ -214,9 +224,18 @@ const columns = helper.columns([
   }),
 ]);
 
-export function JournalView({ trades, truncated }: { trades: JournalTrade[]; truncated: boolean }) {
+export function JournalView({
+  trades,
+  truncated,
+  initialReview = false,
+}: {
+  trades: JournalTrade[];
+  truncated: boolean;
+  initialReview?: boolean;
+}) {
   const router = useRouter();
-  const [filters, setFilters] = useState<Filters>(EMPTY);
+  const [filters, setFilters] = useState<Filters>({ ...EMPTY, review: initialReview });
+  const reviewCount = useMemo(() => trades.filter((t) => t.needs_review).length, [trades]);
   const search = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -276,6 +295,20 @@ export function JournalView({ trades, truncated }: { trades: JournalTrade[]; tru
             onChange={(e) => set({ q: e.target.value })}
           />
         </div>
+        {(reviewCount > 0 || filters.review) && (
+          <button
+            type="button"
+            aria-pressed={filters.review}
+            onClick={() => set({ review: !filters.review })}
+            className={cn(
+              "border-input text-muted-foreground hover:text-foreground focus-visible:ring-ring/50 h-9 rounded-md border px-3 text-sm outline-none focus-visible:ring-[3px]",
+              filters.review && "border-primary bg-primary/15 text-foreground",
+            )}
+            data-testid="review-filter"
+          >
+            Needs review ({reviewCount})
+          </button>
+        )}
         <div className="w-32">
           <NativeSelect
             aria-label="Kind"
