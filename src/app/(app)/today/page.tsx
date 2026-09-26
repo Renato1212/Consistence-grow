@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CalendarDays, CheckCircle2, ClipboardPen, Moon, NotebookPen, Plus } from "lucide-react";
+import {
+  CalendarDays,
+  CheckCircle2,
+  ClipboardPen,
+  Moon,
+  NotebookPen,
+  Plus,
+  Tags,
+} from "lucide-react";
 
 import { EventRowButton } from "@/components/calendar/calendar-view";
 import { PageHeader } from "@/components/shell/empty-state";
@@ -14,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { sessionRequest } from "@/lib/ai/requests";
 import { addDays, isWeekend } from "@/lib/calendar/dates";
 import { loadAiInsights, loadPlaybookOptions } from "@/lib/data/ai";
+import { countNeedsReview } from "@/lib/data/import";
 import { loadToday, type DayResult } from "@/lib/data/today";
 import { fmtMoney, fmtR, pnlClass } from "@/lib/format";
 import type { SessionCode } from "@/lib/prep/prep-form";
@@ -110,7 +119,10 @@ function ActionCard({
 export default async function TodayPage() {
   const data = await loadNow();
   const { state, preps, result } = data;
-  const aiNotes = await loadSessionNotes(state.date, state.phase);
+  const [aiNotes, needsReview] = await Promise.all([
+    loadSessionNotes(state.date, state.phase),
+    countNeedsReview(),
+  ]);
   const prepHref = (s: SessionCode) => `/prep/${state.date}/${s.toLowerCase()}`;
   const eu = preps.EU;
   const us = preps.US;
@@ -208,6 +220,16 @@ export default async function TodayPage() {
         {aiNotes && <AiNotes insight={aiNotes.insight} playbooks={aiNotes.playbooks} />}
 
         <ActionItemsList items={data.actionItems} />
+
+        {needsReview > 0 && (
+          <ActionCard
+            icon={Tags}
+            title={`${needsReview} imported trade${needsReview === 1 ? "" : "s"} need${needsReview === 1 ? "s" : ""} tagging`}
+            description="Add the domain (and grades) so they count in Insights by domain and playbook."
+            href="/journal?review=1"
+            cta="Review trades"
+          />
+        )}
 
         {data.missingDebrief && state.phase !== "post" && (
           <ActionCard

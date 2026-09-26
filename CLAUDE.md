@@ -162,6 +162,18 @@ Cloud sandbox: Docker daemon may need `sudo dockerd &` before `pnpm db:start`.
   (`src/components/ai/weekly-ai.tsx`), Today pre-session notes (`src/components/today/ai-notes.tsx`),
   finding cards with action item / playbook note (`src/components/ai/finding-card.tsx`).
 
+## Import / export / backups (Phase 8)
+
+- Import: `/settings/import` (client `src/components/import/import-wizard.tsx`). Pure logic in
+  `src/lib/import`: `csv.ts` (parser), `parse.ts` (mapping, symbols, timestamps, prices → fills),
+  `group.ts` (flat-to-flat round trips), `hash.ts`, `plan.ts` (dedupe + RPC payload), `preset.ts`.
+  Commit via the `import_trades` RPC (one transaction); `needs_review` cleared by trigger when a
+  domain is set; Journal `?review=1`.
+- Export: `/api/export` (zip, `src/lib/export/build.ts`, tables in `src/lib/export/tables.ts` —
+  add new user tables there). Backups: `/api/backup` (manual), `/api/cron/backup` (Vercel Cron in
+  `vercel.json`, needs `CRON_SECRET` + `SUPABASE_SECRET_KEY`), bucket `backups`, `purge_trash`.
+  UI: `/settings/data`.
+
 ## Macro Desk brief delivery
 
 - `POST /api/ingest/brief` (`src/app/api/ingest/brief/route.ts`), bearer token from Settings →

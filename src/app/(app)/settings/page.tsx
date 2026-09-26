@@ -53,6 +53,18 @@ export default async function SettingsPage() {
           </div>
           <ChevronRight className="text-muted-foreground size-5" aria-hidden />
         </Link>
+        <Link
+          href="/settings/data"
+          className="bg-card hover:border-primary/60 flex items-center justify-between rounded-xl border p-5 transition-colors"
+        >
+          <div>
+            <div className="font-semibold">Data & backups</div>
+            <div className="text-muted-foreground text-sm">
+              Import trades from CSV, export everything, weekly backups
+            </div>
+          </div>
+          <ChevronRight className="text-muted-foreground size-5" aria-hidden />
+        </Link>
         <Card>
           <CardHeader>
             <CardTitle>Account</CardTitle>
@@ -70,7 +82,7 @@ export default async function SettingsPage() {
           </CardContent>
         </Card>
         <p className="text-muted-foreground text-sm">
-          Tags, rules and import/export arrive with the phases that use them.
+          Tags and rules management arrives with Phase 9.
         </p>
       </div>
     </>

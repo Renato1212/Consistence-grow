@@ -675,8 +675,14 @@ isOneToOne: false
 "ensure_trading_day":
 { Args: { "p_date": string }; Returns: string
                            },
+"import_trades":
+{ Args: { "p_trades": Json }; Returns: Json
+                           },
 "ingest_brief":
 { Args: { "p_date"?: string,"p_markdown": string,"p_session": string,"p_source"?: string,"p_token": string }; Returns: Json
+                           },
+"purge_trash":
+{ Args: { "p_days"?: number,"p_user": string }; Returns: Json
                            },
 "save_debrief":
 { Args: { "p": Json }; Returns: string
