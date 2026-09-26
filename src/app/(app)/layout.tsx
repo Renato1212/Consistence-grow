@@ -8,6 +8,7 @@ import { CommandPalette } from "@/components/shell/command-palette";
 import { LogTradeFab } from "@/components/shell/log-trade-fab";
 import { BottomNav, TopNavLinks } from "@/components/shell/nav-links";
 import { ThemeToggle } from "@/components/shell/theme-toggle";
+import { Wordmark } from "@/components/shell/wordmark";
 import { APP_NAME } from "@/lib/app";
 import { getUser } from "@/lib/supabase/server";
 
@@ -21,8 +22,8 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
     <div className="flex min-h-dvh flex-col">
       <header className="bg-background/95 sticky top-0 z-40 border-b backdrop-blur">
         <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4">
-          <Link href="/today" className="font-semibold tracking-tight whitespace-nowrap">
-            {APP_NAME}
+          <Link href="/today" aria-label={APP_NAME} className="text-sm">
+            <Wordmark />
           </Link>
           <TopNavLinks />
           <div className="ml-auto flex items-center gap-1 sm:gap-2">

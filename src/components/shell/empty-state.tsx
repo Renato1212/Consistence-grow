@@ -25,7 +25,7 @@ export function EmptyState({
 export function PageHeader({ title, children }: { title: string; children?: React.ReactNode }) {
   return (
     <div className="mb-6 flex items-center justify-between gap-4">
-      <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
+      <h1 className="heading-caps text-lg">{title}</h1>
       {children}
     </div>
   );

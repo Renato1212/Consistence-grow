@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 import { publicEnv } from "@/lib/env";
+import type { Database } from "@/lib/supabase/database.types";
 
 /** Paths reachable without a session. */
 const PUBLIC_PATHS = ["/login", "/auth"];
@@ -18,7 +19,7 @@ export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
   const env = publicEnv();
 
-  const supabase = createServerClient(
+  const supabase = createServerClient<Database>(
     env.NEXT_PUBLIC_SUPABASE_URL,
     env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
     {

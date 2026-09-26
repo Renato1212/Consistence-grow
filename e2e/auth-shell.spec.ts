@@ -36,6 +36,7 @@ test("sign in, navigate with shortcuts and palette, sign out", async ({ page }) 
   await page.getByPlaceholder("Go to…").fill("Playbook");
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/playbook$/);
+  await expect(page.getByText("First test of beginning zone")).toBeVisible();
 
   // Deep link survives login redirect and session persists across reloads.
   await page.reload();
