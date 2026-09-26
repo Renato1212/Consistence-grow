@@ -74,6 +74,8 @@ export const tradeFormSchema = z.object({
   calendarEventId: z.string(),
   scenarioId: z.string(),
   keyLevelId: z.string(),
+  /** Pre-entry checklist of the linked playbook: item id → ticked. */
+  checklist: z.record(z.string(), z.boolean()),
 });
 
 export type TradeFormValues = z.infer<typeof tradeFormSchema>;
@@ -137,6 +139,7 @@ export function emptyTradeForm(opts: {
     calendarEventId: "",
     scenarioId: "",
     keyLevelId: "",
+    checklist: {},
   };
 }
 
@@ -349,6 +352,7 @@ export function toTradePayload(
     calendar_event_id: v.calendarEventId || null,
     scenario_id: v.scenarioId || null,
     key_level_id: v.keyLevelId || null,
+    checklist: v.playbookId ? (v.checklist ?? {}) : {},
   };
 
   return { errors, missing, payload };
@@ -392,6 +396,7 @@ export function tradeRowToForm(
     calendar_event_id?: string | null;
     scenario_id?: string | null;
     key_level_id?: string | null;
+    checklist?: unknown;
   },
   inst: Pick<FormInstrument, "tickSize" | "priceFormat">,
   tagIds: string[],
@@ -435,5 +440,9 @@ export function tradeRowToForm(
     calendarEventId: row.calendar_event_id ?? "",
     scenarioId: row.scenario_id ?? "",
     keyLevelId: row.key_level_id ?? "",
+    checklist:
+      row.checklist && typeof row.checklist === "object" && !Array.isArray(row.checklist)
+        ? (row.checklist as Record<string, boolean>)
+        : {},
   };
 }

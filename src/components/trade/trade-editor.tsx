@@ -32,6 +32,7 @@ import { cn } from "@/lib/utils";
 import { MediaManager, type MediaItem } from "./media-manager";
 import { LivePreview } from "./live-preview";
 import { SaveStatus } from "./save-status";
+import { TradeChecklist } from "./trade-checklist";
 import { TradeLinks } from "./trade-links";
 
 const DRAFT_PREFIX = "cg:trade:";
@@ -181,6 +182,20 @@ export function TradeEditor({ data, mode, initial, restoreId }: TradeEditorProps
       onSaved: () => setPersisted(true),
     });
   });
+
+  // A different playbook has a different checklist: start it empty.
+  useEffect(() => {
+    let prev = form.getValues("playbookId");
+    return form.subscribe({
+      formState: { values: true },
+      callback: ({ values: v }) => {
+        if (v.playbookId !== prev) {
+          prev = v.playbookId;
+          if (Object.keys(v.checklist ?? {}).length) form.setValue("checklist", {});
+        }
+      },
+    });
+  }, [form]);
 
   // Feed every change to the autosave controller (only real edits, not mount).
   useEffect(
@@ -688,6 +703,18 @@ export function TradeEditor({ data, mode, initial, restoreId }: TradeEditorProps
                 </Field>
               )}
             </div>
+
+            <Controller
+              control={form.control}
+              name="checklist"
+              render={({ field }) => (
+                <TradeChecklist
+                  playbookId={values.playbookId}
+                  value={field.value ?? {}}
+                  onChange={field.onChange}
+                />
+              )}
+            />
 
             <TradeLinks
               control={form.control}

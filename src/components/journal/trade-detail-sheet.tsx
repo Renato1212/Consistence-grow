@@ -124,6 +124,12 @@ function Detail({ trade: t, media }: { trade: JournalTrade; media: MediaItem[] }
             );
           })}
           {t.playbook_name && <Badge variant="accent">{t.playbook_name}</Badge>}
+          {t.checklist && Object.keys(t.checklist).length > 0 && (
+            <Badge variant="outline" data-testid="checklist-badge">
+              Checklist {Object.values(t.checklist).filter(Boolean).length}/
+              {Object.keys(t.checklist).length}
+            </Badge>
+          )}
           {t.tag_names.map((tag) => (
             <Badge key={tag}>{tag}</Badge>
           ))}

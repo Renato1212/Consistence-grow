@@ -124,6 +124,17 @@ Cloud sandbox: Docker daemon may need `sudo dockerd &` before `pnpm db:start`.
 - Action items: `src/components/review/action-items-list.tsx` (done/drop + Undo), used on Today,
   prep, debrief and weekly review.
 
+## Playbook (Phase 5)
+
+- `/playbook` (domain landing with live stats), `/playbook/new?domain=`, `/playbook/[id]` (tabs:
+  Playbook read/edit, Stats, History, Examples). Editor `src/components/playbook/playbook-editor.tsx`
+  (client-only, autosave via the `save_playbook` RPC with a per-mount edit session id).
+- Pure logic in `src/lib/playbook`: `form.ts` (model ↔ payload), `diff.ts` (LCS line diff +
+  snapshot field diff), `stats.ts` (expectancy, profit factor, R histogram, buckets, adherence,
+  example order). Loader `src/lib/data/playbook.ts`.
+- Trade editor shows the linked playbook's checklist (`src/components/trade/trade-checklist.tsx`),
+  stored in `trades.checklist`.
+
 ## Design
 
 AXIA-style: near-black + one orange accent (`--primary`), `heading-caps` utility for bold

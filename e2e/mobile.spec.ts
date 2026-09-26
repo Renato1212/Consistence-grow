@@ -54,3 +54,13 @@ test("mobile: debrief grades save on a phone", async ({ page }) => {
     timeout: 10_000,
   });
 });
+
+test("mobile: open a playbook and edit its summary", async ({ page }) => {
+  await signIn(page, "/playbook");
+  await page.getByTestId("playbook-card").first().click();
+  await page.getByRole("radio", { name: "Edit" }).click();
+  await page.getByLabel("One-line summary").fill(`Checked on the phone ${Date.now()}`);
+  await expect(page.getByTestId("save-status")).toHaveAttribute("data-status", "saved", {
+    timeout: 10_000,
+  });
+});
