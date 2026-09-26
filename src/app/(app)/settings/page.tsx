@@ -29,6 +29,18 @@ export default async function SettingsPage() {
           </div>
           <ChevronRight className="text-muted-foreground size-5" aria-hidden />
         </Link>
+        <Link
+          href="/settings/calendar"
+          className="bg-card hover:border-primary/60 flex items-center justify-between rounded-xl border p-5 transition-colors"
+        >
+          <div>
+            <div className="font-semibold">Calendar & sessions</div>
+            <div className="text-muted-foreground text-sm">
+              Session times, be-flat banner, recurring releases, exchange holidays
+            </div>
+          </div>
+          <ChevronRight className="text-muted-foreground size-5" aria-hidden />
+        </Link>
         <Card>
           <CardHeader>
             <CardTitle>Account</CardTitle>
@@ -46,8 +58,7 @@ export default async function SettingsPage() {
           </CardContent>
         </Card>
         <p className="text-muted-foreground text-sm">
-          Tags, rules, session times, calendar templates and import/export arrive with the phases
-          that use them.
+          Tags, rules and import/export arrive with the phases that use them.
         </p>
       </div>
     </>

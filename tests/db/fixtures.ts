@@ -27,6 +27,8 @@ export const USER_TABLES = [
   "ai_insights",
   "import_presets",
   "error_logs",
+  "holidays",
+  "calendar_templates",
 ] as const;
 
 export type UserTable = (typeof USER_TABLES)[number];

@@ -71,6 +71,9 @@ export const tradeFormSchema = z.object({
   moveTrigger: z.string(),
   movePhases: z.string(),
   tagIds: z.array(z.string()),
+  calendarEventId: z.string(),
+  scenarioId: z.string(),
+  keyLevelId: z.string(),
 });
 
 export type TradeFormValues = z.infer<typeof tradeFormSchema>;
@@ -131,6 +134,9 @@ export function emptyTradeForm(opts: {
     moveTrigger: "",
     movePhases: "",
     tagIds: [],
+    calendarEventId: "",
+    scenarioId: "",
+    keyLevelId: "",
   };
 }
 
@@ -340,6 +346,9 @@ export function toTradePayload(
     lesson: text(v.lesson),
     move_trigger: isObserved ? text(v.moveTrigger) : null,
     move_phases: isObserved ? text(v.movePhases) : null,
+    calendar_event_id: v.calendarEventId || null,
+    scenario_id: v.scenarioId || null,
+    key_level_id: v.keyLevelId || null,
   };
 
   return { errors, missing, payload };
@@ -380,6 +389,9 @@ export function tradeRowToForm(
     lesson: string | null;
     move_trigger: string | null;
     move_phases: string | null;
+    calendar_event_id?: string | null;
+    scenario_id?: string | null;
+    key_level_id?: string | null;
   },
   inst: Pick<FormInstrument, "tickSize" | "priceFormat">,
   tagIds: string[],
@@ -420,5 +432,8 @@ export function tradeRowToForm(
     moveTrigger: row.move_trigger ?? "",
     movePhases: row.move_phases ?? "",
     tagIds,
+    calendarEventId: row.calendar_event_id ?? "",
+    scenarioId: row.scenario_id ?? "",
+    keyLevelId: row.key_level_id ?? "",
   };
 }
