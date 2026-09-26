@@ -51,6 +51,7 @@ jobs:
             echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLISHABLE_KEY"
             echo "SUPABASE_SECRET_KEY=$SECRET_KEY"
             echo "MAILPIT_URL=$MAILPIT_URL"
+            echo "SUPABASE_DB_URL=$DB_URL"
           } >> "$GITHUB_ENV"
 
       - name: DB / RLS tests

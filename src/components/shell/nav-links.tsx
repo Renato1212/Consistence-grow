@@ -19,8 +19,10 @@ export function TopNavLinks() {
             href={item.href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "hover:bg-accent hover:text-foreground rounded-md px-3 py-1.5 text-sm transition-colors",
-              active ? "bg-accent text-foreground font-medium" : "text-muted-foreground",
+              "heading-caps hover:text-foreground border-b-2 px-3 py-4 text-xs transition-colors",
+              active
+                ? "border-primary text-foreground"
+                : "text-muted-foreground border-transparent",
             )}
           >
             {item.label}

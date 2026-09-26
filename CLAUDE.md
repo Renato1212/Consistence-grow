@@ -56,6 +56,36 @@ Cloud sandbox: Docker daemon may need `sudo dockerd &` before `pnpm db:start`.
 - `supabase/migrations` — schema; every table has RLS `user_id = auth.uid()`.
   `private.allowed_signups` + trigger on `auth.users` enforce the single-user lock.
 
+## Data model (Phase 1)
+
+- 25 user tables in `public`, all with `user_id default auth.uid()`, RLS `user_id = auth.uid()`,
+  `updated_at` trigger and (except `trade_tags`) `deleted_at` soft delete. See
+  `supabase/migrations/*_phase1_core.sql`.
+- `public.compute_trade()` trigger derives ticks, fees_total, gross/net P&L, risk, R, duration,
+  weekday, time bucket, session, trading day, playbook version, minutes from event. The TS
+  mirror is `src/lib/trading/pnl.ts` (+ `sessions.ts`); `tests/db/trade-compute.test.ts` keeps
+  them identical — change both together.
+- `public.trade_facts` (security_invoker view) = trade + instrument + tags + event + prep
+  context, for Insights.
+- `private.seed_user_defaults(uid)` creates instruments, tags, rules, draft playbooks and
+  settings for new users (trigger on `auth.users`). Specs mirror `src/lib/trading/instrument-specs.ts`.
+- Storage bucket `media` (private, 50 MB): paths `user_id/owner_type/owner_id/file`.
+- Typed clients: `src/lib/supabase/database.types.ts` (regenerate with `pnpm db:types` after
+  every migration); helpers `Row<"trades">` etc. in `src/lib/supabase/types.ts`.
+- Production migrations: apply with the Supabase MCP, then rename the local file to the version
+  production recorded (`list_migrations`).
+
+## Design
+
+AXIA-style: near-black + one orange accent (`--primary`), `heading-caps` utility for bold
+uppercase titles/nav, `Wordmark` component, green/red only for P&L, domain colours fixed in
+`globals.css` (`--domain-*`).
+
+## Deploys
+
+`claude/compassionate-cray-ktgp9e` is Vercel's **production** branch: every push deploys live.
+Run `pnpm check && pnpm test:db && pnpm build && pnpm e2e` before every push.
+
 ## Conventions
 
 - Server-only modules import `"server-only"`. Secrets never get a `NEXT_PUBLIC_` prefix.

@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { Json } from "@/lib/supabase/database.types";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -9,7 +10,7 @@ import { createClient } from "@/lib/supabase/server";
 export async function logServerError(
   source: string,
   error: unknown,
-  context: Record<string, unknown> = {},
+  context: { [key: string]: Json } = {},
 ): Promise<void> {
   const message = error instanceof Error ? error.message : String(error);
   console.error(`[${source}]`, message, context);

@@ -1,0 +1,288 @@
+/**
+ * Default contract specifications. Mirrors the seed in
+ * supabase/migrations/*_phase1_user_defaults.sql (a DB test checks they match).
+ *
+ * Verified against exchange contract maths:
+ *   tick value = tick size × contract multiplier
+ *   e.g. ZN: ½ of 1/32 point × $1,000 per point = $15.625
+ *        6J: 0.0000005 × ¥12,500,000 = $6.25
+ *        FGBL: 0.01 × €1,000 per point = €10
+ */
+export type PriceFormat = "decimal" | "thirty_seconds";
+export type AssetClass = "equity_index" | "energy" | "metals" | "rates" | "fx" | "crypto" | "other";
+
+export type InstrumentSpec = {
+  symbol: string;
+  name: string;
+  exchange: string;
+  assetClass: AssetClass;
+  tickSize: number;
+  tickValue: number;
+  currency: "USD" | "EUR" | "GBP" | "JPY";
+  exchangeTz: string;
+  priceFormat: PriceFormat;
+};
+
+const CHI = "America/Chicago";
+
+export const DEFAULT_INSTRUMENTS: InstrumentSpec[] = [
+  {
+    symbol: "ES",
+    name: "E-mini S&P 500",
+    exchange: "CME",
+    assetClass: "equity_index",
+    tickSize: 0.25,
+    tickValue: 12.5,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "decimal",
+  },
+  {
+    symbol: "MES",
+    name: "Micro E-mini S&P 500",
+    exchange: "CME",
+    assetClass: "equity_index",
+    tickSize: 0.25,
+    tickValue: 1.25,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "decimal",
+  },
+  {
+    symbol: "NQ",
+    name: "E-mini Nasdaq-100",
+    exchange: "CME",
+    assetClass: "equity_index",
+    tickSize: 0.25,
+    tickValue: 5,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "decimal",
+  },
+  {
+    symbol: "MNQ",
+    name: "Micro E-mini Nasdaq-100",
+    exchange: "CME",
+    assetClass: "equity_index",
+    tickSize: 0.25,
+    tickValue: 0.5,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "decimal",
+  },
+  {
+    symbol: "RTY",
+    name: "E-mini Russell 2000",
+    exchange: "CME",
+    assetClass: "equity_index",
+    tickSize: 0.1,
+    tickValue: 5,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "decimal",
+  },
+  {
+    symbol: "YM",
+    name: "E-mini Dow ($5)",
+    exchange: "CBOT",
+    assetClass: "equity_index",
+    tickSize: 1,
+    tickValue: 5,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "decimal",
+  },
+  {
+    symbol: "CL",
+    name: "Crude Oil (WTI)",
+    exchange: "NYMEX",
+    assetClass: "energy",
+    tickSize: 0.01,
+    tickValue: 10,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "decimal",
+  },
+  {
+    symbol: "NG",
+    name: "Henry Hub Natural Gas",
+    exchange: "NYMEX",
+    assetClass: "energy",
+    tickSize: 0.001,
+    tickValue: 10,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "decimal",
+  },
+  {
+    symbol: "GC",
+    name: "Gold",
+    exchange: "COMEX",
+    assetClass: "metals",
+    tickSize: 0.1,
+    tickValue: 10,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "decimal",
+  },
+  {
+    symbol: "SI",
+    name: "Silver",
+    exchange: "COMEX",
+    assetClass: "metals",
+    tickSize: 0.005,
+    tickValue: 25,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "decimal",
+  },
+  {
+    symbol: "HG",
+    name: "Copper",
+    exchange: "COMEX",
+    assetClass: "metals",
+    tickSize: 0.0005,
+    tickValue: 12.5,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "decimal",
+  },
+  {
+    symbol: "ZT",
+    name: "2-Year T-Note",
+    exchange: "CBOT",
+    assetClass: "rates",
+    tickSize: 1 / 256,
+    tickValue: 7.8125,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "thirty_seconds",
+  },
+  {
+    symbol: "ZF",
+    name: "5-Year T-Note",
+    exchange: "CBOT",
+    assetClass: "rates",
+    tickSize: 1 / 128,
+    tickValue: 7.8125,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "thirty_seconds",
+  },
+  {
+    symbol: "ZN",
+    name: "10-Year T-Note",
+    exchange: "CBOT",
+    assetClass: "rates",
+    tickSize: 1 / 64,
+    tickValue: 15.625,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "thirty_seconds",
+  },
+  {
+    symbol: "ZB",
+    name: "U.S. Treasury Bond",
+    exchange: "CBOT",
+    assetClass: "rates",
+    tickSize: 1 / 32,
+    tickValue: 31.25,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "thirty_seconds",
+  },
+  {
+    symbol: "UB",
+    name: "Ultra U.S. Treasury Bond",
+    exchange: "CBOT",
+    assetClass: "rates",
+    tickSize: 1 / 32,
+    tickValue: 31.25,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "thirty_seconds",
+  },
+  {
+    symbol: "6E",
+    name: "Euro FX",
+    exchange: "CME",
+    assetClass: "fx",
+    tickSize: 0.00005,
+    tickValue: 6.25,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "decimal",
+  },
+  {
+    symbol: "6J",
+    name: "Japanese Yen",
+    exchange: "CME",
+    assetClass: "fx",
+    tickSize: 0.0000005,
+    tickValue: 6.25,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "decimal",
+  },
+  {
+    symbol: "6B",
+    name: "British Pound",
+    exchange: "CME",
+    assetClass: "fx",
+    tickSize: 0.0001,
+    tickValue: 6.25,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "decimal",
+  },
+  {
+    symbol: "6A",
+    name: "Australian Dollar",
+    exchange: "CME",
+    assetClass: "fx",
+    tickSize: 0.00005,
+    tickValue: 5,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "decimal",
+  },
+  {
+    symbol: "BTC",
+    name: "Bitcoin (CME)",
+    exchange: "CME",
+    assetClass: "crypto",
+    tickSize: 5,
+    tickValue: 25,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "decimal",
+  },
+  {
+    symbol: "ETH",
+    name: "Ether (CME)",
+    exchange: "CME",
+    assetClass: "crypto",
+    tickSize: 0.5,
+    tickValue: 25,
+    currency: "USD",
+    exchangeTz: CHI,
+    priceFormat: "decimal",
+  },
+  {
+    symbol: "FGBL",
+    name: "Euro-Bund",
+    exchange: "Eurex",
+    assetClass: "rates",
+    tickSize: 0.01,
+    tickValue: 10,
+    currency: "EUR",
+    exchangeTz: "Europe/Berlin",
+    priceFormat: "decimal",
+  },
+];
+
+export function defaultSpec(symbol: string): InstrumentSpec {
+  const spec = DEFAULT_INSTRUMENTS.find((i) => i.symbol === symbol);
+  if (!spec) throw new Error(`No default spec for ${symbol}`);
+  return spec;
+}
