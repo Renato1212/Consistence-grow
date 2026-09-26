@@ -135,6 +135,14 @@ Cloud sandbox: Docker daemon may need `sudo dockerd &` before `pnpm db:start`.
 - Trade editor shows the linked playbook's checklist (`src/components/trade/trade-checklist.tsx`),
   stored in `trades.checklist`.
 
+## Macro Desk brief delivery
+
+- `POST /api/ingest/brief` (`src/app/api/ingest/brief/route.ts`), bearer token from Settings →
+  Integrations (`/settings/integrations`); token check in `public.ingest_brief` (security definer,
+  hashed tokens in `api_tokens`); briefs in `briefs` (one per date + EU/US edition).
+- Prep editor auto-fills an empty Brief and offers "Replace / Keep mine" otherwise; Today shows the
+  TL;DR via `src/lib/briefs/tldr.ts`. Loader: `src/lib/data/briefs.ts`.
+
 ## Design
 
 AXIA-style: near-black + one orange accent (`--primary`), `heading-caps` utility for bold

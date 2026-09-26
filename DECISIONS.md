@@ -87,3 +87,9 @@ Format: date — decision — reason.
 - 2026-09-26 — Deviation: playbook charts (R histogram, bars) are plain HTML/SVG; Recharts is deferred to Insights where many charts justify the dependency.
 - 2026-09-26 — Playbook stats use only taken trades; expectancy = average R over trades with a stop (n shown); profit factor in R; event proximity buckets −30…0 / 0–5 / 5–15 / 15–60 min (shared with Insights). Examples gallery = linked trades with media, A-process first, then by R.
 - 2026-09-26 — Deleted playbooks are soft-deleted and listed under "Recently deleted (30 days)" on the Playbook page with Restore; linked trades keep their link.
+
+## Add-on — Macro Desk brief delivery
+
+- 2026-09-26 — The daily Macro Desk Pre-Session Brief (owner's Claude skill, run by a scheduled routine) is delivered to `POST /api/ingest/brief` with a personal API token (Settings → Integrations). Tokens are generated in the browser, shown once and stored only as SHA-256 hashes; the token is checked inside the `ingest_brief` security-definer function (callable with the publishable key), so the app needs no service key. A token can only write briefs. `/api/ingest` is excluded from the login redirect.
+- 2026-09-26 — Briefs live in their own `briefs` table (one per user, Lisbon date and edition; a resend replaces it) instead of writing into preps from the outside. The prep editor fills an empty Brief section automatically; if the section already has different text it shows "New Macro Desk brief — Replace / Keep mine" (owner's choice: never overwrite typed text). Today shows the TL;DR (section 0) of the current edition.
+- 2026-09-26 — Delivery runs as weekday routines (≈06:58 Lisbon European-open edition, ≈12:58 Lisbon US refresh) in the Claude Code cloud environment; the environment's network policy must allow the app's domain, and the token is kept as an environment secret, never in the routine prompt.

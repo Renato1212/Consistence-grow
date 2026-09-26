@@ -49,6 +49,32 @@ export type Database = {
                   Relationships: [
                     
                   ]
+                },"api_tokens": {
+                  Row: {
+                    "created_at": string,"deleted_at": string | null,"id": string,"last_used_at": string | null,"name": string,"prefix": string,"revoked_at": string | null,"token_hash": string,"updated_at": string,"user_id": string
+                  }
+                  Insert: {
+                    "created_at"?: string,"deleted_at"?: string | null,"id"?: string,"last_used_at"?: string | null,"name": string,"prefix": string,"revoked_at"?: string | null,"token_hash": string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"deleted_at"?: string | null,"id"?: string,"last_used_at"?: string | null,"name"?: string,"prefix"?: string,"revoked_at"?: string | null,"token_hash"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"briefs": {
+                  Row: {
+                    "created_at": string,"date": string,"deleted_at": string | null,"id": string,"markdown": string,"received_at": string,"session": string,"source": string,"updated_at": string,"user_id": string
+                  }
+                  Insert: {
+                    "created_at"?: string,"date": string,"deleted_at"?: string | null,"id"?: string,"markdown": string,"received_at"?: string,"session": string,"source"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"date"?: string,"deleted_at"?: string | null,"id"?: string,"markdown"?: string,"received_at"?: string,"session"?: string,"source"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"calendar_events": {
                   Row: {
                     "actual": string | null,"category": string,"created_at": string,"deleted_at": string | null,"forecast": string | null,"generator_key": string | null,"id": string,"importance": number,"instruments": (string)[],"native_tz": string,"notes": string | null,"previous": string | null,"primary_domain": string,"secondary_domains": (string)[],"source": string,"starts_at": string,"title": string,"updated_at": string,"user_id": string
@@ -611,6 +637,9 @@ isOneToOne: false
           Functions: {
             "ensure_trading_day":
 { Args: { "p_date": string }; Returns: string
+                           },
+"ingest_brief":
+{ Args: { "p_date"?: string,"p_markdown": string,"p_session": string,"p_source"?: string,"p_token": string }; Returns: Json
                            },
 "save_debrief":
 { Args: { "p": Json }; Returns: string
