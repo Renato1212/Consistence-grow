@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
+import { fetchAll } from "./paginate";
 
 export const JOURNAL_COLUMNS =
   "id, kind, symbol, currency, direction, entry_at, exit_at, entry_price, exit_price, stop_price, target_price, contracts, ticks, gross_pnl, fees_total, net_pnl, r_multiple, no_stop, duration_sec, session, time_bucket, trade_date, primary_domain, secondary_domains, playbook_name, grade_context, grade_edge, grade_process, grade_context_reason, grade_edge_reason, grade_process_reason, confidence, entry_type, exit_reason, tag_names, media_count, thesis, management, lesson, move_trigger, move_phases, needs_review, mae_ticks, mfe_ticks, instrument_id, checklist";
@@ -59,14 +60,17 @@ const LIMIT = 2000;
 /** Live trades, newest first (RLS scopes to the user). */
 export async function loadJournal(): Promise<{ trades: JournalTrade[]; truncated: boolean }> {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("trade_facts")
-    .select(JOURNAL_COLUMNS)
-    .order("entry_at", { ascending: false })
-    .limit(LIMIT + 1);
-  if (error) throw error;
-  const rows = (data ?? []) as unknown as JournalTrade[];
-  return { trades: rows.slice(0, LIMIT), truncated: rows.length > LIMIT };
+  const { rows, truncated } = await fetchAll(
+    (from, to) =>
+      supabase
+        .from("trade_facts")
+        .select(JOURNAL_COLUMNS)
+        .order("entry_at", { ascending: false })
+        .order("id")
+        .range(from, to),
+    LIMIT,
+  );
+  return { trades: rows as unknown as JournalTrade[], truncated };
 }
 
 export async function loadJournalTrade(id: string): Promise<JournalTrade | null> {

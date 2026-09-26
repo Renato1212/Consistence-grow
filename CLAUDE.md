@@ -19,7 +19,7 @@ per non-obvious choice).
 
 Next.js 16 (App Router, `src/`, Turbopack) · React 19 · TypeScript strict · Tailwind v4 ·
 shadcn-style components hand-written in `src/components/ui` (registry is blocked in the cloud
-sandbox) on `radix-ui` · lucide-react · Supabase (Postgres, Auth, Storage, RLS) · zod 4 ·
+sandbox) on `radix-ui` · lucide-react · Recharts · Supabase (Postgres, Auth, Storage, RLS) · zod 4 ·
 date-fns + date-fns-tz · Vitest 5 · Playwright · pnpm.
 
 Next 16 differences that matter here: `middleware.ts` is now **`src/proxy.ts`** (export
@@ -134,6 +134,19 @@ Cloud sandbox: Docker daemon may need `sudo dockerd &` before `pnpm db:start`.
   example order). Loader `src/lib/data/playbook.ts`.
 - Trade editor shows the linked playbook's checklist (`src/components/trade/trade-checklist.tsx`),
   stored in `trades.checklist`.
+
+## Insights (Phase 6)
+
+- `/insights` (server loader `src/lib/data/insights.ts`, paginated via `src/lib/data/paginate.ts`) →
+  client `src/components/insights/insights-view.tsx`. Tabs: Overview, Breakdowns, Pattern finder
+  (+ confluence, missed & observed), Process, Plan accuracy. Filter, tab and breakdown dimension
+  live in the URL (`src/lib/insights/filters.ts`, `view-state.ts`); saved views in `saved_views`.
+- Pure logic in `src/lib/insights`: `metrics.ts` (Wilson, seeded bootstrap, drawdown, streaks,
+  equity, histogram), `dimensions.ts` (one definition per attribute for filters, breakdowns and
+  patterns), `analysis.ts` (breakdowns, time × weekday heatmap, pattern finder, confluence,
+  process, plan accuracy). Unit tests in `insights.test.ts`.
+- Charts: Recharts (`src/components/insights/charts.tsx`); every number opens the trade list sheet
+  (`DrillContext` in `bits.tsx`). `pattern_min_n` is edited on the Pattern finder tab.
 
 ## Macro Desk brief delivery
 
