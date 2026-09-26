@@ -1,0 +1,131 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design tokens. Dark is the default theme; `.light` is opt-in.
+ * One accent colour (teal). Green/red are reserved for P&L only.
+ * Each Axia edge domain has a fixed, subtle colour used everywhere.
+ */
+:root {
+  --radius: 0.5rem;
+
+  /* dark (default) */
+  --background: oklch(0.16 0.006 250);
+  --foreground: oklch(0.93 0.005 250);
+  --card: oklch(0.195 0.007 250);
+  --card-foreground: var(--foreground);
+  --popover: oklch(0.2 0.008 250);
+  --popover-foreground: var(--foreground);
+  --primary: oklch(0.72 0.11 195);
+  --primary-foreground: oklch(0.16 0.02 195);
+  --secondary: oklch(0.25 0.008 250);
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(0.24 0.007 250);
+  --muted-foreground: oklch(0.68 0.012 250);
+  --accent: oklch(0.26 0.01 250);
+  --accent-foreground: var(--foreground);
+  --destructive: oklch(0.64 0.2 25);
+  --border: oklch(0.29 0.008 250);
+  --input: oklch(0.31 0.008 250);
+  --ring: oklch(0.72 0.11 195);
+
+  --profit: oklch(0.74 0.15 150);
+  --loss: oklch(0.66 0.19 25);
+
+  --domain-technical: oklch(0.72 0.1 250);
+  --domain-data: oklch(0.78 0.11 85);
+  --domain-news: oklch(0.72 0.12 330);
+  --domain-central-banks: oklch(0.74 0.1 165);
+  --domain-flow: oklch(0.74 0.11 50);
+}
+
+.light {
+  --background: oklch(0.985 0.002 250);
+  --foreground: oklch(0.2 0.01 250);
+  --card: oklch(1 0 0);
+  --card-foreground: var(--foreground);
+  --popover: oklch(1 0 0);
+  --popover-foreground: var(--foreground);
+  --primary: oklch(0.52 0.1 195);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.95 0.004 250);
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(0.955 0.004 250);
+  --muted-foreground: oklch(0.47 0.012 250);
+  --accent: oklch(0.94 0.006 250);
+  --accent-foreground: var(--foreground);
+  --destructive: oklch(0.55 0.21 25);
+  --border: oklch(0.9 0.006 250);
+  --input: oklch(0.88 0.006 250);
+  --ring: oklch(0.52 0.1 195);
+
+  --profit: oklch(0.55 0.15 150);
+  --loss: oklch(0.55 0.2 25);
+
+  --domain-technical: oklch(0.52 0.12 250);
+  --domain-data: oklch(0.58 0.12 75);
+  --domain-news: oklch(0.52 0.15 330);
+  --domain-central-banks: oklch(0.52 0.1 165);
+  --domain-flow: oklch(0.58 0.13 50);
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 6px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-profit: var(--profit);
+  --color-loss: var(--loss);
+
+  --color-domain-technical: var(--domain-technical);
+  --color-domain-data: var(--domain-data);
+  --color-domain-news: var(--domain-news);
+  --color-domain-central-banks: var(--domain-central-banks);
+  --color-domain-flow: var(--domain-flow);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    color-scheme: dark;
+  }
+  html.light {
+    color-scheme: light;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+/* Numbers: tabular monospace everywhere they matter. */
+@utility num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
