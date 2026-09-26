@@ -2,7 +2,7 @@ import { DIMENSION_BY_KEY, type DimensionKey } from "./dimensions";
 import { filterToQuery, type Filter } from "./filters";
 
 /** Insights tab and breakdown dimension, kept in the URL next to the filter. */
-export const TABS = ["overview", "breakdowns", "patterns", "process", "plan"] as const;
+export const TABS = ["overview", "breakdowns", "patterns", "process", "plan", "ai"] as const;
 export type Tab = (typeof TABS)[number];
 export const DEFAULT_DIMENSION: DimensionKey = "domain";
 

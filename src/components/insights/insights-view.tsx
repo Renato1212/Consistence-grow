@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle } from "lucide-react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { AiInsight, AiPlaybookOption, AiRequest } from "@/lib/data/ai";
 import type { InsightsData } from "@/lib/data/insights";
 import type { DimensionKey } from "@/lib/insights/dimensions";
 import {
@@ -16,6 +17,7 @@ import {
 } from "@/lib/insights/filters";
 import { insightsQuery, parseDimension, parseTab, TABS, type Tab } from "@/lib/insights/view-state";
 import { DrillContext, N } from "./bits";
+import { AiTab } from "./ai-tab";
 import { BreakdownsTab } from "./breakdowns-tab";
 import { FilterBar } from "./filter-bar";
 import { OverviewTab } from "./overview-tab";
@@ -25,22 +27,32 @@ import { ProcessTab } from "./process-tab";
 import { SavedViews } from "./saved-views";
 import { TradeListSheet } from "./trade-list-sheet";
 
+export type AiTabData = {
+  insights: AiInsight[];
+  requests: AiRequest[];
+  playbooks: AiPlaybookOption[];
+  hasToken: boolean;
+};
+
 const TAB_LABEL: Record<Tab, string> = {
   overview: "Overview",
   breakdowns: "Breakdowns",
   patterns: "Pattern finder",
   process: "Process",
   plan: "Plan accuracy",
+  ai: "AI analysis",
 };
 
 export function InsightsView({
   data,
   today,
   initial,
+  ai,
 }: {
   data: InsightsData;
   today: string;
   initial: { filter: Filter; tab: Tab; dimension: DimensionKey };
+  ai: AiTabData;
 }) {
   const [filter, setFilterState] = useState(initial.filter);
   const [tab, setTabState] = useState(initial.tab);
@@ -169,6 +181,9 @@ export function InsightsView({
           </TabsContent>
           <TabsContent value="process">
             <ProcessTab trades={filtered} tags={data.tags} ruleChecks={ruleChecks} />
+          </TabsContent>
+          <TabsContent value="ai">
+            <AiTab filter={filter} today={today} trades={data.trades} {...ai} />
           </TabsContent>
           <TabsContent value="plan">
             <PlanTab trades={filtered} scenarios={scenarios} levels={levels} />

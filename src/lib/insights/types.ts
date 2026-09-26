@@ -4,6 +4,8 @@ export type InsightTrade = {
   kind: "taken" | "missed" | "observed";
   trade_date: string | null; // Lisbon date
   entry_at: string;
+  /** Last edit (used to recognise when an AI analysis still matches the data). */
+  updated_at?: string;
   symbol: string;
   currency: string;
   direction: "long" | "short";

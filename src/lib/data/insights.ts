@@ -13,7 +13,7 @@ import { createClient } from "@/lib/supabase/server";
 import { fetchAll } from "./paginate";
 
 const INSIGHT_COLUMNS =
-  "id, kind, trade_date, entry_at, symbol, currency, direction, net_pnl, r_multiple, ticks, duration_sec, session, weekday, time_bucket, primary_domain, secondary_domains, domain_count, playbook_id, playbook_name, playbook_version, minutes_from_event, event_category, event_title, level_type, level_strength, scenario_id, key_level_id, regime, prior_day_type, prep_done, readiness, confidence, grade_context, grade_edge, grade_process, exit_reason, tag_ids, tag_names";
+  "id, kind, trade_date, entry_at, updated_at, symbol, currency, direction, net_pnl, r_multiple, ticks, duration_sec, session, weekday, time_bucket, primary_domain, secondary_domains, domain_count, playbook_id, playbook_name, playbook_version, minutes_from_event, event_category, event_title, level_type, level_strength, scenario_id, key_level_id, regime, prior_day_type, prep_done, readiness, confidence, grade_context, grade_edge, grade_process, exit_reason, tag_ids, tag_names";
 
 /** Analytics are computed in the browser over at most this many trades. */
 export const INSIGHT_LIMIT = 10000;

@@ -5,16 +5,19 @@ import { CalendarDays, CheckCircle2, ClipboardPen, Moon, NotebookPen, Plus } fro
 import { EventRowButton } from "@/components/calendar/calendar-view";
 import { PageHeader } from "@/components/shell/empty-state";
 import { ActionItemsList } from "@/components/review/action-items-list";
+import { AiNotes } from "@/components/today/ai-notes";
 import { BriefCard } from "@/components/today/brief-card";
 import { Countdown } from "@/components/today/countdown";
 import { PlanView } from "@/components/today/plan-view";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { sessionRequest } from "@/lib/ai/requests";
 import { addDays, isWeekend } from "@/lib/calendar/dates";
+import { loadAiInsights, loadPlaybookOptions } from "@/lib/data/ai";
 import { loadToday, type DayResult } from "@/lib/data/today";
 import { fmtMoney, fmtR, pnlClass } from "@/lib/format";
 import type { SessionCode } from "@/lib/prep/prep-form";
-import { formatInTz } from "@/lib/time";
+import { dateInTz, DISPLAY_TZ, formatInTz } from "@/lib/time";
 import type { TodayPhase } from "@/lib/today/state";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +33,21 @@ const PHASE_LABEL: Record<TodayPhase, string> = {
 
 function loadNow() {
   return loadToday(new Date());
+}
+
+/** Latest pre-session analysis of today's current session, if the routine ran today. */
+async function loadSessionNotes(date: string, phase: TodayPhase) {
+  if (phase === "closed" || phase === "post") return null;
+  const session = phase === "us" ? "US" : "EU";
+  const key = sessionRequest(session).filterKey;
+  const [insights, playbooks] = await Promise.all([
+    loadAiInsights({ scope: "session", limit: 6 }),
+    loadPlaybookOptions(),
+  ]);
+  const insight = insights.find(
+    (i) => i.filterKey === key && dateInTz(i.createdAt, DISPLAY_TZ) === date,
+  );
+  return insight ? { insight, playbooks } : null;
 }
 
 function DayPnl({ result }: { result: DayResult }) {
@@ -92,6 +110,7 @@ function ActionCard({
 export default async function TodayPage() {
   const data = await loadNow();
   const { state, preps, result } = data;
+  const aiNotes = await loadSessionNotes(state.date, state.phase);
   const prepHref = (s: SessionCode) => `/prep/${state.date}/${s.toLowerCase()}`;
   const eu = preps.EU;
   const us = preps.US;
@@ -185,6 +204,8 @@ export default async function TodayPage() {
             : (data.briefs.EU ?? data.briefs.US);
           return brief ? <BriefCard brief={brief} /> : null;
         })()}
+
+        {aiNotes && <AiNotes insight={aiNotes.insight} playbooks={aiNotes.playbooks} />}
 
         <ActionItemsList items={data.actionItems} />
 

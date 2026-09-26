@@ -5,10 +5,10 @@ import { publicEnv } from "@/lib/env";
 import type { Database } from "@/lib/supabase/database.types";
 
 /**
- * Paths reachable without a session. `/api/ingest` authenticates with a
- * personal API token instead (checked in the database).
+ * Paths reachable without a session. `/api/ingest` and `/api/ai` authenticate
+ * with a personal API token instead (checked in the database).
  */
-const PUBLIC_PATHS = ["/login", "/auth", "/api/ingest"];
+const PUBLIC_PATHS = ["/login", "/auth", "/api/ingest", "/api/ai"];
 
 function isPublic(pathname: string) {
   return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));

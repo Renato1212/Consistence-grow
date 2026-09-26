@@ -38,26 +38,45 @@ export type Database = {
                   ]
                 },"ai_insights": {
                   Row: {
-                    "cost_estimate": number | null,"created_at": string,"data_hash": string,"deleted_at": string | null,"filter": NonNullable<Json>,"id": string,"input_tokens": number | null,"model": string,"output": NonNullable<Json>,"output_tokens": number | null,"scope": string,"updated_at": string,"user_id": string
+                    "cost_estimate": number | null,"created_at": string,"data_hash": string,"deleted_at": string | null,"filter": NonNullable<Json>,"filter_key": string | null,"id": string,"input_tokens": number | null,"label": string | null,"model": string,"output": NonNullable<Json>,"output_tokens": number | null,"request_id": string | null,"scope": string,"updated_at": string,"user_id": string,"week": string | null
                   }
                   Insert: {
-                    "cost_estimate"?: number | null,"created_at"?: string,"data_hash": string,"deleted_at"?: string | null,"filter"?: NonNullable<Json>,"id"?: string,"input_tokens"?: number | null,"model": string,"output": NonNullable<Json>,"output_tokens"?: number | null,"scope": string,"updated_at"?: string,"user_id"?: string
+                    "cost_estimate"?: number | null,"created_at"?: string,"data_hash": string,"deleted_at"?: string | null,"filter"?: NonNullable<Json>,"filter_key"?: string | null,"id"?: string,"input_tokens"?: number | null,"label"?: string | null,"model": string,"output": NonNullable<Json>,"output_tokens"?: number | null,"request_id"?: string | null,"scope": string,"updated_at"?: string,"user_id"?: string,"week"?: string | null
                   }
                   Update: {
-                    "cost_estimate"?: number | null,"created_at"?: string,"data_hash"?: string,"deleted_at"?: string | null,"filter"?: NonNullable<Json>,"id"?: string,"input_tokens"?: number | null,"model"?: string,"output"?: NonNullable<Json>,"output_tokens"?: number | null,"scope"?: string,"updated_at"?: string,"user_id"?: string
+                    "cost_estimate"?: number | null,"created_at"?: string,"data_hash"?: string,"deleted_at"?: string | null,"filter"?: NonNullable<Json>,"filter_key"?: string | null,"id"?: string,"input_tokens"?: number | null,"label"?: string | null,"model"?: string,"output"?: NonNullable<Json>,"output_tokens"?: number | null,"request_id"?: string | null,"scope"?: string,"updated_at"?: string,"user_id"?: string,"week"?: string | null
                   }
                   Relationships: [
                     
                   ]
-                },"api_tokens": {
+                },"ai_requests": {
                   Row: {
-                    "created_at": string,"deleted_at": string | null,"id": string,"last_used_at": string | null,"name": string,"prefix": string,"revoked_at": string | null,"token_hash": string,"updated_at": string,"user_id": string
+                    "allowed_playbook_ids": (string)[],"allowed_trade_ids": (string)[],"completed_at": string | null,"created_at": string,"data_hash": string | null,"deleted_at": string | null,"error": string | null,"filter": NonNullable<Json>,"filter_key": string,"id": string,"insight_id": string | null,"kind": string,"label": string,"served_at": string | null,"slot": string | null,"status": string,"updated_at": string,"user_id": string,"week": string | null
                   }
                   Insert: {
-                    "created_at"?: string,"deleted_at"?: string | null,"id"?: string,"last_used_at"?: string | null,"name": string,"prefix": string,"revoked_at"?: string | null,"token_hash": string,"updated_at"?: string,"user_id"?: string
+                    "allowed_playbook_ids"?: (string)[],"allowed_trade_ids"?: (string)[],"completed_at"?: string | null,"created_at"?: string,"data_hash"?: string | null,"deleted_at"?: string | null,"error"?: string | null,"filter"?: NonNullable<Json>,"filter_key"?: string,"id"?: string,"insight_id"?: string | null,"kind": string,"label": string,"served_at"?: string | null,"slot"?: string | null,"status"?: string,"updated_at"?: string,"user_id"?: string,"week"?: string | null
                   }
                   Update: {
-                    "created_at"?: string,"deleted_at"?: string | null,"id"?: string,"last_used_at"?: string | null,"name"?: string,"prefix"?: string,"revoked_at"?: string | null,"token_hash"?: string,"updated_at"?: string,"user_id"?: string
+                    "allowed_playbook_ids"?: (string)[],"allowed_trade_ids"?: (string)[],"completed_at"?: string | null,"created_at"?: string,"data_hash"?: string | null,"deleted_at"?: string | null,"error"?: string | null,"filter"?: NonNullable<Json>,"filter_key"?: string,"id"?: string,"insight_id"?: string | null,"kind"?: string,"label"?: string,"served_at"?: string | null,"slot"?: string | null,"status"?: string,"updated_at"?: string,"user_id"?: string,"week"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "ai_requests_insight_id_fkey"
+      columns: ["insight_id"]
+isOneToOne: false
+      referencedRelation: "ai_insights"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"api_tokens": {
+                  Row: {
+                    "created_at": string,"deleted_at": string | null,"id": string,"last_used_at": string | null,"name": string,"prefix": string,"revoked_at": string | null,"scopes": (string)[],"token_hash": string,"updated_at": string,"user_id": string
+                  }
+                  Insert: {
+                    "created_at"?: string,"deleted_at"?: string | null,"id"?: string,"last_used_at"?: string | null,"name": string,"prefix": string,"revoked_at"?: string | null,"scopes"?: (string)[],"token_hash": string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"deleted_at"?: string | null,"id"?: string,"last_used_at"?: string | null,"name"?: string,"prefix"?: string,"revoked_at"?: string | null,"scopes"?: (string)[],"token_hash"?: string,"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     
@@ -635,7 +654,25 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "ensure_trading_day":
+            "ai_context":
+{ Args: { "p_token": string }; Returns: Json
+                           },
+"ai_enqueue":
+{ Args: { "p_filter": Json,"p_filter_key": string,"p_kind": string,"p_label": string,"p_slot": string,"p_token": string,"p_week"?: string }; Returns: string
+                           },
+"ai_fail":
+{ Args: { "p_error": string,"p_request": string,"p_token": string }; Returns: undefined
+                           },
+"ai_serve":
+{ Args: { "p_data_hash": string,"p_playbook_ids": (string)[],"p_request": string,"p_token": string,"p_trade_ids": (string)[] }; Returns: undefined
+                           },
+"ai_submit":
+{ Args: { "p_data_hash": string,"p_model": string,"p_output": Json,"p_request": string,"p_token": string }; Returns: string
+                           },
+"append_playbook_note":
+{ Args: { "p_playbook": string,"p_text": string }; Returns: boolean
+                           },
+"ensure_trading_day":
 { Args: { "p_date": string }; Returns: string
                            },
 "ingest_brief":
