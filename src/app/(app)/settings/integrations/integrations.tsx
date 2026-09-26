@@ -7,9 +7,12 @@ import { Copy, KeyRound, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Field } from "@/components/form/field";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Segmented } from "@/components/ui/segmented";
+import { AI_SCHEDULE, AI_SCHEDULE_TEXT } from "@/lib/ai/schedule";
 import { generateToken, hashToken, tokenPrefix } from "@/lib/briefs/token";
 import { logClientError } from "@/lib/client-errors";
 import type { ApiToken, Brief } from "@/lib/data/briefs";
@@ -24,6 +27,7 @@ export function Integrations({
   briefs: Omit<Brief, "markdown">[];
 }) {
   const router = useRouter();
+  const [scope, setScope] = useState<"briefs" | "ai">("briefs");
   const [name, setName] = useState("Macro Desk routine");
   const [created, setCreated] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -33,6 +37,7 @@ export function Integrations({
     () => "",
   );
   const endpoint = `${origin}/api/ingest/brief`;
+  const aiBase = `${origin}/api/ai`;
 
   async function create() {
     if (!name.trim()) return;
@@ -44,6 +49,7 @@ export function Integrations({
         name: name.trim(),
         token_hash: await hashToken(token),
         prefix: tokenPrefix(token),
+        scopes: [scope],
       });
     setBusy(false);
     if (error) {
@@ -107,10 +113,39 @@ Content-Type: application/json
 
       <Card>
         <CardHeader>
+          <CardTitle>AI analysis (Claude subscription)</CardTitle>
+          <CardDescription>
+            Claude analyses your Insights on your Claude plan — no API credits. A scheduled Claude
+            Code routine picks up queued analyses, reads the same numbers you see (with n and
+            confidence intervals) and posts findings back. {AI_SCHEDULE_TEXT}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3 text-sm">
+          <ul className="text-muted-foreground list-disc space-y-1 pl-5 text-xs">
+            {AI_SCHEDULE.map((s) => (
+              <li key={s.slot}>
+                {s.days} {s.time} Lisbon — {s.label}
+              </li>
+            ))}
+          </ul>
+          <pre className="bg-muted overflow-x-auto rounded-md p-3 text-xs" data-testid="ai-example">
+            {`GET  ${aiBase}/queue?slot=eu|us|weekly
+POST ${aiBase}/findings   { "request_id", "data_hash", "model", "output" }
+Authorization: Bearer <token with the AI analysis scope>`}
+          </pre>
+          <p className="text-muted-foreground text-xs">
+            Store the token as the routine&apos;s <code>CG_AI_TOKEN</code> secret, next to{" "}
+            <code>CG_APP_URL</code>. It can only read the analysis queue and post findings.
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>API tokens</CardTitle>
           <CardDescription>
-            A token can only deliver briefs. It is shown once — store it as a secret where the job
-            runs. Only a hash is kept here.
+            Each token has one purpose: delivering briefs, or the AI analysis queue. It is shown
+            once — store it as a secret where the job runs. Only a hash is kept here.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -138,7 +173,20 @@ Content-Type: application/json
               </div>
             </div>
           )}
-          <div className="flex items-end gap-2">
+          <Segmented
+            label="Token purpose"
+            size="sm"
+            value={scope}
+            onChange={(v) => {
+              setScope(v);
+              setName(v === "ai" ? "AI analysis routine" : "Macro Desk routine");
+            }}
+            options={[
+              { value: "briefs", label: "Macro Desk briefs" },
+              { value: "ai", label: "AI analysis" },
+            ]}
+          />
+          <div className="flex flex-wrap items-end gap-2">
             <Field id="token-name" label="Name">
               <Input
                 id="token-name"
@@ -159,7 +207,10 @@ Content-Type: application/json
               {tokens.map((t) => (
                 <li key={t.id} className="flex items-center gap-3 px-3 py-2 text-sm">
                   <span className="flex-1">
-                    {t.name} <span className="num text-muted-foreground text-xs">{t.prefix}</span>
+                    {t.name} <span className="num text-muted-foreground text-xs">{t.prefix}</span>{" "}
+                    <Badge variant="outline" data-testid="token-scope">
+                      {t.scopes.includes("ai") ? "AI analysis" : "Briefs"}
+                    </Badge>
                   </span>
                   <span className="text-muted-foreground text-xs">
                     {t.lastUsedAt

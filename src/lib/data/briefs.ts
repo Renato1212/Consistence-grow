@@ -67,13 +67,14 @@ export type ApiToken = {
   prefix: string;
   createdAt: string;
   lastUsedAt: string | null;
+  scopes: ("briefs" | "ai")[];
 };
 
 export async function loadTokens(): Promise<ApiToken[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("api_tokens")
-    .select("id, name, prefix, created_at, last_used_at")
+    .select("id, name, prefix, created_at, last_used_at, scopes")
     .is("revoked_at", null)
     .is("deleted_at", null)
     .order("created_at");
@@ -84,5 +85,6 @@ export async function loadTokens(): Promise<ApiToken[]> {
     prefix: t.prefix,
     createdAt: t.created_at,
     lastUsedAt: t.last_used_at,
+    scopes: t.scopes as ApiToken["scopes"],
   }));
 }

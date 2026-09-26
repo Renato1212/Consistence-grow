@@ -58,7 +58,7 @@ Cloud sandbox: Docker daemon may need `sudo dockerd &` before `pnpm db:start`.
 
 ## Data model (Phase 1)
 
-- 25 user tables in `public` (27 after Phase 3), all with `user_id default auth.uid()`, RLS `user_id = auth.uid()`,
+- 25 user tables in `public` (27 after Phase 3, 28 after Phase 7), all with `user_id default auth.uid()`, RLS `user_id = auth.uid()`,
   `updated_at` trigger and (except `trade_tags`) `deleted_at` soft delete. See
   `supabase/migrations/*_phase1_core.sql`.
 - `public.compute_trade()` trigger derives ticks, fees_total, gross/net P&L, risk, R, duration,
@@ -147,6 +147,20 @@ Cloud sandbox: Docker daemon may need `sudo dockerd &` before `pnpm db:start`.
   process, plan accuracy). Unit tests in `insights.test.ts`.
 - Charts: Recharts (`src/components/insights/charts.tsx`); every number opens the trade list sheet
   (`DrillContext` in `bits.tsx`). `pattern_min_n` is edited on the Pattern finder tab.
+
+## AI analysis (Phase 7) — Claude subscription, no API
+
+- The app never calls Claude. A Claude Code routine (see `docs/AI_ROUTINE.md`) polls
+  `GET /api/ai/queue?slot=eu|us|weekly` and posts `POST /api/ai/findings` with a token of scope `ai`
+  (Settings → Integrations). Routes: `src/app/api/ai/*`; token-auth SQL functions `ai_context`,
+  `ai_enqueue`, `ai_serve`, `ai_submit`, `ai_fail` (migration `*_phase7_ai_analysis.sql`).
+- Pure logic in `src/lib/ai`: `requests.ts` (filter/session/weekly specs, slots), `payload.ts`
+  (payload from the Insights libs, trade selection, `specHash`), `schema.ts` (zod output + JSON
+  schema), `instructions.ts` (rules; bump `PAYLOAD_VERSION` in `hash.ts` when they change),
+  `schedule.ts`. Loader `src/lib/data/ai.ts`.
+- UI: Insights "AI analysis" tab (`src/components/insights/ai-tab.tsx`), weekly review
+  (`src/components/ai/weekly-ai.tsx`), Today pre-session notes (`src/components/today/ai-notes.tsx`),
+  finding cards with action item / playbook note (`src/components/ai/finding-card.tsx`).
 
 ## Macro Desk brief delivery
 

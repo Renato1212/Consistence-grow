@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { WeeklyAi } from "@/components/ai/weekly-ai";
 import { ActionItemsList } from "@/components/review/action-items-list";
 import { EquityCurve } from "@/components/review/equity-curve";
 import { SampleBadge, weakClass } from "@/components/review/stat-bits";
@@ -11,6 +12,7 @@ import { PageHeader } from "@/components/shell/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { addDays, parseIsoWeekKey } from "@/lib/calendar/dates";
+import { hasAiToken, loadAiInsights, loadAiRequests, loadPlaybookOptions } from "@/lib/data/ai";
 import { loadWeek } from "@/lib/data/week";
 import { domainMeta, type DomainCode } from "@/lib/domains";
 import { fmtMoney, fmtR, pnlClass } from "@/lib/format";
@@ -123,7 +125,13 @@ export default async function WeekPage({ params }: PageProps<"/review/week/[week
   const { week: key } = await params;
   const parsed = parseIsoWeekKey(key);
   if (!parsed) notFound();
-  const w = await loadWeek(parsed.year, parsed.week);
+  const [w, aiInsights, aiRequests, playbooks, hasToken] = await Promise.all([
+    loadWeek(parsed.year, parsed.week),
+    loadAiInsights({ week: key, scope: "weekly", limit: 1 }),
+    loadAiRequests(),
+    loadPlaybookOptions(),
+    hasAiToken(),
+  ]);
   const s = summarize(w.trades);
   const curve = equityCurve(w.trades);
   const byId = new Map(w.trades.map((t) => [t.id, t]));
@@ -299,6 +307,20 @@ export default async function WeekPage({ params }: PageProps<"/review/week/[week
             week={w.week}
             initial={{ reflection: w.review.reflection, goals: w.review.goals }}
             updatedAt={w.review.updatedAt}
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <WeeklyAi
+            week={w.key}
+            insight={aiInsights[0] ?? null}
+            request={
+              aiRequests.find(
+                (r) => r.kind === "weekly" && r.week === w.key && r.status !== "done",
+              ) ?? null
+            }
+            playbooks={playbooks}
+            hasToken={hasToken}
           />
         </div>
       </div>

@@ -5,6 +5,7 @@ import { LineChart } from "lucide-react";
 import { InsightsView } from "@/components/insights/insights-view";
 import { EmptyState, PageHeader } from "@/components/shell/empty-state";
 import { Button } from "@/components/ui/button";
+import { hasAiToken, loadAiInsights, loadAiRequests, loadPlaybookOptions } from "@/lib/data/ai";
 import { loadInsights } from "@/lib/data/insights";
 import { parseFilter } from "@/lib/insights/filters";
 import { parseDimension, parseTab } from "@/lib/insights/view-state";
@@ -22,7 +23,14 @@ function toParams(raw: Record<string, string | string[] | undefined>): URLSearch
 
 export default async function InsightsPage({ searchParams }: PageProps<"/insights">) {
   const params = toParams(await searchParams);
-  const [data, today] = await Promise.all([loadInsights(), Promise.resolve(lisbonToday())]);
+  const today = lisbonToday();
+  const [data, insights, requests, playbooks, hasToken] = await Promise.all([
+    loadInsights(),
+    loadAiInsights(),
+    loadAiRequests(),
+    loadPlaybookOptions(),
+    hasAiToken(),
+  ]);
 
   if (data.trades.length === 0) {
     return (
@@ -52,6 +60,7 @@ export default async function InsightsPage({ searchParams }: PageProps<"/insight
           tab: parseTab(params.get("tab")),
           dimension: parseDimension(params.get("by")),
         }}
+        ai={{ insights, requests, playbooks, hasToken }}
       />
     </>
   );
