@@ -58,7 +58,7 @@ Cloud sandbox: Docker daemon may need `sudo dockerd &` before `pnpm db:start`.
 
 ## Data model (Phase 1)
 
-- 25 user tables in `public`, all with `user_id default auth.uid()`, RLS `user_id = auth.uid()`,
+- 25 user tables in `public` (27 after Phase 3), all with `user_id default auth.uid()`, RLS `user_id = auth.uid()`,
   `updated_at` trigger and (except `trade_tags`) `deleted_at` soft delete. See
   `supabase/migrations/*_phase1_core.sql`.
 - `public.compute_trade()` trigger derives ticks, fees_total, gross/net P&L, risk, R, duration,
@@ -89,6 +89,26 @@ Cloud sandbox: Docker daemon may need `sudo dockerd &` before `pnpm db:start`.
 - UI primitives are hand-written in `src/components/ui` (native select, segmented radio group,
   sheet, table…). TanStack Table is **v9** (`useTable`, features via `tableFeatures`).
 - E2E helpers `e2e/helpers.ts`: `signIn`, `logTrade`, `pasteImage`, `fillQuickTrade`.
+
+## Calendar, prep, Today (Phase 3)
+
+- Calendar: `/calendar?view=month|week|day&date=`, components in `src/components/calendar`
+  (event sheet, quick-add presets, headline log). Pure rules in `src/lib/calendar`:
+  `flow.ts` (OPEX/quad/VIX/month-end/fix), `holidays.ts` (seed list mirrored by
+  `private.seed_phase3_defaults`), `presets.ts`, `templates.ts`, `markers.ts` (computed session
+  markers). Server loaders in `src/lib/data/calendar.ts`; `syncGenerated()` calls the
+  `sync_generated_events` RPC (idempotent, keyed by `generator_key`).
+- Prep: `/prep/[date]/[eu|us]` (client-only editor `src/components/prep/prep-editor.tsx`), form model
+  `src/lib/prep/prep-form.ts`, loader `src/lib/data/prep.ts`, saved via the `save_prep` RPC (one
+  transaction). `/prep` redirects to the current session's prep (`P` shortcut).
+- Today: `src/lib/today/state.ts` (phase machine, DST-tested), `banner.ts`; page
+  `src/app/(app)/today/page.tsx`, plan view `src/components/today/plan-view.tsx`. The be-flat
+  banner (`src/components/today/be-flat-banner.tsx`) lives in the app shell; call
+  `notifyCalendarChanged()` after writing events.
+- Settings → Calendar & sessions: `/settings/calendar` (session times, banner minutes, templates,
+  holidays).
+- Trade editor links (event / scenario / key level of the entry day): `src/components/trade/trade-links.tsx`.
+- New tables: `holidays`, `calendar_templates` (27 user tables in total).
 
 ## Design
 

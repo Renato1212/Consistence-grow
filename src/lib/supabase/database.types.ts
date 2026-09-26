@@ -62,6 +62,19 @@ export type Database = {
                   Relationships: [
                     
                   ]
+                },"calendar_templates": {
+                  Row: {
+                    "active": boolean,"category": string,"created_at": string,"deleted_at": string | null,"id": string,"importance": number,"instruments": (string)[],"local_time": string,"preset_key": string | null,"primary_domain": string,"sort": number,"title": string,"tz": string,"updated_at": string,"user_id": string,"weekday": number
+                  }
+                  Insert: {
+                    "active"?: boolean,"category": string,"created_at"?: string,"deleted_at"?: string | null,"id"?: string,"importance"?: number,"instruments"?: (string)[],"local_time": string,"preset_key"?: string | null,"primary_domain": string,"sort"?: number,"title": string,"tz"?: string,"updated_at"?: string,"user_id"?: string,"weekday": number
+                  }
+                  Update: {
+                    "active"?: boolean,"category"?: string,"created_at"?: string,"deleted_at"?: string | null,"id"?: string,"importance"?: number,"instruments"?: (string)[],"local_time"?: string,"preset_key"?: string | null,"primary_domain"?: string,"sort"?: number,"title"?: string,"tz"?: string,"updated_at"?: string,"user_id"?: string,"weekday"?: number
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"debriefs": {
                   Row: {
                     "completed_at": string | null,"created_at": string,"day_id": string,"deleted_at": string | null,"energy": number | null,"grade_context": string | null,"grade_context_note": string | null,"grade_edge": string | null,"grade_edge_note": string | null,"grade_process": string | null,"grade_process_note": string | null,"id": string,"lesson": string | null,"mood": number | null,"to_improve": (string)[],"updated_at": string,"user_id": string,"went_well": (string)[]
@@ -118,6 +131,19 @@ isOneToOne: false
       referencedRelation: "trades"
       referencedColumns: ["id"]
     }
+                  ]
+                },"holidays": {
+                  Row: {
+                    "created_at": string,"date": string,"deleted_at": string | null,"early_close": string | null,"id": string,"market": string,"name": string,"updated_at": string,"user_id": string
+                  }
+                  Insert: {
+                    "created_at"?: string,"date": string,"deleted_at"?: string | null,"early_close"?: string | null,"id"?: string,"market": string,"name": string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"date"?: string,"deleted_at"?: string | null,"early_close"?: string | null,"id"?: string,"market"?: string,"name"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
                   ]
                 },"import_presets": {
                   Row: {
@@ -583,7 +609,15 @@ isOneToOne: false
                 }
           }
           Functions: {
-            [_ in never]: never
+            "ensure_trading_day":
+{ Args: { "p_date": string }; Returns: string
+                           },
+"save_prep":
+{ Args: { "p": Json }; Returns: string
+                           },
+"sync_generated_events":
+{ Args: { "p_events": Json,"p_from": string,"p_to": string }; Returns: number
+                           }
           }
           Enums: {
             [_ in never]: never

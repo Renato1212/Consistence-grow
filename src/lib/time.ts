@@ -39,3 +39,8 @@ export function zonedWallTimeToUtc(wallTime: string, tz: string): Date {
 export function dateInTz(instant: Date | string | number, tz: string = DISPLAY_TZ): string {
   return formatInTimeZone(instant, tz, "yyyy-MM-dd");
 }
+
+/** Today's trading-day date in Lisbon. */
+export function lisbonToday(): string {
+  return dateInTz(new Date(), DISPLAY_TZ);
+}

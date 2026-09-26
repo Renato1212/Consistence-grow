@@ -28,3 +28,16 @@ test("mobile: log a trade one-handed and see it as a card", async ({ page }) => 
   await page.keyboard.press("Escape");
   await expect(page.getByTestId("journal-card").first()).toBeVisible();
 });
+
+test("mobile: session prep is usable one-handed", async ({ page }) => {
+  await signIn(page);
+  await page.goto("/prep/2039-03-15/eu");
+  await page.getByRole("radiogroup", { name: "sleep" }).getByRole("radio", { name: "4" }).click();
+  await page.getByRole("button", { name: "Add level" }).click();
+  const row = page.getByTestId("level-row").last();
+  await row.getByLabel("Price (or zone low)").fill("5000");
+  await row.getByLabel("Level type").fill("POC");
+  await expect(page.getByTestId("save-status")).toHaveAttribute("data-status", "saved", {
+    timeout: 10_000,
+  });
+});
