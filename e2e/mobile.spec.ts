@@ -41,3 +41,16 @@ test("mobile: session prep is usable one-handed", async ({ page }) => {
     timeout: 10_000,
   });
 });
+
+test("mobile: debrief grades save on a phone", async ({ page }) => {
+  await signIn(page);
+  await page.goto("/review/2039-03-16");
+  await page
+    .getByRole("radiogroup", { name: "Process grade" })
+    .getByRole("radio", { name: "B", exact: true })
+    .click();
+  await page.getByLabel("Lesson of the day (one sentence)").fill("Stay patient");
+  await expect(page.getByTestId("save-status")).toHaveAttribute("data-status", "saved", {
+    timeout: 10_000,
+  });
+});

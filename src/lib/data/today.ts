@@ -1,10 +1,12 @@
 import "server-only";
 
+import { addDays, isoWeekOf } from "@/lib/calendar/dates";
 import { HolidayCalendar } from "@/lib/calendar/holidays";
 import { loadEditorData } from "@/lib/data/editor";
 import { createClient } from "@/lib/supabase/server";
 import { todayState, type TodayState } from "@/lib/today/state";
 import { loadHolidays, loadSettings } from "./calendar";
+import { loadDebriefStatuses, type DebriefStatus } from "./debrief";
 import { loadDayEvents, loadDayPreps, loadPrepActionItems, loadRules } from "./prep";
 
 export type DayResult = {
@@ -40,6 +42,36 @@ async function loadDayResult(date: string): Promise<DayResult> {
   return out;
 }
 
+/** Most recent of the last 7 days with taken trades but no completed debrief. */
+async function loadMissingDebrief(date: string, statuses: Map<string, DebriefStatus>) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("trade_facts")
+    .select("trade_date")
+    .eq("kind", "taken")
+    .gte("trade_date", addDays(date, -7))
+    .lt("trade_date", date)
+    .order("trade_date", { ascending: false });
+  if (error) throw error;
+  const days = [...new Set((data ?? []).map((r) => r.trade_date as string))];
+  return days.find((d) => statuses.get(d) !== "complete") ?? null;
+}
+
+/** Goals set in last week's review, shown on Today all this week. */
+async function loadWeekGoals(date: string): Promise<string[]> {
+  const prev = isoWeekOf(addDays(date, -7));
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("weekly_reviews")
+    .select("goals")
+    .eq("iso_year", prev.year)
+    .eq("iso_week", prev.week)
+    .is("deleted_at", null)
+    .maybeSingle();
+  if (error) throw error;
+  return data?.goals ?? [];
+}
+
 export async function loadToday(now: Date) {
   const [settings, holidays, editor, rules, actionItems] = await Promise.all([
     loadSettings(),
@@ -50,11 +82,14 @@ export async function loadToday(now: Date) {
   ]);
   const cal = new HolidayCalendar(holidays);
   const state: TodayState = todayState(now, cal, settings);
-  const [preps, events, result] = await Promise.all([
+  const [preps, events, result, statuses, goals] = await Promise.all([
     loadDayPreps(state.date, editor.instruments),
     loadDayEvents(state.date, cal),
     loadDayResult(state.date),
+    loadDebriefStatuses(addDays(state.date, -7), state.date),
+    loadWeekGoals(state.date),
   ]);
+  const missingDebrief = await loadMissingDebrief(state.date, statuses);
   return {
     state,
     settings,
@@ -66,6 +101,9 @@ export async function loadToday(now: Date) {
     preps,
     events,
     result,
+    debrief: statuses.get(state.date) ?? ("none" as DebriefStatus),
+    missingDebrief,
+    goals,
   };
 }
 

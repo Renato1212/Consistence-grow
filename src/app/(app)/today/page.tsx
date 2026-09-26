@@ -4,6 +4,7 @@ import { CalendarDays, CheckCircle2, ClipboardPen, Moon, NotebookPen, Plus } fro
 
 import { EventRowButton } from "@/components/calendar/calendar-view";
 import { PageHeader } from "@/components/shell/empty-state";
+import { ActionItemsList } from "@/components/review/action-items-list";
 import { Countdown } from "@/components/today/countdown";
 import { PlanView } from "@/components/today/plan-view";
 import { Badge } from "@/components/ui/badge";
@@ -165,15 +166,27 @@ export default async function TodayPage() {
       </div>
 
       <div className="space-y-4">
-        {data.actionItems.length > 0 && (
-          <section className="border-primary/40 rounded-xl border p-4" aria-label="Action items">
-            <h2 className="heading-caps mb-2 text-xs">Open action items</h2>
-            <ul className="list-disc space-y-1 pl-5 text-sm">
-              {data.actionItems.map((a) => (
-                <li key={a.id}>{a.text}</li>
+        {data.goals.length > 0 && (
+          <section className="bg-card rounded-xl border p-4" aria-label="This week's goals">
+            <h2 className="heading-caps mb-2 text-xs">This week&apos;s goals</h2>
+            <ol className="list-decimal space-y-1 pl-5 text-sm" data-testid="week-goals">
+              {data.goals.map((g, i) => (
+                <li key={i}>{g}</li>
               ))}
-            </ul>
+            </ol>
           </section>
+        )}
+
+        <ActionItemsList items={data.actionItems} />
+
+        {data.missingDebrief && state.phase !== "post" && (
+          <ActionCard
+            icon={NotebookPen}
+            title={`Debrief ${formatInTz(`${data.missingDebrief}T12:00:00Z`, "UTC", "EEE d MMM")}`}
+            description="You traded that day and the debrief isn't complete yet."
+            href={`/review/${data.missingDebrief}`}
+            cta="Open debrief"
+          />
         )}
 
         {state.phase === "closed" && (
@@ -202,16 +215,25 @@ export default async function TodayPage() {
 
         {state.phase === "us" && !us && prepCard("US")}
 
-        {state.phase === "post" && (
-          <ActionCard
-            icon={NotebookPen}
-            title="Session over"
-            description={`${result.n} trade${result.n === 1 ? "" : "s"} logged today. The guided debrief arrives in the next update — review today's trades in the Journal meanwhile.`}
-            href="/journal"
-            cta="Open journal"
-            done
-          />
-        )}
+        {state.phase === "post" &&
+          (data.debrief === "complete" ? (
+            <ActionCard
+              icon={CheckCircle2}
+              title="Debrief complete"
+              description={`${result.n} trade${result.n === 1 ? "" : "s"} today. Everything stays editable.`}
+              href={`/review/${state.date}`}
+              cta="Open debrief"
+              done
+            />
+          ) : (
+            <ActionCard
+              icon={NotebookPen}
+              title={data.debrief === "draft" ? "Continue debrief" : "Start debrief"}
+              description={`${result.n} trade${result.n === 1 ? "" : "s"} logged today. Plan vs reality, grades, rules, lesson and action items.`}
+              href={`/review/${state.date}`}
+              cta={data.debrief === "draft" ? "Continue debrief" : "Start debrief"}
+            />
+          ))}
 
         {(state.phase === "eu" || state.phase === "us" || state.phase === "pre_eu") && planPrep && (
           <PlanView

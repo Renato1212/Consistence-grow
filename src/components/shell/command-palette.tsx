@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarDays, ClipboardPen, Plus, Search } from "lucide-react";
+import { CalendarDays, ClipboardPen, NotebookPen, Plus, Search } from "lucide-react";
 
 import {
   CommandDialog,
@@ -31,6 +31,7 @@ function isTypingTarget(target: EventTarget | null) {
  * ⌘K command palette plus global single-key shortcuts:
  *   N           → log trade
  *   P           → current session prep
+ *   D           → today's debrief
  *   G then T/J/R/I/P/S → navigate
  */
 export function CommandPalette() {
@@ -78,6 +79,9 @@ export function CommandPalette() {
       } else if (key === "p") {
         e.preventDefault();
         router.push("/prep");
+      } else if (key === "d") {
+        e.preventDefault();
+        router.push("/review/today");
       }
     }
     window.addEventListener("keydown", onKeyDown);
@@ -120,6 +124,11 @@ export function CommandPalette() {
               <ClipboardPen aria-hidden />
               Session prep
               <CommandShortcut>P</CommandShortcut>
+            </CommandItem>
+            <CommandItem onSelect={() => go("/review/today")}>
+              <NotebookPen aria-hidden />
+              Debrief
+              <CommandShortcut>D</CommandShortcut>
             </CommandItem>
             <CommandItem onSelect={() => go("/calendar")}>
               <CalendarDays aria-hidden />
