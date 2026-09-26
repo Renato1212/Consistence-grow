@@ -10,7 +10,10 @@ test("unauthenticated visitors are sent to login", async ({ page }) => {
 
 test("wrong password shows a calm, generic error", async ({ page }) => {
   await page.goto("/login");
-  await page.getByRole("tab", { name: "Password" }).click();
+  await expect(async () => {
+    await page.getByRole("tab", { name: "Password" }).click();
+    await expect(page.getByRole("textbox", { name: "Password" })).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
   await page.getByLabel("Email").fill("e2e@consistent-grow.test");
   await page.getByRole("textbox", { name: "Password" }).fill("definitely-wrong");
   await page.getByRole("button", { name: "Sign in" }).click();

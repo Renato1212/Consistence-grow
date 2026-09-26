@@ -75,6 +75,21 @@ Cloud sandbox: Docker daemon may need `sudo dockerd &` before `pnpm db:start`.
 - Production migrations: apply with the Supabase MCP, then rename the local file to the version
   production recorded (`list_migrations`).
 
+## Trade logging (Phase 2)
+
+- Editor: `src/components/trade/trade-editor.tsx` (client-only via `editor-client.tsx`), form model
+  and form↔DB conversion in `src/lib/trading/trade-form.ts`, autosave in
+  `src/lib/autosave/controller.ts` (idempotent upserts keyed by a client UUID; drafts in
+  localStorage under `cg:trade:<id>`).
+- Media: `src/components/trade/media-manager.tsx` (+ `MediaGallery`, `MediaLightbox`), rules in
+  `src/lib/media.ts`, signed URLs from `src/lib/data/media.ts`.
+- Journal: `/journal` (list + heatmap + `?trade=` detail sheet), `/journal/[id]` (edit),
+  `/journal/trash`; data in `src/lib/data/journal.ts` (reads `trade_facts`).
+- Settings → Instruments: `/settings/instruments` (fees, active, tick specs behind unlock).
+- UI primitives are hand-written in `src/components/ui` (native select, segmented radio group,
+  sheet, table…). TanStack Table is **v9** (`useTable`, features via `tableFeatures`).
+- E2E helpers `e2e/helpers.ts`: `signIn`, `logTrade`, `pasteImage`, `fillQuickTrade`.
+
 ## Design
 
 AXIA-style: near-black + one orange accent (`--primary`), `heading-caps` utility for bold

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 
 import { PageHeader } from "@/components/shell/empty-state";
 import { Button } from "@/components/ui/button";
@@ -15,6 +17,18 @@ export default async function SettingsPage() {
     <>
       <PageHeader title="Settings" />
       <div className="grid max-w-xl gap-6">
+        <Link
+          href="/settings/instruments"
+          className="bg-card hover:border-primary/60 flex items-center justify-between rounded-xl border p-5 transition-colors"
+        >
+          <div>
+            <div className="font-semibold">Instruments & fees</div>
+            <div className="text-muted-foreground text-sm">
+              Commissions per contract, active markets, tick specs
+            </div>
+          </div>
+          <ChevronRight className="text-muted-foreground size-5" aria-hidden />
+        </Link>
         <Card>
           <CardHeader>
             <CardTitle>Account</CardTitle>
@@ -32,8 +46,8 @@ export default async function SettingsPage() {
           </CardContent>
         </Card>
         <p className="text-muted-foreground text-sm">
-          Instruments, tags, rules, session times, calendar templates and import/export arrive with
-          the phases that use them.
+          Tags, rules, session times, calendar templates and import/export arrive with the phases
+          that use them.
         </p>
       </div>
     </>
