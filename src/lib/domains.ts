@@ -46,3 +46,8 @@ export function domainMeta(code: DomainCode) {
   if (!meta) throw new Error(`Unknown domain ${code}`);
   return meta;
 }
+
+/** Short label of a domain code; unknown codes pass through unchanged. */
+export function domainLabel(code: string): string {
+  return DOMAINS.find((d) => d.code === code)?.short ?? code;
+}

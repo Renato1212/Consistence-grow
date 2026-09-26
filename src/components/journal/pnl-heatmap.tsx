@@ -15,12 +15,17 @@ const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 export function PnlHeatmap({
   trades,
   onPickDay,
+  initialMonth,
 }: {
   trades: HeatmapTrade[];
   onPickDay?: (date: string) => void;
+  /** "yyyy-MM" to open on (default: the current Lisbon month). */
+  initialMonth?: string;
 }) {
   const [cursor, setCursor] = useState(() => {
-    const [y, m] = formatInTz(new Date(), DISPLAY_TZ, "yyyy-MM").split("-").map(Number);
+    const [y, m] = (initialMonth ?? formatInTz(new Date(), DISPLAY_TZ, "yyyy-MM"))
+      .split("-")
+      .map(Number);
     return { y, m };
   });
   const days = useMemo(() => aggregateDaily(trades), [trades]);

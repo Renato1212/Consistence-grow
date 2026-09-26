@@ -64,3 +64,14 @@ test("mobile: open a playbook and edit its summary", async ({ page }) => {
     timeout: 10_000,
   });
 });
+
+test("mobile: insights fit the screen and tabs are reachable", async ({ page }) => {
+  await signIn(page, "/insights");
+  await expect(page.getByTestId("filter-bar")).toBeVisible();
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
+  await page.getByRole("tab", { name: "Pattern finder" }).click();
+  await expect(page.getByTestId("pattern-baseline")).toBeVisible();
+});
