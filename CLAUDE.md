@@ -110,6 +110,20 @@ Cloud sandbox: Docker daemon may need `sudo dockerd &` before `pnpm db:start`.
 - Trade editor links (event / scenario / key level of the entry day): `src/components/trade/trade-links.tsx`.
 - New tables: `holidays`, `calendar_templates` (27 user tables in total).
 
+## Debrief & weekly review (Phase 4)
+
+- Debrief: `/review/[date]` (client-only editor `src/components/review/debrief-editor.tsx`, local
+  mirror `cg:debrief:<date>`), form model `src/lib/review/debrief-form.ts`, loader
+  `src/lib/data/debrief.ts`, saved via the `save_debrief` RPC. `/review/today` redirects to the
+  current day (`D` shortcut).
+- Weekly review: `/review/week/2026-W40` (`src/lib/data/week.ts`, ISO helpers in
+  `src/lib/calendar/dates.ts`), reflection/goals autosaved into `weekly_reviews`. `/review` lists
+  recent days and the last 8 weeks.
+- Stats: `src/lib/review/stats.ts` (`summarize`, `breakdown`, `equityCurve`, `extremes`,
+  `sampleQuality`) — shared by debrief, weekly review and later Insights.
+- Action items: `src/components/review/action-items-list.tsx` (done/drop + Undo), used on Today,
+  prep, debrief and weekly review.
+
 ## Design
 
 AXIA-style: near-black + one orange accent (`--primary`), `heading-caps` utility for bold

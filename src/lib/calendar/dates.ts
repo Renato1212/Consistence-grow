@@ -60,3 +60,34 @@ export function startOfIsoWeek(d: IsoDate): IsoDate {
 export function isIsoDate(s: string): boolean {
   return /^\d{4}-\d{2}-\d{2}$/.test(s) && fromUtc(toUtc(s)) === s;
 }
+
+/** ISO-8601 week of a date: weeks start Monday; week 1 contains the year's first Thursday. */
+export function isoWeekOf(d: IsoDate): { year: number; week: number } {
+  const thursday = addDays(d, 4 - isoWeekday(d));
+  const year = Number(thursday.slice(0, 4));
+  const jan1 = ymd(year, 1, 1);
+  const dayOfYear = Math.round((toUtc(thursday).getTime() - toUtc(jan1).getTime()) / 86_400_000);
+  return { year, week: Math.floor(dayOfYear / 7) + 1 };
+}
+
+/** Monday of ISO week `week` of `year`. */
+export function isoWeekStart(year: number, week: number): IsoDate {
+  const jan4 = ymd(year, 1, 4);
+  return addDays(startOfIsoWeek(jan4), (week - 1) * 7);
+}
+
+/** "2026-W40" */
+export function isoWeekKey(year: number, week: number): string {
+  return `${year}-W${String(week).padStart(2, "0")}`;
+}
+
+export function parseIsoWeekKey(key: string): { year: number; week: number } | null {
+  const m = /^(\d{4})-W(\d{2})$/.exec(key);
+  if (!m) return null;
+  const year = Number(m[1]);
+  const week = Number(m[2]);
+  if (week < 1 || week > 53) return null;
+  // Week 53 only exists in some years.
+  if (isoWeekOf(isoWeekStart(year, week)).year !== year) return null;
+  return { year, week };
+}

@@ -612,6 +612,9 @@ isOneToOne: false
             "ensure_trading_day":
 { Args: { "p_date": string }; Returns: string
                            },
+"save_debrief":
+{ Args: { "p": Json }; Returns: string
+                           },
 "save_prep":
 { Args: { "p": Json }; Returns: string
                            },

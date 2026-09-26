@@ -68,3 +68,12 @@ Format: date — decision — reason.
 - 2026-09-26 — Be-flat banner is app-wide (in the shell), reads importance-3 events for the next 26 h from the browser (refresh every 5 min, on focus and after calendar edits) and keeps the last list on a failed read. `event_banner_minutes` (default 10, 0 = off) in Settings → Calendar.
 - 2026-09-26 — Calendar is reachable from Today, Prep, the ⌘K palette and Settings, keeping the 5-item nav from the spec. `P` opens `/prep`, which redirects to the prep that matters now (next weekday's EU prep at weekends).
 - 2026-09-26 — New deps: `react-markdown` + `remark-gfm` for the pasted brief (raw HTML never rendered).
+
+## Phase 4 — Debrief & weekly review
+
+- 2026-09-26 — Debrief = one snapshot saved by the `save_debrief` RPC in one transaction (debrief row, scenario outcome/traded, level tested/respected, rule checks with notes, action items with client ids). It only touches scenarios/levels of that day's own preps; a second client id for the same day reuses the existing debrief (unique `day_id`).
+- 2026-09-26 — "Debrief complete" needs the three pillar grades and a note on every broken rule — enforced in the UI and again in the database (a check in `save_debrief`). Drafts save with anything missing. Went well / to improve are capped at 3 (UI slots + existing DB check).
+- 2026-09-26 — Action items stay on Today, in every prep and in the weekly review until marked done or dropped (from any of those places, with Undo). Only items flagged "show in next prep" appear on Today/prep.
+- 2026-09-26 — Today after the close shows Start / Continue debrief; on later days a reminder appears for the most recent day in the last week with trades but no completed debrief. `D` opens today's debrief (last weekday's at the weekend).
+- 2026-09-26 — Weekly review is generated for any ISO week (Lisbon trading dates), stored input is only the reflection and ≤ 3 goals (`weekly_reviews`, upsert on user+week). Last week's goals show on Today all this week. The AI weekly review is left out until Phase 7 (hidden, not stubbed).
+- 2026-09-26 — Honest stats in reviews: R only over trades with a stop (n shown next to it), money per currency, missed/observed never in P&L; rows with n < 10 greyed and "insufficient data" below 20. Equity curve is a single-series inline SVG (2px line, hairline grid, crosshair tooltip, keyboard arrows) with a table fallback.

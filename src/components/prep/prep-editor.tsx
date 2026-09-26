@@ -37,6 +37,7 @@ import type { Json } from "@/lib/supabase/database.types";
 import { createClient } from "@/lib/supabase/client";
 import { DISPLAY_TZ, formatInTz } from "@/lib/time";
 import { cn } from "@/lib/utils";
+import { ActionItemsList } from "@/components/review/action-items-list";
 import { DayEvents } from "./day-events";
 import { LevelsEditor } from "./levels-editor";
 import { Markdown } from "./markdown";
@@ -232,16 +233,7 @@ export function PrepEditor({ data }: { data: PrepPageData }) {
         </div>
       </div>
 
-      {data.actionItems.length > 0 && (
-        <section className="border-primary/40 rounded-xl border p-4" aria-label="Action items">
-          <h2 className="heading-caps mb-2 text-xs">From past debriefs</h2>
-          <ul className="list-disc space-y-1 pl-5 text-sm">
-            {data.actionItems.map((a) => (
-              <li key={a.id}>{a.text}</li>
-            ))}
-          </ul>
-        </section>
-      )}
+      <ActionItemsList items={data.actionItems} title="From past debriefs" />
 
       {session === "US" && data.eu && snap.copiedFromId !== data.eu.id && (
         <div className="flex flex-wrap items-center gap-3 rounded-xl border border-dashed p-4">
