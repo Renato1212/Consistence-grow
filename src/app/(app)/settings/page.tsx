@@ -41,6 +41,18 @@ export default async function SettingsPage() {
           </div>
           <ChevronRight className="text-muted-foreground size-5" aria-hidden />
         </Link>
+        <Link
+          href="/settings/integrations"
+          className="bg-card hover:border-primary/60 flex items-center justify-between rounded-xl border p-5 transition-colors"
+        >
+          <div>
+            <div className="font-semibold">Integrations</div>
+            <div className="text-muted-foreground text-sm">
+              Daily Macro Desk brief delivery, API tokens
+            </div>
+          </div>
+          <ChevronRight className="text-muted-foreground size-5" aria-hidden />
+        </Link>
         <Card>
           <CardHeader>
             <CardTitle>Account</CardTitle>

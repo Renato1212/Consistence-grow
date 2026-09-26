@@ -5,6 +5,7 @@ import { CalendarDays, CheckCircle2, ClipboardPen, Moon, NotebookPen, Plus } fro
 import { EventRowButton } from "@/components/calendar/calendar-view";
 import { PageHeader } from "@/components/shell/empty-state";
 import { ActionItemsList } from "@/components/review/action-items-list";
+import { BriefCard } from "@/components/today/brief-card";
 import { Countdown } from "@/components/today/countdown";
 import { PlanView } from "@/components/today/plan-view";
 import { Badge } from "@/components/ui/badge";
@@ -176,6 +177,14 @@ export default async function TodayPage() {
             </ol>
           </section>
         )}
+
+        {(() => {
+          const late = state.phase === "us" || state.phase === "post";
+          const brief = late
+            ? (data.briefs.US ?? data.briefs.EU)
+            : (data.briefs.EU ?? data.briefs.US);
+          return brief ? <BriefCard brief={brief} /> : null;
+        })()}
 
         <ActionItemsList items={data.actionItems} />
 

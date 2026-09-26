@@ -6,6 +6,7 @@ import { loadEditorData } from "@/lib/data/editor";
 import { createClient } from "@/lib/supabase/server";
 import { todayState, type TodayState } from "@/lib/today/state";
 import { loadHolidays, loadSettings } from "./calendar";
+import { loadDayBriefs } from "./briefs";
 import { loadDebriefStatuses, type DebriefStatus } from "./debrief";
 import { loadDayEvents, loadDayPreps, loadPrepActionItems, loadRules } from "./prep";
 
@@ -82,12 +83,13 @@ export async function loadToday(now: Date) {
   ]);
   const cal = new HolidayCalendar(holidays);
   const state: TodayState = todayState(now, cal, settings);
-  const [preps, events, result, statuses, goals] = await Promise.all([
+  const [preps, events, result, statuses, goals, briefs] = await Promise.all([
     loadDayPreps(state.date, editor.instruments),
     loadDayEvents(state.date, cal),
     loadDayResult(state.date),
     loadDebriefStatuses(addDays(state.date, -7), state.date),
     loadWeekGoals(state.date),
+    loadDayBriefs(state.date),
   ]);
   const missingDebrief = await loadMissingDebrief(state.date, statuses);
   return {
@@ -104,6 +106,7 @@ export async function loadToday(now: Date) {
     debrief: statuses.get(state.date) ?? ("none" as DebriefStatus),
     missingDebrief,
     goals,
+    briefs,
   };
 }
 

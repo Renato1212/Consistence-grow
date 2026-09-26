@@ -77,11 +77,15 @@ export function PrepEditor({ data }: { data: PrepPageData }) {
       }
       browserStore.remove(storageKey);
     }
+    const base = server
+      ? { ...server, levels: sortLevels(server.levels) }
+      : emptyPrep(data.newId, date, session);
+    // A delivered Macro Desk brief fills an empty Brief section automatically.
+    const autoFilled = !!data.brief && !base.briefMd.trim();
     return {
-      snap: server
-        ? { ...server, levels: sortLevels(server.levels) }
-        : emptyPrep(data.newId, date, session),
+      snap: autoFilled ? { ...base, briefMd: data.brief!.markdown } : base,
       recovered: false,
+      autoFilled,
     };
   });
   const [snap, setSnap] = useState<PrepSnapshot>(start.snap);
@@ -114,8 +118,20 @@ export function PrepEditor({ data }: { data: PrepPageData }) {
     if (start.recovered) {
       controller.update(start.snap);
       toast.info("Restored unsaved prep changes from this device");
+    } else if ("autoFilled" in start && start.autoFilled && data.current) {
+      // Existing prep with an empty Brief: store the delivered brief now.
+      controller.update(start.snap);
     }
-  }, [start, controller]);
+  }, [start, controller, data]);
+
+  // A newer brief than the text in the prep: offer to replace, never overwrite.
+  const brief = data.brief;
+  const dismissKey = brief ? `cg:brief-dismissed:${brief.id}:${brief.receivedAt}` : "";
+  const [dismissed, setDismissed] = useState(
+    () => !!dismissKey && browserStore.get(dismissKey) !== null,
+  );
+  const offerReplace =
+    !!brief && !dismissed && !!snap.briefMd.trim() && snap.briefMd !== brief.markdown;
 
   useEffect(() => {
     const beforeUnload = (e: BeforeUnloadEvent) => {
@@ -271,7 +287,44 @@ export function PrepEditor({ data }: { data: PrepPageData }) {
         </Field>
       </Section>
 
-      <BriefSection value={snap.briefMd} onChange={(briefMd) => change({ briefMd })} />
+      {offerReplace && brief && (
+        <div
+          role="status"
+          data-testid="brief-offer"
+          className="border-primary/60 flex flex-wrap items-center gap-3 rounded-xl border p-4 text-sm"
+        >
+          <span className="flex-1">
+            New Macro Desk brief received {formatInTz(brief.receivedAt, DISPLAY_TZ, "HH:mm")} (
+            {session} edition). Your Brief section has different text.
+          </span>
+          <Button
+            size="sm"
+            onClick={() => {
+              change({ briefMd: brief.markdown });
+              toast.success("Brief replaced");
+            }}
+          >
+            Replace
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              browserStore.set(dismissKey, "1");
+              setDismissed(true);
+            }}
+          >
+            Keep mine
+          </Button>
+        </div>
+      )}
+
+      <BriefSection
+        key={snap.briefMd === brief?.markdown ? `brief-${brief.id}` : "brief"}
+        value={snap.briefMd}
+        onChange={(briefMd) => change({ briefMd })}
+        source={brief && snap.briefMd === brief.markdown ? brief : null}
+      />
 
       <Section id="context" title="Environment / context">
         <div className="grid gap-4 sm:grid-cols-2">
@@ -511,12 +564,24 @@ export function PrepEditor({ data }: { data: PrepPageData }) {
   );
 }
 
-function BriefSection({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function BriefSection({
+  value,
+  onChange,
+  source,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  source: { receivedAt: string; source: string } | null;
+}) {
   const [mode, setMode] = useState<"write" | "preview">(value ? "preview" : "write");
   return (
     <Section
       id="brief"
-      title="Brief"
+      title={
+        source
+          ? `Brief · ${source.source} ${formatInTz(source.receivedAt, DISPLAY_TZ, "HH:mm")}`
+          : "Brief"
+      }
       aside={
         <Segmented
           label="Brief mode"

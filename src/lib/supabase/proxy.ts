@@ -4,8 +4,11 @@ import { createServerClient } from "@supabase/ssr";
 import { publicEnv } from "@/lib/env";
 import type { Database } from "@/lib/supabase/database.types";
 
-/** Paths reachable without a session. */
-const PUBLIC_PATHS = ["/login", "/auth"];
+/**
+ * Paths reachable without a session. `/api/ingest` authenticates with a
+ * personal API token instead (checked in the database).
+ */
+const PUBLIC_PATHS = ["/login", "/auth", "/api/ingest"];
 
 function isPublic(pathname: string) {
   return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));

@@ -18,6 +18,7 @@ import {
 } from "@/lib/prep/prep-form";
 import { createClient } from "@/lib/supabase/server";
 import { DISPLAY_TZ, zonedWallTimeToUtc } from "@/lib/time";
+import { loadDayBriefs, type Brief } from "./briefs";
 import { loadEvents, loadHolidays, loadTemplates, syncGenerated } from "./calendar";
 
 export const PREP_COLUMNS =
@@ -175,6 +176,8 @@ export type PrepPageData = {
   events: CalendarEvent[];
   holidays: Holiday[];
   actionItems: ActionItem[];
+  /** Macro Desk brief delivered for this date and session, if any. */
+  brief: Brief | null;
 };
 
 export async function loadPrepPage(date: IsoDate, session: SessionCode): Promise<PrepPageData> {
@@ -185,10 +188,11 @@ export async function loadPrepPage(date: IsoDate, session: SessionCode): Promise
     loadPrepActionItems(),
   ]);
   const cal = new HolidayCalendar(holidays);
-  const [preps, previous, events] = await Promise.all([
+  const [preps, previous, events, briefs] = await Promise.all([
     loadDayPreps(date, editor.instruments),
     loadPreviousLevels(date, editor.instruments),
     loadDayEvents(date, cal),
+    loadDayBriefs(date),
   ]);
   return {
     date,
@@ -203,5 +207,6 @@ export async function loadPrepPage(date: IsoDate, session: SessionCode): Promise
     events,
     holidays,
     actionItems,
+    brief: briefs[session] ?? null,
   };
 }
