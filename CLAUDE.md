@@ -83,8 +83,9 @@ uppercase titles/nav, `Wordmark` component, green/red only for P&L, domain colou
 
 ## Deploys
 
-`claude/compassionate-cray-ktgp9e` is Vercel's **production** branch: every push deploys live.
-Run `pnpm check && pnpm test:db && pnpm build && pnpm e2e` before every push.
+`main` = Vercel production. Work happens on `claude/compassionate-cray-ktgp9e` (every push →
+preview URL) via the running PR; merging into `main` ships to production. Run
+`pnpm check && pnpm test:db && pnpm build && pnpm e2e` before every push.
 
 ## Conventions
 
