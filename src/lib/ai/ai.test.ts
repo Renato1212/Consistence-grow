@@ -271,6 +271,44 @@ describe("payload", () => {
     expect(specHash(edited, spec, today)).not.toBe(built.dataHash);
   });
 
+  it("weekly payloads carry the week's broker statements; new statements change the hash", () => {
+    const today = "2026-09-26";
+    const spec = weeklyRequest("2026-W39")!;
+    const t = [trade({ trade_date: "2026-09-22" })];
+    const day = (date: string, net: number) => ({
+      date,
+      account: "A",
+      simulated: true,
+      realized: net,
+      fees: 0,
+      net,
+      contracts: 10,
+      checks: "ok" as const,
+      products: [{ instrument: "MES", realized: net, contracts: 10 }],
+    });
+    const without = buildPayload(ctx(t), spec, today, null);
+    const withStatements = buildPayload(
+      ctx(t, {
+        statements: [day("2026-09-15", 999), day("2026-09-22", -120), day("2026-09-23", 80)],
+      }),
+      spec,
+      today,
+      null,
+    );
+    if (without.empty || withStatements.empty) throw new Error("expected payloads");
+    const weekly = (withStatements.payload as { weekly: Record<string, unknown> }).weekly;
+    expect(weekly.broker_statements).toMatchObject({
+      days: 2,
+      net: -40,
+      contracts: 20,
+      per_instrument: [{ instrument: "MES", realized: -40, contracts: 20, days: 2 }],
+    });
+    expect((without.payload as { weekly: Record<string, unknown> }).weekly.broker_statements).toBe(
+      undefined,
+    );
+    expect(withStatements.dataHash).not.toBe(without.dataHash);
+  });
+
   it("the browser's hash for a filter matches the server's", () => {
     const today = "2026-09-26";
     const trades = [trade(), trade({ kind: "observed", r_multiple: null })];

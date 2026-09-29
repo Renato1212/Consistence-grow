@@ -4,6 +4,7 @@ import {
   CalendarDays,
   CheckCircle2,
   ClipboardPen,
+  Landmark,
   Moon,
   NotebookPen,
   Plus,
@@ -23,6 +24,7 @@ import { sessionRequest } from "@/lib/ai/requests";
 import { addDays, isWeekend } from "@/lib/calendar/dates";
 import { loadAiInsights, loadPlaybookOptions } from "@/lib/data/ai";
 import { countNeedsReview } from "@/lib/data/import";
+import { loadStatementNudge } from "@/lib/data/statements";
 import { loadToday, type DayResult } from "@/lib/data/today";
 import { fmtMoney, fmtR, pnlClass } from "@/lib/format";
 import type { SessionCode } from "@/lib/prep/prep-form";
@@ -119,9 +121,10 @@ function ActionCard({
 export default async function TodayPage() {
   const data = await loadNow();
   const { state, preps, result } = data;
-  const [aiNotes, needsReview] = await Promise.all([
+  const [aiNotes, needsReview, statements] = await Promise.all([
     loadSessionNotes(state.date, state.phase),
     countNeedsReview(),
+    loadStatementNudge(state.date),
   ]);
   const prepHref = (s: SessionCode) => `/prep/${state.date}/${s.toLowerCase()}`;
   const eu = preps.EU;
@@ -228,6 +231,26 @@ export default async function TodayPage() {
             description="Add the domain (and grades) so they count in Insights by domain and playbook."
             href="/journal?review=1"
             cta="Review trades"
+          />
+        )}
+
+        {statements?.missingDate && (
+          <ActionCard
+            icon={Landmark}
+            title={`Upload the statement of ${formatInTz(`${statements.missingDate}T12:00:00Z`, "UTC", "EEE d MMM")}`}
+            description="You traded that day and the broker statement isn't in yet — it confirms the day's P/L."
+            href="/statements/upload"
+            cta="Upload statement"
+          />
+        )}
+
+        {statements && statements.open > 0 && (
+          <ActionCard
+            icon={Landmark}
+            title={`${statements.open} broker product-day${statements.open === 1 ? "" : "s"} not matching the journal`}
+            description={`Last 14 days · journal completeness ${statements.completeness === null ? "—" : `${Math.round(statements.completeness * 100)}%`}. Log or fix the trades so playbook stats rest on complete data.`}
+            href="/statements"
+            cta="Reconcile"
           />
         )}
 

@@ -28,6 +28,10 @@ export const EXPORT_TABLES = [
   "ai_insights",
   "import_presets",
   "briefs",
+  "statements",
+  "statement_products",
+  "statement_fills",
+  "statement_code_map",
   "api_tokens",
 ] as const;
 export type ExportTable = (typeof EXPORT_TABLES)[number];

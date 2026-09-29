@@ -18,6 +18,7 @@ import {
 import { insightsQuery, parseDimension, parseTab, TABS, type Tab } from "@/lib/insights/view-state";
 import { DrillContext, N } from "./bits";
 import { AiTab } from "./ai-tab";
+import { BrokerTab, type BrokerTabData } from "./broker-tab";
 import { BreakdownsTab } from "./breakdowns-tab";
 import { FilterBar } from "./filter-bar";
 import { OverviewTab } from "./overview-tab";
@@ -40,6 +41,7 @@ const TAB_LABEL: Record<Tab, string> = {
   patterns: "Pattern finder",
   process: "Process",
   plan: "Plan accuracy",
+  broker: "Account (broker)",
   ai: "AI analysis",
 };
 
@@ -48,11 +50,13 @@ export function InsightsView({
   today,
   initial,
   ai,
+  broker,
 }: {
   data: InsightsData;
   today: string;
   initial: { filter: Filter; tab: Tab; dimension: DimensionKey };
   ai: AiTabData;
+  broker: BrokerTabData;
 }) {
   const [filter, setFilterState] = useState(initial.filter);
   const [tab, setTabState] = useState(initial.tab);
@@ -184,6 +188,9 @@ export function InsightsView({
           </TabsContent>
           <TabsContent value="ai">
             <AiTab filter={filter} today={today} trades={data.trades} {...ai} />
+          </TabsContent>
+          <TabsContent value="broker">
+            <BrokerTab broker={broker} bounds={bounds} />
           </TabsContent>
           <TabsContent value="plan">
             <PlanTab trades={filtered} scenarios={scenarios} levels={levels} />

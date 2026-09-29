@@ -27,7 +27,7 @@ export function Integrations({
   briefs: Omit<Brief, "markdown">[];
 }) {
   const router = useRouter();
-  const [scope, setScope] = useState<"briefs" | "ai">("briefs");
+  const [scope, setScope] = useState<"briefs" | "ai" | "statements">("briefs");
   const [name, setName] = useState("Macro Desk routine");
   const [created, setCreated] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -179,11 +179,18 @@ Authorization: Bearer <token with the AI analysis scope>`}
             value={scope}
             onChange={(v) => {
               setScope(v);
-              setName(v === "ai" ? "AI analysis routine" : "Macro Desk routine");
+              setName(
+                v === "ai"
+                  ? "AI analysis routine"
+                  : v === "statements"
+                    ? "Statement delivery"
+                    : "Macro Desk routine",
+              );
             }}
             options={[
               { value: "briefs", label: "Macro Desk briefs" },
               { value: "ai", label: "AI analysis" },
+              { value: "statements", label: "Statements" },
             ]}
           />
           <div className="flex flex-wrap items-end gap-2">
@@ -209,7 +216,11 @@ Authorization: Bearer <token with the AI analysis scope>`}
                   <span className="flex-1">
                     {t.name} <span className="num text-muted-foreground text-xs">{t.prefix}</span>{" "}
                     <Badge variant="outline" data-testid="token-scope">
-                      {t.scopes.includes("ai") ? "AI analysis" : "Briefs"}
+                      {t.scopes.includes("ai")
+                        ? "AI analysis"
+                        : t.scopes.includes("statements")
+                          ? "Statements"
+                          : "Briefs"}
                     </Badge>
                   </span>
                   <span className="text-muted-foreground text-xs">

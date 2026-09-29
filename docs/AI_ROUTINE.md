@@ -27,7 +27,8 @@ immediately.
 ## Endpoints
 
 - `GET /api/ai/queue[?slot=eu|us|weekly]` → `{ items: [{ request_id, data_hash, label, payload }], notes }`.
-  Each payload carries `instructions` (the analysis rules) and `output_schema`.
+  Each payload carries `instructions` (the analysis rules) and `output_schema`. Weekly payloads also
+  carry `weekly.broker_statements` when broker statements were uploaded for that week.
 - `POST /api/ai/findings` `{ request_id, data_hash, model, output }` → 200, or 422 with `errors` to
   fix and re-post.
 

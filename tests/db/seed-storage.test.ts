@@ -6,7 +6,7 @@ const sql = localSql();
 afterAll(() => sql.end());
 
 describe("default reference data", () => {
-  it("every new user gets settings, 23 instruments, the tag vocabulary, rule and draft playbooks", async () => {
+  it("every new user gets settings, 25 instruments, the tag vocabulary, rule and draft playbooks", async () => {
     const { userId } = await signedIn(E2E_USER);
     const [row] = await sql`
       select
@@ -19,7 +19,7 @@ describe("default reference data", () => {
         (select count(*) from public.playbook_versions where user_id = ${userId})::int as versions`;
     expect(row).toMatchObject({
       settings: 1,
-      instruments: 23,
+      instruments: 25,
       groups: 4,
       tags: 53,
       rules: 1,

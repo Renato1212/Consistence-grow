@@ -9,6 +9,7 @@ import { PlaybookStatsView } from "@/components/playbook/playbook-stats";
 import { RestorePlaybookButton } from "@/components/playbook/restore-button";
 import { VersionHistory } from "@/components/playbook/version-history";
 import { EmptyState } from "@/components/shell/empty-state";
+import { BrokerVerification } from "@/components/statements/broker-card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { loadActiveSymbols } from "@/lib/data/instruments";
@@ -63,7 +64,8 @@ export default async function PlaybookDetailPage({ params }: PageProps<"/playboo
             symbols={symbols}
           />
         </TabsContent>
-        <TabsContent value="stats" className="pt-4">
+        <TabsContent value="stats" className="space-y-4 pt-4">
+          <BrokerVerification trades={data.trades} />
           <PlaybookStatsView trades={data.trades} />
         </TabsContent>
         <TabsContent value="history" className="pt-4">

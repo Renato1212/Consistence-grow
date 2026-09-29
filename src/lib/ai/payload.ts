@@ -63,6 +63,18 @@ export type AiDebrief = {
   complete: boolean;
 };
 export type AiWeekly = { week: string; reflection: string | null; goals: string[] };
+/** A broker statement day (what `ai_statements` returns). */
+export type AiStatement = {
+  date: string;
+  account: string;
+  simulated: boolean;
+  realized: number;
+  fees: number;
+  net: number;
+  contracts: number;
+  checks: "ok" | "attention";
+  products: { instrument: string; realized: number | null; contracts: number }[];
+};
 export type AiOpenRequest = {
   id: string;
   kind: RequestSpec["kind"];
@@ -89,6 +101,8 @@ export type AiContext = {
   requests: AiOpenRequest[];
   recent_hashes: string[];
   pattern_min_n: number;
+  /** Broker statements (from `ai_statements`); absent when not loaded. */
+  statements?: AiStatement[];
 };
 
 const MAX_TRADES = 100;
@@ -230,7 +244,7 @@ export function scopeTrades(trades: AiTrade[], spec: RequestSpec, today: string)
 }
 
 function weeklyExtras(
-  ctx: Pick<AiContext, "debriefs" | "weekly_reviews" | "rule_checks">,
+  ctx: Pick<AiContext, "debriefs" | "weekly_reviews" | "rule_checks" | "statements">,
   week: string,
 ) {
   const w = parseIsoWeekKey(week);
@@ -248,12 +262,51 @@ function weeklyExtras(
       ctx.weekly_reviews.find((r) => r.week === isoWeekKey(prev.year, prev.week))?.goals ?? [],
     debriefs: ctx.debriefs.filter((d) => inWeek(d.date)),
     rule_checks: ctx.rule_checks.filter((c) => inWeek(c.date) && c.followed !== null),
+    ...brokerWeek(ctx.statements, inWeek),
+  };
+}
+
+/** The week's broker statements (official P/L per day and product), when any exist. */
+function brokerWeek(statements: AiStatement[] | undefined, inWeek: (d: string) => boolean) {
+  const days = (statements ?? []).filter((s) => inWeek(s.date));
+  if (!days.length) return {};
+  const sum = (xs: number[]) =>
+    round(
+      xs.reduce((a, b) => a + Number(b), 0),
+      2,
+    );
+  const byInstrument = new Map<string, { realized: number; contracts: number; days: number }>();
+  for (const d of days)
+    for (const p of d.products) {
+      const cur = byInstrument.get(p.instrument) ?? { realized: 0, contracts: 0, days: 0 };
+      byInstrument.set(p.instrument, {
+        realized: round(cur.realized + Number(p.realized ?? 0), 2),
+        contracts: cur.contracts + p.contracts,
+        days: cur.days + 1,
+      });
+    }
+  return {
+    broker_statements: {
+      note: "Official broker P/L (USD, before your journal). No setups or times — use it to check that the journal is complete and to judge size/overtrading, not to grade setups.",
+      simulated: days.some((d) => d.simulated),
+      days: days.length,
+      net: sum(days.map((d) => d.net)),
+      fees: sum(days.map((d) => d.fees)),
+      contracts: days.reduce((a, d) => a + d.contracts, 0),
+      per_day: days.map((d) => ({
+        date: d.date,
+        net: Number(d.net),
+        contracts: d.contracts,
+        checks: d.checks,
+      })),
+      per_instrument: [...byInstrument.entries()].map(([instrument, v]) => ({ instrument, ...v })),
+    },
   };
 }
 
 /** The hash an analysis of `spec` over this data would get (same in browser and server). */
 export function specHash(
-  ctx: Pick<AiContext, "trades" | "debriefs" | "weekly_reviews" | "rule_checks">,
+  ctx: Pick<AiContext, "trades" | "debriefs" | "weekly_reviews" | "rule_checks" | "statements">,
   spec: RequestSpec,
   today: string,
 ): string {

@@ -29,7 +29,7 @@ beforeAll(async () => {
 });
 
 describe("seeded instruments match the TypeScript specs", () => {
-  it("has all 23 defaults with identical tick size and value", () => {
+  it("has all 25 defaults with identical tick size and value", () => {
     for (const spec of DEFAULT_INSTRUMENTS) {
       const row = instruments.find((i) => i.symbol === spec.symbol);
       expect(row, spec.symbol).toBeDefined();

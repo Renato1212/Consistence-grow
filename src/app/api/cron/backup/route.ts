@@ -43,12 +43,16 @@ export async function GET(req: NextRequest) {
       const stored = await storeBackup(admin, u.id, await backupJson(admin, u.id), date);
       const purge = await admin.rpc("purge_trash", { p_user: u.id });
       if (purge.error) throw purge.error;
-      const { media_paths: paths, counts } = purge.data as {
-        media_paths: string[];
-        counts: unknown;
-      };
+      const {
+        media_paths: paths,
+        statement_paths: statementPaths = [],
+        counts,
+      } = purge.data as { media_paths: string[]; statement_paths?: string[]; counts: unknown };
       for (let i = 0; i < paths.length; i += 100) {
         await admin.storage.from("media").remove(paths.slice(i, i + 100));
+      }
+      for (let i = 0; i < statementPaths.length; i += 100) {
+        await admin.storage.from("statements").remove(statementPaths.slice(i, i + 100));
       }
       results.push({ user: u.id, ok: true, backup: stored, purged: counts });
     } catch (e) {
