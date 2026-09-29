@@ -375,7 +375,7 @@ export function JournalView({
         {filtered && (
           <button
             type="button"
-            className="text-primary h-9 px-2 text-xs underline-offset-4 hover:underline"
+            className="text-primary-ink h-9 px-2 text-xs underline-offset-4 hover:underline"
             onClick={() => set(EMPTY)}
           >
             Clear

@@ -83,7 +83,7 @@ export function Integrations({
     );
 
   return (
-    <div className="grid max-w-3xl gap-6">
+    <div className="grid max-w-3xl grid-cols-[minmax(0,1fr)] gap-6">
       <Card>
         <CardHeader>
           <CardTitle>Macro Desk brief</CardTitle>

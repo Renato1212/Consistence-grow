@@ -20,10 +20,10 @@ export function AiNotes({
     >
       <div className="flex items-center justify-between gap-2">
         <h2 className="heading-caps inline-flex items-center gap-1.5 text-xs">
-          <Sparkles className="text-primary size-3.5" aria-hidden />
+          <Sparkles className="text-primary-ink size-3.5" aria-hidden />
           Claude · pre-session notes
         </h2>
-        <Link href="/insights?tab=ai" className="text-primary text-xs hover:underline">
+        <Link href="/insights?tab=ai" className="text-primary-ink text-xs hover:underline">
           All analyses
         </Link>
       </div>

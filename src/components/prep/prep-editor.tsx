@@ -235,7 +235,7 @@ export function PrepEditor({ data }: { data: PrepPageData }) {
           <SaveStatus status={status} onRetry={() => void controller.retry()} />
           {snap.completedAt ? (
             <span
-              className="text-primary inline-flex items-center gap-1 text-xs font-semibold"
+              className="text-primary-ink inline-flex items-center gap-1 text-xs font-semibold"
               data-testid="prep-complete"
             >
               <CheckCircle2 className="size-4" aria-hidden />
@@ -446,7 +446,7 @@ export function PrepEditor({ data }: { data: PrepPageData }) {
               .map((i) => ({ value: i.id, label: i.symbol }))}
           />
           {snap.focusInstrumentIds.length > 3 && (
-            <p className="text-xs text-amber-500">
+            <p className="text-warn text-xs">
               {snap.focusInstrumentIds.length} instruments — fewer is usually better.
             </p>
           )}

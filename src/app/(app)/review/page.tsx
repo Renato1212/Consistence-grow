@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ClipboardList, NotebookPen } from "lucide-react";
+import { ChevronRight, ClipboardList, Landmark, NotebookPen } from "lucide-react";
 
 import { EmptyState, PageHeader } from "@/components/shell/empty-state";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +42,20 @@ export default async function ReviewPage() {
           </Button>
         </div>
       </PageHeader>
+
+      <Link
+        href="/statements"
+        className="bg-card hover:border-primary/60 mb-6 flex items-center gap-3 rounded-xl border p-4 transition-colors"
+      >
+        <Landmark className="text-muted-foreground size-5 shrink-0" aria-hidden />
+        <span className="flex-1">
+          <span className="block text-sm font-medium">Broker statements</span>
+          <span className="text-muted-foreground block text-xs">
+            Official daily P/L, products and journal reconciliation
+          </span>
+        </span>
+        <ChevronRight className="text-muted-foreground size-5" aria-hidden />
+      </Link>
 
       <div className="grid gap-6 md:grid-cols-[1fr_18rem]">
         <section aria-label="Days" className="space-y-2">
@@ -103,7 +117,7 @@ export default async function ReviewPage() {
                     {w.rN ? fmtR(w.netR) : "—"}
                   </span>
                   {w.reviewed && (
-                    <span className="text-primary text-xs" aria-label="Reviewed">
+                    <span className="text-primary-ink text-xs" aria-label="Reviewed">
                       ✓
                     </span>
                   )}

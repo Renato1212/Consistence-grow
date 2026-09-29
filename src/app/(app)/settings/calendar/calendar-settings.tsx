@@ -220,7 +220,7 @@ export function CalendarSettings({
               role="alert"
               className="flex items-center gap-2 rounded-md border border-amber-500/40 p-3 text-xs"
             >
-              <AlertTriangle className="size-4 text-amber-500" aria-hidden />
+              <AlertTriangle className="text-warn size-4" aria-hidden />
               Add next year&apos;s holidays for {staleMarkets.join(" and ")} — generated dates may
               be wrong without them.
             </p>

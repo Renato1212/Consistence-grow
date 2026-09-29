@@ -87,9 +87,9 @@ export function PnlHeatmap({
           const bg = !c
             ? undefined
             : usd > 0
-              ? `color-mix(in oklab, var(--profit) ${Math.round(15 + a * 45)}%, transparent)`
+              ? `color-mix(in oklab, var(--profit) ${Math.round(15 + a * 35)}%, transparent)`
               : usd < 0
-                ? `color-mix(in oklab, var(--loss) ${Math.round(15 + a * 45)}%, transparent)`
+                ? `color-mix(in oklab, var(--loss) ${Math.round(15 + a * 35)}%, transparent)`
                 : undefined;
           return (
             <button

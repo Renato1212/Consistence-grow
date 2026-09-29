@@ -139,13 +139,13 @@ export function InsightsView({
             n <N n={filtered.length} />
           </span>
           {hypothetical && (
-            <span className="inline-flex items-center gap-1 text-amber-500">
+            <span className="text-warn inline-flex items-center gap-1">
               <AlertTriangle className="size-3.5" aria-hidden />
               Includes missed/observed trades: hypothetical results.
             </span>
           )}
           {data.truncated && (
-            <span className="inline-flex items-center gap-1 text-amber-500">
+            <span className="text-warn inline-flex items-center gap-1">
               <AlertTriangle className="size-3.5" aria-hidden />
               Only the newest {data.trades.length.toLocaleString("en-US")} trades are analysed.
             </span>

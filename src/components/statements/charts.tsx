@@ -261,9 +261,9 @@ export function StatementCalendar({
           const bg = !c
             ? undefined
             : c.net > 0
-              ? `color-mix(in oklab, var(--profit) ${Math.round(15 + a * 45)}%, transparent)`
+              ? `color-mix(in oklab, var(--profit) ${Math.round(15 + a * 35)}%, transparent)`
               : c.net < 0
-                ? `color-mix(in oklab, var(--loss) ${Math.round(15 + a * 45)}%, transparent)`
+                ? `color-mix(in oklab, var(--loss) ${Math.round(15 + a * 35)}%, transparent)`
                 : undefined;
           return (
             <button

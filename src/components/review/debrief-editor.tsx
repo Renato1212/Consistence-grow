@@ -179,7 +179,7 @@ export function DebriefEditor({ data }: { data: DebriefPageData }) {
           <SaveStatus status={status} onRetry={() => void controller.retry()} />
           {snap.completedAt ? (
             <span
-              className="text-primary inline-flex items-center gap-1 text-xs font-semibold"
+              className="text-primary-ink inline-flex items-center gap-1 text-xs font-semibold"
               data-testid="debrief-complete"
             >
               <CheckCircle2 className="size-4" aria-hidden />

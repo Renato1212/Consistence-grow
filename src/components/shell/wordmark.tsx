@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 export function Wordmark({ className }: { className?: string }) {
   return (
     <span className={cn("heading-caps whitespace-nowrap", className)}>
-      Consistent <span className="text-primary">Grow</span>
+      Consistent <span className="text-primary-ink">Grow</span>
     </span>
   );
 }

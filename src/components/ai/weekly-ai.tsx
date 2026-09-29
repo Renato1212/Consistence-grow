@@ -71,7 +71,7 @@ export function WeeklyAi({
           className="flex items-start gap-2 rounded-md border px-3 py-2 text-sm"
           data-testid="ai-queued"
         >
-          <Clock className="text-primary mt-0.5 size-4 shrink-0" aria-hidden />
+          <Clock className="text-primary-ink mt-0.5 size-4 shrink-0" aria-hidden />
           <div>
             <div className="font-medium">
               Queued {formatInTz(request!.createdAt, DISPLAY_TZ, "EEE HH:mm")}
@@ -83,7 +83,7 @@ export function WeeklyAi({
       {!hasToken && (
         <p className="text-muted-foreground text-xs">
           Needs the analysis routine: create an <strong>AI analysis</strong> token in{" "}
-          <Link href="/settings/integrations" className="text-primary underline">
+          <Link href="/settings/integrations" className="text-primary-ink underline">
             Settings → Integrations
           </Link>
           .

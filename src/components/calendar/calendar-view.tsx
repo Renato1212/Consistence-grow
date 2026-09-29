@@ -327,7 +327,7 @@ function AgendaView({
             <h3 className="flex flex-wrap items-center gap-2 text-sm font-semibold">
               <Link
                 href={href("day", d)}
-                className={cn("hover:underline", d === today && "text-primary")}
+                className={cn("hover:underline", d === today && "text-primary-ink")}
               >
                 {fmtDate(d, "EEE d MMM")}
               </Link>

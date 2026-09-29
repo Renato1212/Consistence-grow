@@ -21,6 +21,9 @@
   --popover-foreground: var(--foreground);
   --primary: #f28c28;
   --primary-foreground: #0e0f11;
+  /* Accent/warning as TEXT: must reach 4.5:1 on the surfaces (WCAG AA). */
+  --primary-ink: #f28c28;
+  --warn: #f59e0b;
   --secondary: #1f2227;
   --secondary-foreground: var(--foreground);
   --muted: #1c1f23;
@@ -51,6 +54,8 @@
   --popover-foreground: var(--foreground);
   --primary: #e8801f;
   --primary-foreground: #111316;
+  --primary-ink: #c2410c;
+  --warn: #92400e;
   --secondary: #eeeff1;
   --secondary-foreground: var(--foreground);
   --muted: #f0f1f3;
@@ -89,6 +94,8 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-ink: var(--primary-ink);
+  --color-warn: var(--warn);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);

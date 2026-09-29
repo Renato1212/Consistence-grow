@@ -86,7 +86,7 @@ export function StatementsDashboard({
         >
           {data.attention.map((a) => (
             <li key={a.id} className="flex items-center gap-2">
-              <AlertTriangle className="size-4 shrink-0 text-amber-500" aria-hidden />
+              <AlertTriangle className="text-warn size-4 shrink-0" aria-hidden />
               The statement of {a.date} did not pass every check —{" "}
               <Link className="underline" href={`/statements/${a.id}`}>
                 review it
@@ -95,14 +95,14 @@ export function StatementsDashboard({
           ))}
           {data.gaps.map((g) => (
             <li key={`${g.after}-${g.before}`} className="flex items-center gap-2">
-              <AlertTriangle className="size-4 shrink-0 text-amber-500" aria-hidden />
+              <AlertTriangle className="text-warn size-4 shrink-0" aria-hidden />
               The balance does not roll from {g.after} to {g.before} — a statement in between is
               probably missing.
             </li>
           ))}
           {data.unmapped.length > 0 && (
             <li className="flex items-center gap-2">
-              <AlertTriangle className="size-4 shrink-0 text-amber-500" aria-hidden />
+              <AlertTriangle className="text-warn size-4 shrink-0" aria-hidden />
               Product code{data.unmapped.length > 1 ? "s" : ""} {data.unmapped.join(", ")} not
               linked to an instrument —{" "}
               <Link className="underline" href="/settings/statements">
