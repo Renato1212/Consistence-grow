@@ -448,6 +448,31 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"statement_allocations": {
+                  Row: {
+                    "created_at": string,"deleted_at": string | null,"fill_id": string,"id": string,"qty": number,"statement_trade_id": string,"updated_at": string,"user_id": string
+                  }
+                  Insert: {
+                    "created_at"?: string,"deleted_at"?: string | null,"fill_id": string,"id"?: string,"qty": number,"statement_trade_id": string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"deleted_at"?: string | null,"fill_id"?: string,"id"?: string,"qty"?: number,"statement_trade_id"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "statement_allocations_fill_id_fkey"
+      columns: ["fill_id"]
+isOneToOne: false
+      referencedRelation: "statement_fills"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "statement_allocations_statement_trade_id_fkey"
+      columns: ["statement_trade_id"]
+isOneToOne: false
+      referencedRelation: "statement_trades"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"statement_code_map": {
                   Row: {
                     "broker": string,"code": string,"created_at": string,"deleted_at": string | null,"id": string,"instrument_id": string,"price_scale": number,"updated_at": string,"user_id": string
@@ -508,6 +533,43 @@ isOneToOne: false
       columns: ["statement_id"]
 isOneToOne: false
       referencedRelation: "statements"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"statement_trades": {
+                  Row: {
+                    "avg_buy": number,"avg_sell": number,"build_id": string,"contracts": number,"created_at": string,"deleted_at": string | null,"direction": string,"fees": number,"gross_pnl": number,"id": string,"method": string,"origin": string,"product_id": string,"seq": number,"statement_id": string,"time_estimated": boolean,"trade_id": string | null,"updated_at": string,"user_id": string
+                  }
+                  Insert: {
+                    "avg_buy": number,"avg_sell": number,"build_id": string,"contracts": number,"created_at"?: string,"deleted_at"?: string | null,"direction": string,"fees"?: number,"gross_pnl": number,"id"?: string,"method": string,"origin": string,"product_id": string,"seq": number,"statement_id": string,"time_estimated"?: boolean,"trade_id"?: string | null,"updated_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "avg_buy"?: number,"avg_sell"?: number,"build_id"?: string,"contracts"?: number,"created_at"?: string,"deleted_at"?: string | null,"direction"?: string,"fees"?: number,"gross_pnl"?: number,"id"?: string,"method"?: string,"origin"?: string,"product_id"?: string,"seq"?: number,"statement_id"?: string,"time_estimated"?: boolean,"trade_id"?: string | null,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "statement_trades_product_id_fkey"
+      columns: ["product_id"]
+isOneToOne: false
+      referencedRelation: "statement_products"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "statement_trades_statement_id_fkey"
+      columns: ["statement_id"]
+isOneToOne: false
+      referencedRelation: "statements"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "statement_trades_trade_id_fkey"
+      columns: ["trade_id"]
+isOneToOne: false
+      referencedRelation: "trade_facts"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "statement_trades_trade_id_fkey"
+      columns: ["trade_id"]
+isOneToOne: false
+      referencedRelation: "trades"
       referencedColumns: ["id"]
     }
                   ]
@@ -589,13 +651,13 @@ isOneToOne: false
                   ]
                 },"trades": {
                   Row: {
-                    "calendar_event_id": string | null,"checklist": NonNullable<Json>,"confidence": number | null,"contracts": number | null,"created_at": string,"day_id": string | null,"deleted_at": string | null,"direction": string,"duration_sec": number | null,"entry_at": string,"entry_price": number,"entry_type": string | null,"exit_at": string | null,"exit_price": number | null,"exit_reason": string | null,"fees": number | null,"fees_total": number | null,"grade_context": string | null,"grade_context_reason": string | null,"grade_edge": string | null,"grade_edge_reason": string | null,"grade_process": string | null,"grade_process_reason": string | null,"gross_pnl": number | null,"id": string,"import_hash": string | null,"instrument_id": string,"key_level_id": string | null,"kind": string,"lesson": string | null,"mae_ticks": number | null,"management": string | null,"mfe_ticks": number | null,"minutes_from_event": number | null,"move_phases": string | null,"move_trigger": string | null,"needs_review": boolean,"net_pnl": number | null,"no_stop": boolean,"planned_r": number | null,"playbook_id": string | null,"playbook_version": number | null,"primary_domain": string | null,"r_multiple": number | null,"risk_usd": number | null,"scenario_id": string | null,"secondary_domains": (string)[],"session": string | null,"stop_price": number | null,"target_price": number | null,"thesis": string | null,"ticks": number | null,"time_bucket": string | null,"updated_at": string,"user_id": string,"weekday": number | null
+                    "calendar_event_id": string | null,"checklist": NonNullable<Json>,"confidence": number | null,"contracts": number | null,"created_at": string,"day_id": string | null,"deleted_at": string | null,"direction": string,"duration_sec": number | null,"entry_at": string,"entry_price": number,"entry_type": string | null,"exit_at": string | null,"exit_price": number | null,"exit_reason": string | null,"fees": number | null,"fees_total": number | null,"grade_context": string | null,"grade_context_reason": string | null,"grade_edge": string | null,"grade_edge_reason": string | null,"grade_process": string | null,"grade_process_reason": string | null,"gross_pnl": number | null,"id": string,"import_hash": string | null,"instrument_id": string,"key_level_id": string | null,"kind": string,"lesson": string | null,"mae_ticks": number | null,"management": string | null,"mfe_ticks": number | null,"minutes_from_event": number | null,"move_phases": string | null,"move_trigger": string | null,"needs_review": boolean,"net_pnl": number | null,"no_stop": boolean,"planned_r": number | null,"playbook_id": string | null,"playbook_version": number | null,"primary_domain": string | null,"r_multiple": number | null,"risk_usd": number | null,"scenario_id": string | null,"secondary_domains": (string)[],"session": string | null,"stop_price": number | null,"target_price": number | null,"thesis": string | null,"ticks": number | null,"time_bucket": string | null,"time_estimated": boolean,"updated_at": string,"user_id": string,"weekday": number | null
                   }
                   Insert: {
-                    "calendar_event_id"?: string | null,"checklist"?: NonNullable<Json>,"confidence"?: number | null,"contracts"?: number | null,"created_at"?: string,"day_id"?: string | null,"deleted_at"?: string | null,"direction": string,"duration_sec"?: number | null,"entry_at": string,"entry_price": number,"entry_type"?: string | null,"exit_at"?: string | null,"exit_price"?: number | null,"exit_reason"?: string | null,"fees"?: number | null,"fees_total"?: number | null,"grade_context"?: string | null,"grade_context_reason"?: string | null,"grade_edge"?: string | null,"grade_edge_reason"?: string | null,"grade_process"?: string | null,"grade_process_reason"?: string | null,"gross_pnl"?: number | null,"id"?: string,"import_hash"?: string | null,"instrument_id": string,"key_level_id"?: string | null,"kind"?: string,"lesson"?: string | null,"mae_ticks"?: number | null,"management"?: string | null,"mfe_ticks"?: number | null,"minutes_from_event"?: number | null,"move_phases"?: string | null,"move_trigger"?: string | null,"needs_review"?: boolean,"net_pnl"?: number | null,"no_stop"?: boolean,"planned_r"?: number | null,"playbook_id"?: string | null,"playbook_version"?: number | null,"primary_domain"?: string | null,"r_multiple"?: number | null,"risk_usd"?: number | null,"scenario_id"?: string | null,"secondary_domains"?: (string)[],"session"?: string | null,"stop_price"?: number | null,"target_price"?: number | null,"thesis"?: string | null,"ticks"?: number | null,"time_bucket"?: string | null,"updated_at"?: string,"user_id"?: string,"weekday"?: number | null
+                    "calendar_event_id"?: string | null,"checklist"?: NonNullable<Json>,"confidence"?: number | null,"contracts"?: number | null,"created_at"?: string,"day_id"?: string | null,"deleted_at"?: string | null,"direction": string,"duration_sec"?: number | null,"entry_at": string,"entry_price": number,"entry_type"?: string | null,"exit_at"?: string | null,"exit_price"?: number | null,"exit_reason"?: string | null,"fees"?: number | null,"fees_total"?: number | null,"grade_context"?: string | null,"grade_context_reason"?: string | null,"grade_edge"?: string | null,"grade_edge_reason"?: string | null,"grade_process"?: string | null,"grade_process_reason"?: string | null,"gross_pnl"?: number | null,"id"?: string,"import_hash"?: string | null,"instrument_id": string,"key_level_id"?: string | null,"kind"?: string,"lesson"?: string | null,"mae_ticks"?: number | null,"management"?: string | null,"mfe_ticks"?: number | null,"minutes_from_event"?: number | null,"move_phases"?: string | null,"move_trigger"?: string | null,"needs_review"?: boolean,"net_pnl"?: number | null,"no_stop"?: boolean,"planned_r"?: number | null,"playbook_id"?: string | null,"playbook_version"?: number | null,"primary_domain"?: string | null,"r_multiple"?: number | null,"risk_usd"?: number | null,"scenario_id"?: string | null,"secondary_domains"?: (string)[],"session"?: string | null,"stop_price"?: number | null,"target_price"?: number | null,"thesis"?: string | null,"ticks"?: number | null,"time_bucket"?: string | null,"time_estimated"?: boolean,"updated_at"?: string,"user_id"?: string,"weekday"?: number | null
                   }
                   Update: {
-                    "calendar_event_id"?: string | null,"checklist"?: NonNullable<Json>,"confidence"?: number | null,"contracts"?: number | null,"created_at"?: string,"day_id"?: string | null,"deleted_at"?: string | null,"direction"?: string,"duration_sec"?: number | null,"entry_at"?: string,"entry_price"?: number,"entry_type"?: string | null,"exit_at"?: string | null,"exit_price"?: number | null,"exit_reason"?: string | null,"fees"?: number | null,"fees_total"?: number | null,"grade_context"?: string | null,"grade_context_reason"?: string | null,"grade_edge"?: string | null,"grade_edge_reason"?: string | null,"grade_process"?: string | null,"grade_process_reason"?: string | null,"gross_pnl"?: number | null,"id"?: string,"import_hash"?: string | null,"instrument_id"?: string,"key_level_id"?: string | null,"kind"?: string,"lesson"?: string | null,"mae_ticks"?: number | null,"management"?: string | null,"mfe_ticks"?: number | null,"minutes_from_event"?: number | null,"move_phases"?: string | null,"move_trigger"?: string | null,"needs_review"?: boolean,"net_pnl"?: number | null,"no_stop"?: boolean,"planned_r"?: number | null,"playbook_id"?: string | null,"playbook_version"?: number | null,"primary_domain"?: string | null,"r_multiple"?: number | null,"risk_usd"?: number | null,"scenario_id"?: string | null,"secondary_domains"?: (string)[],"session"?: string | null,"stop_price"?: number | null,"target_price"?: number | null,"thesis"?: string | null,"ticks"?: number | null,"time_bucket"?: string | null,"updated_at"?: string,"user_id"?: string,"weekday"?: number | null
+                    "calendar_event_id"?: string | null,"checklist"?: NonNullable<Json>,"confidence"?: number | null,"contracts"?: number | null,"created_at"?: string,"day_id"?: string | null,"deleted_at"?: string | null,"direction"?: string,"duration_sec"?: number | null,"entry_at"?: string,"entry_price"?: number,"entry_type"?: string | null,"exit_at"?: string | null,"exit_price"?: number | null,"exit_reason"?: string | null,"fees"?: number | null,"fees_total"?: number | null,"grade_context"?: string | null,"grade_context_reason"?: string | null,"grade_edge"?: string | null,"grade_edge_reason"?: string | null,"grade_process"?: string | null,"grade_process_reason"?: string | null,"gross_pnl"?: number | null,"id"?: string,"import_hash"?: string | null,"instrument_id"?: string,"key_level_id"?: string | null,"kind"?: string,"lesson"?: string | null,"mae_ticks"?: number | null,"management"?: string | null,"mfe_ticks"?: number | null,"minutes_from_event"?: number | null,"move_phases"?: string | null,"move_trigger"?: string | null,"needs_review"?: boolean,"net_pnl"?: number | null,"no_stop"?: boolean,"planned_r"?: number | null,"playbook_id"?: string | null,"playbook_version"?: number | null,"primary_domain"?: string | null,"r_multiple"?: number | null,"risk_usd"?: number | null,"scenario_id"?: string | null,"secondary_domains"?: (string)[],"session"?: string | null,"stop_price"?: number | null,"target_price"?: number | null,"thesis"?: string | null,"ticks"?: number | null,"time_bucket"?: string | null,"time_estimated"?: boolean,"updated_at"?: string,"user_id"?: string,"weekday"?: number | null
                   }
                   Relationships: [
                     {
@@ -686,7 +748,7 @@ isOneToOne: false
           Views: {
             "trade_facts": {
                   Row: {
-                    "asset_class": string | null,"calendar_event_id": string | null,"checklist": Json | null,"confidence": number | null,"contracts": number | null,"created_at": string | null,"currency": string | null,"day_id": string | null,"deleted_at": string | null,"direction": string | null,"domain_count": number | null,"duration_sec": number | null,"entry_at": string | null,"entry_price": number | null,"entry_type": string | null,"event_category": string | null,"event_domain": string | null,"event_importance": number | null,"event_title": string | null,"exchange": string | null,"exit_at": string | null,"exit_price": number | null,"exit_reason": string | null,"fees": number | null,"fees_total": number | null,"grade_context": string | null,"grade_context_reason": string | null,"grade_edge": string | null,"grade_edge_reason": string | null,"grade_process": string | null,"grade_process_reason": string | null,"gross_pnl": number | null,"id": string | null,"import_hash": string | null,"instrument_id": string | null,"is_win": boolean | null,"key_level_id": string | null,"kind": string | null,"lesson": string | null,"level_strength": number | null,"level_type": string | null,"mae_ticks": number | null,"management": string | null,"media_count": number | null,"mfe_ticks": number | null,"minutes_from_event": number | null,"move_phases": string | null,"move_trigger": string | null,"needs_review": boolean | null,"net_pnl": number | null,"no_stop": boolean | null,"planned_r": number | null,"playbook_id": string | null,"playbook_name": string | null,"playbook_status": string | null,"playbook_version": number | null,"prep_done": boolean | null,"prep_id": string | null,"primary_domain": string | null,"prior_day_type": string | null,"r_multiple": number | null,"readiness": number | null,"regime": string | null,"risk_usd": number | null,"scenario_id": string | null,"secondary_domains": (string)[] | null,"session": string | null,"stop_price": number | null,"symbol": string | null,"tag_ids": (string)[] | null,"tag_names": (string)[] | null,"target_price": number | null,"thesis": string | null,"ticks": number | null,"time_bucket": string | null,"trade_date": string | null,"updated_at": string | null,"user_id": string | null,"vol_state": string | null,"weekday": number | null
+                    "asset_class": string | null,"broker_confirmed": boolean | null,"calendar_event_id": string | null,"checklist": Json | null,"confidence": number | null,"contracts": number | null,"created_at": string | null,"currency": string | null,"day_id": string | null,"deleted_at": string | null,"direction": string | null,"domain_count": number | null,"duration_sec": number | null,"entry_at": string | null,"entry_price": number | null,"entry_type": string | null,"event_category": string | null,"event_domain": string | null,"event_importance": number | null,"event_title": string | null,"exchange": string | null,"exit_at": string | null,"exit_price": number | null,"exit_reason": string | null,"fees": number | null,"fees_total": number | null,"grade_context": string | null,"grade_context_reason": string | null,"grade_edge": string | null,"grade_edge_reason": string | null,"grade_process": string | null,"grade_process_reason": string | null,"gross_pnl": number | null,"id": string | null,"import_hash": string | null,"instrument_id": string | null,"is_win": boolean | null,"key_level_id": string | null,"kind": string | null,"lesson": string | null,"level_strength": number | null,"level_type": string | null,"mae_ticks": number | null,"management": string | null,"media_count": number | null,"mfe_ticks": number | null,"minutes_from_event": number | null,"move_phases": string | null,"move_trigger": string | null,"needs_review": boolean | null,"net_pnl": number | null,"no_stop": boolean | null,"planned_r": number | null,"playbook_id": string | null,"playbook_name": string | null,"playbook_status": string | null,"playbook_version": number | null,"prep_done": boolean | null,"prep_id": string | null,"primary_domain": string | null,"prior_day_type": string | null,"r_multiple": number | null,"readiness": number | null,"regime": string | null,"risk_usd": number | null,"scenario_id": string | null,"secondary_domains": (string)[] | null,"session": string | null,"stop_price": number | null,"symbol": string | null,"tag_ids": (string)[] | null,"tag_names": (string)[] | null,"target_price": number | null,"thesis": string | null,"ticks": number | null,"time_bucket": string | null,"time_estimated": boolean | null,"trade_date": string | null,"updated_at": string | null,"user_id": string | null,"vol_state": string | null,"weekday": number | null
                   }
                   Relationships: [
                     {
@@ -751,6 +813,9 @@ isOneToOne: false
 "append_playbook_note":
 { Args: { "p_playbook": string,"p_text": string }; Returns: boolean
                            },
+"build_statement_trades":
+{ Args: { "p_build": string,"p_method": string,"p_product": string,"p_trades": Json }; Returns: Json
+                           },
 "ensure_trading_day":
 { Args: { "p_date": string }; Returns: string
                            },
@@ -797,6 +862,9 @@ isOneToOne: false
                            },
 "token_valid":
 { Args: { "p_scope": string,"p_token": string }; Returns: boolean
+                           },
+"undo_statement_build":
+{ Args: { "p_product": string }; Returns: Json
                            },
 "unmerge_tags":
 { Args: { "p_from": string,"p_had_target": (string)[],"p_into": string,"p_links": (string)[] }; Returns: undefined

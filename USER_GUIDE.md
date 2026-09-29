@@ -39,6 +39,25 @@ zones (London for EU, New York for US), so daylight-saving changes need no atten
 5. If a statement ever fails to read, Axia probably changed the layout: keep the PDF and ask for the
    parser to be updated. Nothing is guessed.
 
+### Splitting a statement into trades
+
+The PDF lists each product's fills (buys first, then sells, sorted by price) **without times**, so
+it cannot say which buy was closed by which sell. **Trades** on a statement's page (or _Split into
+trades_ after uploading) rebuilds your trades:
+
+- **Suggested (N)** — the most flat trades the fills allow, grouping fills that sit close in price.
+  Use − / + to merge into fewer trades. **One trade** keeps the whole product as one block.
+- **Your journal (N)** appears when trades you already logged (or imported with platform fills)
+  match the broker fills exactly: they are linked, not logged again, and marked _Broker-confirmed_.
+- Tap a fill to move it (or part of it) to another trade, a new trade, or out. Every trade must be
+  flat and the sum always equals the broker's realized P/L (the check turns green).
+- Choose **Long/Short** per trade (the statement can't tell); entry/exit times are optional. Without
+  times the trade shows `--:--` and stays out of time-of-day stats until you set the real times in
+  the journal.
+- **Add to the journal** creates the trades (taken, marked _Review_, average prices kept exact,
+  statement fees shared per contract). **Undo build** moves them to the trash (30 days). Work in
+  progress is kept on this device if you leave the page.
+
 Automatic delivery: create a token with scope **Statements** in Settings → Integrations and have a
 script or mail rule `POST` the PDF to `/api/ingest/statement` (see Settings → Statements).
 

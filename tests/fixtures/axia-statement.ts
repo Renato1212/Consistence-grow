@@ -101,6 +101,57 @@ function priceValue(p: string): number {
   return Number(p);
 }
 
+/** A round trip for `fillsFromTrades`: entry and exit fills (qty @ price). */
+export type FixtureTrade = {
+  direction: "long" | "short";
+  entries: [number, string][];
+  exits: [number, string][];
+};
+
+/**
+ * The fills of a day of trades as Axia prints them: buys first, then sells,
+ * each sorted by price (the order the trades happened in is lost).
+ */
+export function fillsFromTrades(trades: FixtureTrade[]): FixtureFill[] {
+  const fills: FixtureFill[] = trades.flatMap((t) => {
+    const open = t.direction === "long" ? "buy" : "sell";
+    const close = t.direction === "long" ? "sell" : "buy";
+    return [
+      ...t.entries.map(([qty, price]) => ({ side: open, qty, price }) as FixtureFill),
+      ...t.exits.map(([qty, price]) => ({ side: close, qty, price }) as FixtureFill),
+    ];
+  });
+  return fills.sort((a, b) =>
+    a.side !== b.side ? (a.side === "buy" ? -1 : 1) : priceValue(a.price) - priceValue(b.price),
+  );
+}
+
+/**
+ * Three MES trades of one day: long 2 (+$20), short 3 (+$30), and a long
+ * scaled in at 7770 and 7770.25 (average 7770.125) out at 7765 (−$51.25).
+ */
+export const MES_THREE_TRADES: FixtureTrade[] = [
+  { direction: "long", entries: [[2, "7750"]], exits: [[2, "7752"]] },
+  { direction: "short", entries: [[3, "7760.25"]], exits: [[3, "7758.25"]] },
+  {
+    direction: "long",
+    entries: [
+      [1, "7770"],
+      [1, "7770.25"],
+    ],
+    exits: [[2, "7765"]],
+  },
+];
+
+export const MES_THREE_TRADES_PRODUCT: FixtureProduct = {
+  code: "MS",
+  contract: "DEC-26",
+  exchange: "CME",
+  description: "MICRO S&P",
+  multiplier: 5,
+  fills: fillsFromTrades(MES_THREE_TRADES),
+};
+
 const cents = (v: number) => Math.round(v * 100) / 100;
 const fmt = (v: number, grouped = true) =>
   grouped

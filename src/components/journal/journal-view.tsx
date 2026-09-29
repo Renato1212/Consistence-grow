@@ -18,6 +18,7 @@ import {
   Image as ImageIcon,
   NotebookPen,
   Search,
+  ShieldCheck,
 } from "lucide-react";
 
 import { EmptyState } from "@/components/shell/empty-state";
@@ -131,7 +132,16 @@ const columns = helper.columns([
     sortFn: "alphanumeric",
     cell: ({ row }) => (
       <span className="num text-xs">
-        {formatInTz(row.original.entry_at, DISPLAY_TZ, "dd MMM HH:mm")}
+        {row.original.time_estimated ? (
+          <>
+            {formatInTz(row.original.entry_at, DISPLAY_TZ, "dd MMM")}{" "}
+            <span className="text-muted-foreground" title="Time not set yet">
+              --:--
+            </span>
+          </>
+        ) : (
+          formatInTz(row.original.entry_at, DISPLAY_TZ, "dd MMM HH:mm")
+        )}
       </span>
     ),
   }),
@@ -143,6 +153,11 @@ const columns = helper.columns([
         <span className="font-medium">{row.original.symbol}</span>
         <KindBadge kind={row.original.kind} />
         {row.original.needs_review && <Badge variant="warn">Review</Badge>}
+        {row.original.broker_confirmed && (
+          <span title="Matches the broker statement's fills">
+            <ShieldCheck className="text-muted-foreground size-3.5" aria-label="Broker-confirmed" />
+          </span>
+        )}
       </span>
     ),
   }),

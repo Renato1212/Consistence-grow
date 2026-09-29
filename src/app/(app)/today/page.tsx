@@ -244,6 +244,16 @@ export default async function TodayPage() {
           />
         )}
 
+        {statements?.unsplit && (
+          <ActionCard
+            icon={Landmark}
+            title={`Split the statement of ${formatInTz(`${statements.unsplit.tradeDate}T12:00:00Z`, "UTC", "EEE d MMM")} into trades`}
+            description={`${statements.unsplit.products} product${statements.unsplit.products === 1 ? "" : "s"} still one block per instrument${statements.unsplit.days > 1 ? ` (${statements.unsplit.days} days in the last 14)` : ""}. Confirm the suggested split to log each trade.`}
+            href={`/statements/${statements.unsplit.id}#trades`}
+            cta="Split into trades"
+          />
+        )}
+
         {statements && statements.open > 0 && (
           <ActionCard
             icon={Landmark}

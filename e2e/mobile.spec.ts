@@ -1,6 +1,7 @@
 import { expect, test } from "./fixtures";
 
 import { signIn } from "./helpers";
+import { seedStatementPage } from "./seed-statement";
 
 test("mobile: bottom nav and log-trade button are reachable", async ({ page }) => {
   await signIn(page);
@@ -84,6 +85,7 @@ test("mobile: every page fits the screen; Statements is reachable from Review", 
   await page.getByRole("link", { name: /Broker statements/ }).click();
   await expect(page).toHaveURL(/\/statements$/);
   const pages = [
+    await seedStatementPage(),
     "/today",
     "/journal",
     "/calendar",

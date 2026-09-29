@@ -58,7 +58,7 @@ Cloud sandbox: Docker daemon may need `sudo dockerd &` before `pnpm db:start`.
 
 ## Data model (Phase 1)
 
-- 25 user tables in `public` (27 after Phase 3, 28 after Phase 7, 32 with Statements), all with `user_id default auth.uid()`, RLS `user_id = auth.uid()`,
+- 25 user tables in `public` (27 after Phase 3, 28 after Phase 7, 32 with Statements, 34 with statement trades), all with `user_id default auth.uid()`, RLS `user_id = auth.uid()`,
   `updated_at` trigger and (except `trade_tags`) `deleted_at` soft delete. See
   `supabase/migrations/*_phase1_core.sql`.
 - `public.compute_trade()` trigger derives ticks, fees_total, gross/net P&L, risk, R, duration,
@@ -185,8 +185,15 @@ Cloud sandbox: Docker daemon may need `sudo dockerd &` before `pnpm db:start`.
 - Routes: `POST /api/statements` (session; `mode=preview|save`, `replace=1`), `POST /api/ingest/statement`
   (token scope `statements`, raw PDF body). SQL: `save_statement`, `ingest_statement`, `map_statement_code`,
   `ai_statements` (migration `*_statements.sql`); bucket `statements`.
-- Test fixture: `tests/fixtures/axia-statement.ts` builds anonymised PDFs with the real layout. Never commit a
-  real statement.
+- Test fixture: `tests/fixtures/axia-statement.ts` builds anonymised PDFs with the real layout
+  (`fillsFromTrades`, `MES_THREE_TRADES_PRODUCT` for multi-trade days). Never commit a real statement.
+- Trade builder (split a product's day into trades — the PDF has no fill times): pure logic
+  `src/lib/statements/split.ts` (flat-group solver, suggestions, `checkSplit`, `matchJournal`) and
+  `builder.ts` (draft moves, payload, local draft `cg:split:<productId>`); UI
+  `src/components/statements/trade-builder.tsx` (client-only) on `/statements/[id]#trades`; loader
+  `src/lib/data/statement-trades.ts`. SQL `build_statement_trades` / `undo_statement_build`, tables
+  `statement_trades` + `statement_allocations` (migration `*_statement_trades.sql`).
+  `trades.time_estimated` = no known time (no session/bucket/duration); `trade_facts.broker_confirmed`.
 
 ## Hardening (Phase 9)
 

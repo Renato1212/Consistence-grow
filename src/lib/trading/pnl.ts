@@ -34,6 +34,8 @@ export type TradeInput = {
   contracts?: number | null;
   /** Manual fee override for the whole trade; null → instrument default × contracts. */
   fees?: number | null;
+  /** Time not known (built from a broker statement): no time bucket, session or duration. */
+  timeEstimated?: boolean;
 };
 
 export type TradeComputed = {
@@ -46,8 +48,8 @@ export type TradeComputed = {
   noStop: boolean;
   durationSec: number | null;
   weekday: number;
-  timeBucket: string;
-  session: Session;
+  timeBucket: string | null;
+  session: Session | null;
 };
 
 const isNum = (v: number | null | undefined): v is number =>
@@ -87,9 +89,10 @@ export function computeTrade(
   }
 
   const entry = new Date(t.entryAt);
-  const durationSec = t.exitAt
-    ? Math.floor((new Date(t.exitAt).getTime() - entry.getTime()) / 1000)
-    : null;
+  const durationSec =
+    t.exitAt && !t.timeEstimated
+      ? Math.floor((new Date(t.exitAt).getTime() - entry.getTime()) / 1000)
+      : null;
 
   return {
     ticks,
@@ -101,7 +104,7 @@ export function computeTrade(
     noStop,
     durationSec,
     weekday: isoWeekday(entry, inst.exchangeTz),
-    timeBucket: timeBucket(entry, inst.exchangeTz),
-    session: sessionFor(entry, settings),
+    timeBucket: t.timeEstimated ? null : timeBucket(entry, inst.exchangeTz),
+    session: t.timeEstimated ? null : sessionFor(entry, settings),
   };
 }

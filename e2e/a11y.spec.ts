@@ -2,6 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "./fixtures";
 
 import { signIn } from "./helpers";
+import { seedStatementPage } from "./seed-statement";
 
 /**
  * Automated accessibility scan (axe, WCAG 2.1 A/AA) of every main page in
@@ -51,10 +52,11 @@ async function scan(page: Page, path: string) {
 for (const theme of ["dark", "light"] as const) {
   test(`no serious accessibility violations (${theme})`, async ({ page }) => {
     test.setTimeout(180_000);
+    const statementPage = await seedStatementPage();
     await signIn(page, "/today");
     await page.evaluate((t) => localStorage.setItem("theme", t), theme);
     const all = [];
-    for (const path of PAGES) all.push(...(await scan(page, path)));
+    for (const path of [...PAGES, statementPage]) all.push(...(await scan(page, path)));
     if (all.length) console.log(JSON.stringify(all, null, 1));
     const blocking = all.filter((v) => v.impact === "serious" || v.impact === "critical");
     expect(blocking).toEqual([]);

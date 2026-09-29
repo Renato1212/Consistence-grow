@@ -28,12 +28,16 @@ export function StatementsDashboard({
   accounts,
   account,
   range,
+  unsplit = [],
 }: {
   data: DashboardData;
   accounts: string[];
   account: string;
   range: StatementRange;
+  /** Statements with products not split into trades yet. */
+  unsplit?: string[];
 }) {
+  const unsplitSet = new Set(unsplit);
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -293,6 +297,7 @@ export function StatementsDashboard({
                 <th className="py-1 pr-3 text-right font-normal">Contracts</th>
                 <th className="py-1 pr-3 font-normal">Products</th>
                 <th className="py-1 pr-3 font-normal">Checks</th>
+                <th className="py-1 pr-3 font-normal">Trades</th>
               </tr>
             </thead>
             <tbody>
@@ -318,6 +323,15 @@ export function StatementsDashboard({
                       <Badge variant="outline">ok</Badge>
                     ) : (
                       <Badge variant="warn">attention</Badge>
+                    )}
+                  </td>
+                  <td className="py-1.5 pr-3 text-xs">
+                    {unsplitSet.has(d.id) ? (
+                      <Link className="text-warn underline" href={`/statements/${d.id}#trades`}>
+                        split
+                      </Link>
+                    ) : (
+                      <span className="text-muted-foreground">✓</span>
                     )}
                   </td>
                 </tr>
@@ -433,6 +447,11 @@ export function ReconActions({ row }: { row: ReconRow }) {
   if (row.status === "missing")
     return (
       <span className="flex flex-wrap gap-2 text-xs">
+        {row.statementId && (
+          <Link className="underline" href={`/statements/${row.statementId}#trades`}>
+            Split into trades
+          </Link>
+        )}
         <Link className="underline" href="/journal/new">
           Log trade
         </Link>

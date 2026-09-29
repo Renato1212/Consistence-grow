@@ -363,6 +363,14 @@ function PreviewCard({
                 <Link className="underline" href={`/statements/${item.saved.id}`}>
                   Open
                 </Link>
+                ·
+                <Link
+                  className="text-primary-ink font-medium underline"
+                  href={`/statements/${item.saved.id}#trades`}
+                  data-testid="build-trades-link"
+                >
+                  Split into trades
+                </Link>
               </p>
             ) : item.existing?.state === "duplicate" ? (
               <p className="text-muted-foreground text-sm" data-testid="preview-duplicate">
