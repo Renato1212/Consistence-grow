@@ -32,7 +32,7 @@ export function Section({
             />
             <h2 id={`${id}-title`} className="heading-caps text-xs">
               {title}
-              {required && <span className="text-primary ml-1">*</span>}
+              {required && <span className="text-primary-ink ml-1">*</span>}
             </h2>
           </CollapsibleTrigger>
           {aside}

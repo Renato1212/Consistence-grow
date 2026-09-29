@@ -104,7 +104,7 @@ function ActionCard({
       data-testid="today-action"
     >
       <Icon
-        className={cn("size-8 shrink-0", done ? "text-muted-foreground" : "text-primary")}
+        className={cn("size-8 shrink-0", done ? "text-muted-foreground" : "text-primary-ink")}
         aria-hidden
       />
       <div className="flex-1">

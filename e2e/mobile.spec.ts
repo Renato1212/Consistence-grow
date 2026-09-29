@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 import { signIn } from "./helpers";
 
@@ -74,4 +74,40 @@ test("mobile: insights fit the screen and tabs are reachable", async ({ page }) 
   expect(overflow).toBeLessThanOrEqual(0);
   await page.getByRole("tab", { name: "Pattern finder" }).click();
   await expect(page.getByTestId("pattern-baseline")).toBeVisible();
+});
+
+test("mobile: every page fits the screen; Statements is reachable from Review", async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  await signIn(page, "/review");
+  await page.getByRole("link", { name: /Broker statements/ }).click();
+  await expect(page).toHaveURL(/\/statements$/);
+  const pages = [
+    "/today",
+    "/journal",
+    "/calendar",
+    "/review",
+    "/playbook",
+    "/statements",
+    "/statements/upload",
+    "/insights?tab=broker",
+    "/settings",
+    "/settings/tags",
+    "/settings/rules",
+    "/settings/statements",
+    "/settings/instruments",
+    "/settings/integrations",
+    "/settings/data",
+  ];
+  const wide: string[] = [];
+  for (const path of pages) {
+    await page.goto(path);
+    await page.waitForLoadState("networkidle");
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    if (overflow > 0) wide.push(`${path} (+${overflow}px)`);
+  }
+  expect(wide).toEqual([]);
 });

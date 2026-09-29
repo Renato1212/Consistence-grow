@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 import { formatInTimeZone } from "date-fns-tz";
 
 import { signIn, status } from "./helpers";

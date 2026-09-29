@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 
 import { isoWeekKey, isoWeekOf } from "../src/lib/calendar/dates";
 import { fillQuickTrade, signIn, status } from "./helpers";

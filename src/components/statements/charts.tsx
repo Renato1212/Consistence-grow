@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   CartesianGrid,
-  Cell,
   Line,
   LineChart,
   ReferenceLine,
@@ -174,21 +173,24 @@ export function VolumeScatter({ points }: { points: ScatterPoint[] }) {
                 );
               }}
             />
-            <Scatter data={points} isAnimationActive={false}>
-              {points.map((p, i) => (
-                <Cell
-                  key={i}
-                  fill={
-                    p.pnl > 0
-                      ? "var(--profit)"
-                      : p.pnl < 0
-                        ? "var(--loss)"
-                        : "var(--muted-foreground)"
-                  }
+            {/* One series per sign (no per-point cells): stays fast with 1,000+ dots. */}
+            {(
+              [
+                [points.filter((p) => p.pnl > 0), "var(--profit)"],
+                [points.filter((p) => p.pnl < 0), "var(--loss)"],
+                [points.filter((p) => p.pnl === 0), "var(--muted-foreground)"],
+              ] as const
+            ).map(([data, fill]) =>
+              data.length ? (
+                <Scatter
+                  key={fill}
+                  data={data}
+                  fill={fill}
                   fillOpacity={0.7}
+                  isAnimationActive={false}
                 />
-              ))}
-            </Scatter>
+              ) : null,
+            )}
           </ScatterChart>
         </ResponsiveContainer>
       </div>
@@ -259,9 +261,9 @@ export function StatementCalendar({
           const bg = !c
             ? undefined
             : c.net > 0
-              ? `color-mix(in oklab, var(--profit) ${Math.round(15 + a * 45)}%, transparent)`
+              ? `color-mix(in oklab, var(--profit) ${Math.round(15 + a * 35)}%, transparent)`
               : c.net < 0
-                ? `color-mix(in oklab, var(--loss) ${Math.round(15 + a * 45)}%, transparent)`
+                ? `color-mix(in oklab, var(--loss) ${Math.round(15 + a * 35)}%, transparent)`
                 : undefined;
           return (
             <button

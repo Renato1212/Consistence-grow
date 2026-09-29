@@ -30,6 +30,30 @@ export default async function SettingsPage() {
           <ChevronRight className="text-muted-foreground size-5" aria-hidden />
         </Link>
         <Link
+          href="/settings/tags"
+          className="bg-card hover:border-primary/60 flex items-center justify-between rounded-xl border p-5 transition-colors"
+        >
+          <div>
+            <div className="font-semibold">Tags</div>
+            <div className="text-muted-foreground text-sm">
+              Groups, rename, merge duplicates, archive
+            </div>
+          </div>
+          <ChevronRight className="text-muted-foreground size-5" aria-hidden />
+        </Link>
+        <Link
+          href="/settings/rules"
+          className="bg-card hover:border-primary/60 flex items-center justify-between rounded-xl border p-5 transition-colors"
+        >
+          <div>
+            <div className="font-semibold">Rules</div>
+            <div className="text-muted-foreground text-sm">
+              The rules checked in every prep and debrief
+            </div>
+          </div>
+          <ChevronRight className="text-muted-foreground size-5" aria-hidden />
+        </Link>
+        <Link
           href="/settings/calendar"
           className="bg-card hover:border-primary/60 flex items-center justify-between rounded-xl border p-5 transition-colors"
         >

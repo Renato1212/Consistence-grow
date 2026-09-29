@@ -17,6 +17,10 @@ export function SampleBadge({ n }: { n: number }) {
   );
 }
 
+/**
+ * Greyed out for n < 10: every text in the element turns muted (P&L colours
+ * included), which keeps WCAG contrast unlike lowering the opacity.
+ */
 export function weakClass(n: number) {
-  return cn(sampleQuality(n) === "weak" && "opacity-50");
+  return cn(sampleQuality(n) === "weak" && "text-muted-foreground **:!text-muted-foreground");
 }

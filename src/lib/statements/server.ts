@@ -2,6 +2,8 @@ import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { logServerError } from "@/lib/errors";
+
 import { StatementFormatError } from "./axia";
 import { MAX_STATEMENT_BYTES } from "./extract";
 import { prepareStatement, type PreparedStatement } from "./payload";
@@ -23,10 +25,25 @@ export async function readStatementFile(
   if (!(bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44 && bytes[3] === 0x46))
     return { ok: false, status: 415, error: "This is not a PDF" };
   try {
-    return { ok: true, prepared: await prepareStatement(bytes, { fileName }), bytes };
+    const prepared = await prepareStatement(bytes, { fileName });
+    if (prepared.parsed.unparsed.length) {
+      // Only counts: never the statement's contents.
+      await logServerError("statements.layout", new Error("Unrecognised statement lines"), {
+        unparsed: prepared.parsed.unparsed.length,
+        parser: prepared.payload.parser_version,
+      });
+    }
+    return { ok: true, prepared, bytes };
   } catch (e) {
-    if (e instanceof StatementFormatError) return { ok: false, status: 422, error: e.message };
-    return { ok: false, status: 422, error: "The PDF could not be read as an Axia statement" };
+    await logServerError("statements.parse", e, { bytes: bytes.length });
+    const hint = " If Axia changed the statement layout, keep this PDF: the parser needs updating.";
+    if (e instanceof StatementFormatError)
+      return { ok: false, status: 422, error: e.message + hint };
+    return {
+      ok: false,
+      status: 422,
+      error: "The PDF could not be read as an Axia Daily Detail Statement." + hint,
+    };
   }
 }
 

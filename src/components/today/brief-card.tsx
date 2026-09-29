@@ -16,7 +16,7 @@ export function BriefCard({ brief }: { brief: Brief }) {
       data-testid="brief-card"
     >
       <div className="flex flex-wrap items-center gap-2">
-        <Newspaper className="text-primary size-4" aria-hidden />
+        <Newspaper className="text-primary-ink size-4" aria-hidden />
         <h2 className="heading-caps text-xs">
           Macro Desk · {brief.session === "EU" ? "European-open" : "US-session"} brief
         </h2>
@@ -25,7 +25,7 @@ export function BriefCard({ brief }: { brief: Brief }) {
         </span>
         <Link
           href={`/prep/${brief.date}/${brief.session.toLowerCase()}#brief`}
-          className="text-primary ml-auto text-xs hover:underline"
+          className="text-primary-ink ml-auto text-xs hover:underline"
         >
           Full brief →
         </Link>

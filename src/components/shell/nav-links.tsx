@@ -52,7 +52,7 @@ export function BottomNav() {
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex h-14 flex-col items-center justify-center gap-0.5 text-[11px]",
-                  active ? "text-primary" : "text-muted-foreground",
+                  active ? "text-primary-ink" : "text-muted-foreground",
                 )}
               >
                 <Icon className="size-5" aria-hidden />

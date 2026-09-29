@@ -96,7 +96,7 @@ export function AiTab({
           Claude analyses run on your Claude subscription through a scheduled Claude Code routine —
           no API credits. To switch it on, create a token with the <strong>AI analysis</strong>{" "}
           scope in{" "}
-          <Link href="/settings/integrations" className="text-primary underline">
+          <Link href="/settings/integrations" className="text-primary-ink underline">
             Settings → Integrations
           </Link>
           .
@@ -123,7 +123,7 @@ export function AiTab({
             className="flex items-start gap-2 rounded-md border px-3 py-2 text-sm"
             data-testid="ai-queued"
           >
-            <Clock className="text-primary mt-0.5 size-4 shrink-0" aria-hidden />
+            <Clock className="text-primary-ink mt-0.5 size-4 shrink-0" aria-hidden />
             <div>
               <div className="font-medium">
                 {now && isStale(open, AI_STALE_HOURS, now)

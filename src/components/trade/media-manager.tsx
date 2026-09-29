@@ -579,7 +579,7 @@ export function MediaLightbox({ item, onClose }: { item: MediaItem | null; onClo
             href={item.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-primary break-all underline"
+            className="text-primary-ink break-all underline"
           >
             Open {item.url}
           </a>

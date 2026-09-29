@@ -19,6 +19,8 @@ import { cn } from "@/lib/utils";
 
 import { AccountCurve, StatementCalendar, VolumeScatter } from "./charts";
 
+const LIST_PAGE = 60;
+
 const fmtMoneyCI = (ci: Interval | null) => (ci ? `${fmtMoney(ci.lo)} … ${fmtMoney(ci.hi)}` : "");
 
 export function StatementsDashboard({
@@ -42,9 +44,11 @@ export function StatementsDashboard({
   };
   const s = data.stats;
   const r = data.reconSummary;
+  const [listAll, setListAll] = useState(false);
+  const list = listAll ? data.list : data.list.slice(0, LIST_PAGE);
 
   return (
-    <div className="grid gap-4">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-4">
       <div className="flex flex-wrap items-center gap-3">
         {accounts.length > 1 && (
           <label className="flex items-center gap-2 text-sm">
@@ -82,7 +86,7 @@ export function StatementsDashboard({
         >
           {data.attention.map((a) => (
             <li key={a.id} className="flex items-center gap-2">
-              <AlertTriangle className="size-4 shrink-0 text-amber-500" aria-hidden />
+              <AlertTriangle className="text-warn size-4 shrink-0" aria-hidden />
               The statement of {a.date} did not pass every check —{" "}
               <Link className="underline" href={`/statements/${a.id}`}>
                 review it
@@ -91,14 +95,14 @@ export function StatementsDashboard({
           ))}
           {data.gaps.map((g) => (
             <li key={`${g.after}-${g.before}`} className="flex items-center gap-2">
-              <AlertTriangle className="size-4 shrink-0 text-amber-500" aria-hidden />
+              <AlertTriangle className="text-warn size-4 shrink-0" aria-hidden />
               The balance does not roll from {g.after} to {g.before} — a statement in between is
               probably missing.
             </li>
           ))}
           {data.unmapped.length > 0 && (
             <li className="flex items-center gap-2">
-              <AlertTriangle className="size-4 shrink-0 text-amber-500" aria-hidden />
+              <AlertTriangle className="text-warn size-4 shrink-0" aria-hidden />
               Product code{data.unmapped.length > 1 ? "s" : ""} {data.unmapped.join(", ")} not
               linked to an instrument —{" "}
               <Link className="underline" href="/settings/statements">
@@ -153,7 +157,7 @@ export function StatementsDashboard({
         </Kpi>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <Section title="Account curve">
           <AccountCurve points={data.curve} ids={data.ids} />
         </Section>
@@ -224,7 +228,7 @@ export function StatementsDashboard({
         </div>
       </Section>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <Section
           title="Size vs results"
           description={
@@ -250,7 +254,10 @@ export function StatementsDashboard({
             No prep, debrief or events on these days yet.
           </p>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2" data-testid="statements-process">
+          <div
+            className="grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
+            data-testid="statements-process"
+          >
             {data.process.map((g) => (
               <div key={g.dimension}>
                 <h3 className="mb-1 text-xs font-medium">{g.dimension}</h3>
@@ -263,7 +270,20 @@ export function StatementsDashboard({
 
       <Reconciliation rows={data.recon} />
 
-      <Section title="Statements">
+      <Section
+        title="Statements"
+        aside={
+          data.list.length > LIST_PAGE ? (
+            <button
+              type="button"
+              className="text-muted-foreground text-xs underline"
+              onClick={() => setListAll((v) => !v)}
+            >
+              {listAll ? `Latest ${LIST_PAGE}` : `Show all ${data.list.length}`}
+            </button>
+          ) : undefined
+        }
+      >
         <div className="overflow-x-auto">
           <table className="w-full text-sm" data-testid="statements-list">
             <thead className="text-muted-foreground text-left text-xs">
@@ -276,7 +296,7 @@ export function StatementsDashboard({
               </tr>
             </thead>
             <tbody>
-              {data.list.map((d) => (
+              {list.map((d) => (
                 <tr key={d.id} className="border-t">
                   <td className="py-1.5 pr-3">
                     <Link
@@ -508,10 +528,14 @@ export function ReconTable({ rows, showDate = true }: { rows: ReconRow[]; showDa
   );
 }
 
+const RECON_PAGE = 50;
+
 function Reconciliation({ rows }: { rows: ReconRow[] }) {
   const [all, setAll] = useState(false);
+  const [limit, setLimit] = useState(RECON_PAGE);
   const open = rows.filter((r) => r.status !== "matched");
-  const shown = all ? rows : open;
+  const list = all ? rows : open;
+  const shown = list.slice(0, limit);
   return (
     <Section
       title="Journal vs broker"
@@ -520,14 +544,29 @@ function Reconciliation({ rows }: { rows: ReconRow[] }) {
         <button
           type="button"
           className="text-muted-foreground text-xs underline"
-          onClick={() => setAll((v) => !v)}
+          onClick={() => {
+            setAll((v) => !v);
+            setLimit(RECON_PAGE);
+          }}
         >
           {all ? "Only open items" : `Show all ${rows.length}`}
         </button>
       }
     >
       {shown.length ? (
-        <ReconTable rows={shown} />
+        <>
+          <ReconTable rows={shown} />
+          {list.length > limit && (
+            <button
+              type="button"
+              className="text-muted-foreground text-xs underline"
+              onClick={() => setLimit((n) => n + RECON_PAGE)}
+            >
+              Show {Math.min(RECON_PAGE, list.length - limit)} more ({list.length - limit} not
+              shown)
+            </button>
+          )}
+        </>
       ) : (
         <p className="text-muted-foreground text-sm" data-testid="recon-clean">
           Every broker product-day matches the journal.

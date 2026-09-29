@@ -73,7 +73,7 @@ export function LivePreview({ values, inst }: { values: TradeFormValues; inst?: 
       <Stat label="Duration">{fmtDuration(c.durationSec)}</Stat>
       {!isObserved && inst.feePerContract === 0 && fees === null && (
         <p className="text-muted-foreground col-span-full flex items-center gap-1.5 text-xs">
-          <AlertTriangle className="size-3.5 text-amber-500" aria-hidden />
+          <AlertTriangle className="text-warn size-3.5" aria-hidden />
           No fees set for {inst.symbol} — net equals gross. Set fees in Settings → Instruments.
         </p>
       )}

@@ -77,7 +77,7 @@ export default async function StatementPage({ params }: PageProps<"/statements/[
         </div>
       </PageHeader>
 
-      <div className="grid gap-4">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4">
         <div className="flex flex-wrap items-center gap-2 text-sm">
           <span className="font-medium">{s.account}</span>
           <span className="text-muted-foreground">client {s.clientCode}</span>
@@ -132,7 +132,7 @@ export default async function StatementPage({ params }: PageProps<"/statements/[
                 <AlertTriangle
                   className={cn(
                     "mt-0.5 size-4 shrink-0",
-                    c.severity === "error" ? "text-loss" : "text-amber-500",
+                    c.severity === "error" ? "text-loss" : "text-warn",
                   )}
                   aria-hidden
                 />
@@ -178,7 +178,7 @@ export default async function StatementPage({ params }: PageProps<"/statements/[
                       </td>
                       <td className="py-1.5 pr-3">
                         {p.symbol ?? (
-                          <Link className="text-amber-500 underline" href="/settings/statements">
+                          <Link className="text-warn underline" href="/settings/statements">
                             map
                           </Link>
                         )}
@@ -244,7 +244,7 @@ export default async function StatementPage({ params }: PageProps<"/statements/[
               <ul className="grid gap-0.5 text-xs">
                 {s.checks.map((c) => (
                   <li key={c.id} className="flex gap-1.5">
-                    <span className={c.ok ? "text-muted-foreground" : "text-amber-500"}>
+                    <span className={c.ok ? "text-muted-foreground" : "text-warn"}>
                       {c.ok ? "✓" : "✗"}
                     </span>
                     {c.label}

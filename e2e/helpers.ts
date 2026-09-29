@@ -2,7 +2,7 @@ import { expect, type Page } from "@playwright/test";
 
 import { E2E_USER } from "../tests/local-supabase";
 
-export async function signIn(page: Page, next = "/today") {
+export async function signIn(page: Page, next = "/today", user = E2E_USER) {
   await page.goto(`/login?next=${encodeURIComponent(next)}`);
   // The tab only works once the page has hydrated: retry until it switches.
   const passwordBox = page.getByRole("textbox", { name: "Password" });
@@ -10,8 +10,8 @@ export async function signIn(page: Page, next = "/today") {
     await page.getByRole("tab", { name: "Password" }).click();
     await expect(passwordBox).toBeVisible({ timeout: 1000 });
   }).toPass({ timeout: 15_000 });
-  await page.getByLabel("Email").fill(E2E_USER.email);
-  await page.getByRole("textbox", { name: "Password" }).fill(E2E_USER.password);
+  await page.getByLabel("Email").fill(user.email);
+  await page.getByRole("textbox", { name: "Password" }).fill(user.password);
   await page.getByRole("button", { name: "Sign in" }).click();
   const escaped = next.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   await expect(page).toHaveURL(new RegExp(`${escaped}$`));

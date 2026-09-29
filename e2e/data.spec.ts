@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 import { readFileSync } from "node:fs";
 import { strFromU8, unzipSync } from "fflate";
 
@@ -126,4 +126,47 @@ test("import fills twice without duplicates, save a preset, export and back up",
     headers: { Authorization: "Bearer guess" },
   });
   expect([401, 503]).toContain(forged.status());
+});
+
+test("restore from a backup puts back a missing row, and only once", async ({ page }) => {
+  const id = crypto.randomUUID();
+  const text = `Restored rule ${Date.now()}`;
+  const backup = JSON.stringify({
+    version: 1,
+    exported_at: "2026-09-27T03:00:00Z",
+    tables: {
+      rules: [
+        {
+          id,
+          user_id: "00000000-0000-0000-0000-000000000000",
+          created_at: "2026-09-01T10:00:00Z",
+          updated_at: "2026-09-01T10:00:00Z",
+          deleted_at: null,
+          text,
+          category: "risk",
+          active: true,
+          sort: 999,
+        },
+      ],
+    },
+  });
+  await signIn(page, "/settings/data");
+  const card = page.getByTestId("restore-backup");
+  const pick = () =>
+    card.getByLabel("Backup file").setInputFiles({
+      name: "backup.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(backup),
+    });
+  await pick();
+  await expect(page.getByTestId("restore-summary")).toContainText("1 rows in 1 tables");
+  await page.getByTestId("restore-run").click();
+  await expect(page.getByTestId("restore-result")).toContainText("rules: 1 restored");
+
+  await pick();
+  await page.getByTestId("restore-run").click();
+  await expect(page.getByTestId("restore-result")).toContainText("Nothing was missing");
+
+  await page.goto("/settings/rules");
+  await expect(page.locator(`li[data-rule="${text}"]`)).toBeVisible();
 });

@@ -188,6 +188,19 @@ Cloud sandbox: Docker daemon may need `sudo dockerd &` before `pnpm db:start`.
 - Test fixture: `tests/fixtures/axia-statement.ts` builds anonymised PDFs with the real layout. Never commit a
   real statement.
 
+## Hardening (Phase 9)
+
+- Perf check: `PERF=1 pnpm e2e e2e/perf.spec.ts` (local perf user, 5,000 trades + 250 statements,
+  3 s budget per page). Long lists render in pages ("Show more").
+- Accessibility: `e2e/a11y.spec.ts` (axe, both themes) must stay at 0 violations. Accent/warning TEXT
+  uses `text-primary-ink` / `text-warn` (never `text-primary` / `text-amber-*`); weak samples use
+  `weakClass()` (muted text, not opacity). Mobile overflow check in `e2e/mobile.spec.ts`.
+- Settings → Tags (`src/components/settings/tag-manager.tsx`; `merge_tags`/`unmerge_tags`/`tag_usage`,
+  `tags.archived_at`) and Settings → Rules (`rule-manager.tsx`). Loader `src/lib/data/taxonomy.ts`.
+- Restore: `restore_rows` RPC + `src/lib/export/restore.ts` (plan) + Settings → Data card; drill in
+  `tests/db/restore.test.ts`. New user tables must be added to `restore_rows`' allow-list too.
+- Token endpoints check `token_valid(token, scope)` before doing work. User guide: `USER_GUIDE.md`.
+
 ## Macro Desk brief delivery
 
 - `POST /api/ingest/brief` (`src/app/api/ingest/brief/route.ts`), bearer token from Settings →

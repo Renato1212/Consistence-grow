@@ -10,6 +10,7 @@ import { BACKUP_KEEP } from "@/lib/export/build";
 import { createClient, getUser } from "@/lib/supabase/server";
 import { DISPLAY_TZ, formatInTz } from "@/lib/time";
 import { BackupNow } from "./backup-now";
+import { RestoreBackup } from "./restore-backup";
 
 export const metadata: Metadata = { title: "Data & backups" };
 
@@ -127,6 +128,21 @@ export default async function DataPage() {
                 })}
               </ul>
             )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Restore from a backup</CardTitle>
+            <CardDescription>
+              Pick a backup (above) or an export&apos;s consistent-grow.json. Rows that are missing
+              — deleted for good, lost by accident — are put back as they were; existing rows are
+              never overwritten, so it is safe to run more than once. Screenshots and videos are not
+              inside backups (only their links).
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <RestoreBackup />
           </CardContent>
         </Card>
       </div>

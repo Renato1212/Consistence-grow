@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 
 import { E2E_USER, signedIn } from "../tests/local-supabase";
 import { signIn } from "./helpers";

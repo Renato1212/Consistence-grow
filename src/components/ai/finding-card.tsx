@@ -27,7 +27,7 @@ const TYPE_LABEL: Record<Finding["type"], string> = {
 const CONFIDENCE_CLASS: Record<Finding["confidence"], string> = {
   low: "text-muted-foreground",
   medium: "text-foreground",
-  high: "text-primary",
+  high: "text-primary-ink",
 };
 
 function noteText(insight: AiInsight, f: Finding) {
@@ -118,7 +118,7 @@ export function FindingCard({
       <p className="text-sm">{f.observation}</p>
       {!compact && (
         <p className="bg-muted/50 rounded-md px-2.5 py-1.5 text-sm">
-          <span className="text-primary text-xs font-semibold uppercase">Experiment </span>
+          <span className="text-primary-ink text-xs font-semibold uppercase">Experiment </span>
           {f.suggested_experiment}
         </p>
       )}

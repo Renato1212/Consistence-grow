@@ -74,7 +74,7 @@ export function LoginForm({ next, linkError }: { next: string; linkError: boolea
     return (
       <Card>
         <CardContent className="space-y-2 text-center">
-          <MailCheck className="text-primary mx-auto size-8" aria-hidden />
+          <MailCheck className="text-primary-ink mx-auto size-8" aria-hidden />
           <p className="font-medium">Check your inbox</p>
           <p className="text-muted-foreground text-sm">
             A sign-in link is on its way to <span className="text-foreground">{status.email}</span>.

@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./fixtures";
 
 import { generateToken, hashToken, tokenPrefix } from "../src/lib/briefs/token";
 import { DEFAULT_PRODUCTS, buildAxiaStatementPdf } from "../tests/fixtures/axia-statement";

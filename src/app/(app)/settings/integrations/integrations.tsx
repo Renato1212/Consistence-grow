@@ -83,7 +83,7 @@ export function Integrations({
     );
 
   return (
-    <div className="grid max-w-3xl gap-6">
+    <div className="grid max-w-3xl grid-cols-[minmax(0,1fr)] gap-6">
       <Card>
         <CardHeader>
           <CardTitle>Macro Desk brief</CardTitle>
@@ -98,6 +98,8 @@ export function Integrations({
           <pre
             className="bg-muted overflow-x-auto rounded-md p-3 text-xs"
             data-testid="ingest-example"
+            tabIndex={0}
+            aria-label="Brief delivery request example"
           >
             {`POST ${endpoint}
 Authorization: Bearer <token>
@@ -128,7 +130,12 @@ Content-Type: application/json
               </li>
             ))}
           </ul>
-          <pre className="bg-muted overflow-x-auto rounded-md p-3 text-xs" data-testid="ai-example">
+          <pre
+            className="bg-muted overflow-x-auto rounded-md p-3 text-xs"
+            data-testid="ai-example"
+            tabIndex={0}
+            aria-label="AI routine request example"
+          >
             {`GET  ${aiBase}/queue?slot=eu|us|weekly
 POST ${aiBase}/findings   { "request_id", "data_hash", "model", "output" }
 Authorization: Bearer <token with the AI analysis scope>`}

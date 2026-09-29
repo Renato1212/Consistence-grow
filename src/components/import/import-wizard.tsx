@@ -52,7 +52,7 @@ function Step({ n, title, children }: { n: number; title: string; children: Reac
   return (
     <section className="bg-card space-y-3 rounded-xl border p-4" aria-label={title}>
       <h2 className="heading-caps text-xs">
-        <span className="text-primary">{n}.</span> {title}
+        <span className="text-primary-ink">{n}.</span> {title}
       </h2>
       {children}
     </section>
@@ -500,7 +500,7 @@ export function ImportWizard({
                   key={`${o.account}-${o.symbol}`}
                   className="text-muted-foreground flex items-center gap-1.5 text-xs"
                 >
-                  <AlertTriangle className="size-3.5 text-amber-500" aria-hidden />
+                  <AlertTriangle className="text-warn size-3.5" aria-hidden />
                   {o.account} · {o.symbol}: position of {o.qty} still open at the end of the file
                   (rows {o.fills.map((f) => f.row).join(", ")}).
                 </p>
@@ -578,7 +578,7 @@ export function ImportWizard({
               role="status"
               data-testid="import-result"
             >
-              <CheckCircle2 className="text-primary size-5" aria-hidden />
+              <CheckCircle2 className="text-primary-ink size-5" aria-hidden />
               {result.created} imported{result.skipped ? `, ${result.skipped} already there` : ""}.
               <Button asChild variant="outline" size="sm">
                 <Link href="/journal?review=1">Review imported trades</Link>

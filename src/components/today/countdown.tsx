@@ -19,7 +19,7 @@ export function Countdown({ at, className }: { at: string; className?: string })
     <span
       className={cn(
         "num w-20 shrink-0 pr-3 text-right text-xs",
-        ms > 0 && ms <= 15 * 60000 ? "text-primary font-semibold" : "text-muted-foreground",
+        ms > 0 && ms <= 15 * 60000 ? "text-primary-ink font-semibold" : "text-muted-foreground",
         className,
       )}
       data-testid="countdown"

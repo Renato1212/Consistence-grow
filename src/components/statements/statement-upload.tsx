@@ -305,21 +305,21 @@ function PreviewCard({
                 </li>
               ))}
               {warnings.map((c) => (
-                <li key={c.id} className="flex gap-1.5 text-amber-500">
+                <li key={c.id} className="text-warn flex gap-1.5">
                   <AlertTriangle className="size-3.5 shrink-0" aria-hidden />
                   {c.label}
                   {c.detail ? ` — ${c.detail}` : ""}
                 </li>
               ))}
               {unmapped.map((m) => (
-                <li key={m.code} className="flex gap-1.5 text-amber-500">
+                <li key={m.code} className="text-warn flex gap-1.5">
                   <AlertTriangle className="size-3.5 shrink-0" aria-hidden />
                   Product code {m.code} has no instrument yet — map it in Settings → Statements
                   after saving.
                 </li>
               ))}
               {badMapping.map((m) => (
-                <li key={`bad-${m.code}`} className="flex gap-1.5 text-amber-500">
+                <li key={`bad-${m.code}`} className="text-warn flex gap-1.5">
                   <AlertTriangle className="size-3.5 shrink-0" aria-hidden />
                   Code {m.code} → {m.symbol}: the amounts imply a different contract size. Check the
                   mapping in Settings → Statements.
@@ -341,7 +341,7 @@ function PreviewCard({
             <ul className="grid gap-0.5 text-xs">
               {p.checks.map((c) => (
                 <li key={c.id} className="flex gap-1.5">
-                  <span className={c.ok ? "text-muted-foreground" : "text-amber-500"}>
+                  <span className={c.ok ? "text-muted-foreground" : "text-warn"}>
                     {c.ok ? "✓" : "✗"}
                   </span>
                   {c.label}
@@ -354,7 +354,7 @@ function PreviewCard({
           <footer className="flex flex-wrap items-center gap-2 border-t pt-3">
             {item.phase === "saved" && item.saved ? (
               <p className="flex items-center gap-2 text-sm" data-testid="preview-saved">
-                <CheckCircle2 className="text-primary size-4" aria-hidden />
+                <CheckCircle2 className="text-primary-ink size-4" aria-hidden />
                 {item.saved.status === "replaced"
                   ? "Replaced (the old one is in the trash)"
                   : item.saved.status === "duplicate"

@@ -6,7 +6,9 @@ import type { PdfPage, TextItem } from "./types";
 export const MAX_STATEMENT_BYTES = 10 * 1024 * 1024;
 
 export async function extractPages(bytes: Uint8Array): Promise<PdfPage[]> {
-  const pdf = await getDocumentProxy(new Uint8Array(bytes));
+  // Untrusted input, text only. The bundled pdf.js (v5) has no eval-based
+  // font compilation at all (the CVE-2024-4367 path), and font faces are off.
+  const pdf = await getDocumentProxy(new Uint8Array(bytes), { disableFontFace: true });
   try {
     const pages: PdfPage[] = [];
     for (let n = 1; n <= pdf.numPages; n++) {
@@ -21,7 +23,7 @@ export async function extractPages(bytes: Uint8Array): Promise<PdfPage[]> {
     }
     return pages;
   } finally {
-    await pdf.cleanup?.();
+    await pdf.loadingTask.destroy();
   }
 }
 
