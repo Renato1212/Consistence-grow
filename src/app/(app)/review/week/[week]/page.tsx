@@ -8,6 +8,7 @@ import { ActionItemsList } from "@/components/review/action-items-list";
 import { EquityCurve } from "@/components/review/equity-curve";
 import { SampleBadge, weakClass } from "@/components/review/stat-bits";
 import { WeekReflectionClient } from "@/components/review/week-reflection-client";
+import { BrokerCard } from "@/components/statements/broker-card";
 import { PageHeader } from "@/components/shell/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -160,6 +161,9 @@ export default async function WeekPage({ params }: PageProps<"/review/week/[week
       </PageHeader>
 
       <div className="grid gap-4 md:grid-cols-2">
+        <div className="empty:hidden md:col-span-2">
+          <BrokerCard from={w.start} to={w.end} title="Broker statements this week" />
+        </div>
         <Card title="Summary" className="md:col-span-2">
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-5" data-testid="week-summary">
             <div>

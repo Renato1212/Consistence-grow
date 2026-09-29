@@ -67,7 +67,7 @@ export type ApiToken = {
   prefix: string;
   createdAt: string;
   lastUsedAt: string | null;
-  scopes: ("briefs" | "ai")[];
+  scopes: ("briefs" | "ai" | "statements")[];
 };
 
 export async function loadTokens(): Promise<ApiToken[]> {

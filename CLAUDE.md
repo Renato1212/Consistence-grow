@@ -58,7 +58,7 @@ Cloud sandbox: Docker daemon may need `sudo dockerd &` before `pnpm db:start`.
 
 ## Data model (Phase 1)
 
-- 25 user tables in `public` (27 after Phase 3, 28 after Phase 7), all with `user_id default auth.uid()`, RLS `user_id = auth.uid()`,
+- 25 user tables in `public` (27 after Phase 3, 28 after Phase 7, 32 with Statements), all with `user_id default auth.uid()`, RLS `user_id = auth.uid()`,
   `updated_at` trigger and (except `trade_tags`) `deleted_at` soft delete. See
   `supabase/migrations/*_phase1_core.sql`.
 - `public.compute_trade()` trigger derives ticks, fees_total, gross/net P&L, risk, R, duration,
@@ -173,6 +173,20 @@ Cloud sandbox: Docker daemon may need `sudo dockerd &` before `pnpm db:start`.
   add new user tables there). Backups: `/api/backup` (manual), `/api/cron/backup` (Vercel Cron in
   `vercel.json`, needs `CRON_SECRET` + `SUPABASE_SECRET_KEY`), bucket `backups`, `purge_trash`.
   UI: `/settings/data`.
+
+## Broker statements (Axia daily PDF)
+
+- Pages: `/statements` (dashboard, `?account=&range=30|90|ytd|all`), `/statements/upload`, `/statements/[id]`,
+  `/settings/statements` (product code → instrument map). Components in `src/components/statements`.
+- Pure logic in `src/lib/statements`: `layout.ts` (text runs → lines), `axia.ts` (parser), `checks.ts`
+  (self-checks → ok/attention), `products.ts` (Axia codes, price scale, implied multiplier), `payload.ts`
+  (PDF → RPC payload, one path for upload/API/tests), `analysis.ts` (day stats, products, size, process,
+  reconciliation), `dashboard.ts`. `extract.ts` uses `unpdf`; `server.ts` is server-only.
+- Routes: `POST /api/statements` (session; `mode=preview|save`, `replace=1`), `POST /api/ingest/statement`
+  (token scope `statements`, raw PDF body). SQL: `save_statement`, `ingest_statement`, `map_statement_code`,
+  `ai_statements` (migration `*_statements.sql`); bucket `statements`.
+- Test fixture: `tests/fixtures/axia-statement.ts` builds anonymised PDFs with the real layout. Never commit a
+  real statement.
 
 ## Macro Desk brief delivery
 

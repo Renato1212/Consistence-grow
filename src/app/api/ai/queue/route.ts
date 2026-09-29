@@ -34,6 +34,9 @@ export async function GET(req: NextRequest) {
   const res = await supabase.rpc("ai_context", { p_token: token });
   if (res.error) return rpcFailure(res.error, "context");
   const ctx = res.data as unknown as AiContext;
+  const statements = await supabase.rpc("ai_statements", { p_token: token });
+  // Statements only enrich the weekly analysis; never block the queue on them.
+  ctx.statements = statements.error ? [] : (statements.data as unknown as AiContext["statements"]);
   const today = lisbonToday();
   const notes: string[] = [];
 

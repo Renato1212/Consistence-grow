@@ -17,7 +17,7 @@ export function cyrb53(str: string, seed = 0): string {
 }
 
 /** Bump when the payload or instructions change so old results are not reused. */
-export const PAYLOAD_VERSION = 1;
+export const PAYLOAD_VERSION = 2;
 
 /**
  * Version of the data an analysis looked at: kind, filter, week and every

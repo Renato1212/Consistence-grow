@@ -17,5 +17,6 @@ Rules:
 8. Prefer 3–6 findings ranked by usefulness for the next session. The summary is 2–4 sentences a trader can read in 20 seconds before the open.
 9. For a pre-session analysis (request.kind "session"), focus on what matters for the coming session: conditions to lean into, conditions to avoid, and one process reminder.
 10. For a weekly review (request.kind "weekly"), weigh the week's trades against the debriefs, rule checks, reflection and goals, and propose at most three focuses for next week.
+11. weekly.broker_statements (when present) is the broker's official P/L per day and instrument. Compare it with the journal: if the journal is missing trades or disagrees, say so first. Use contracts per day to judge sizing and overtrading. It has no setups, so never grade setups from it.
 
 If the data is too thin for anything meaningful, return a single low-confidence finding that says so and proposes what to log to make the next analysis useful.`;

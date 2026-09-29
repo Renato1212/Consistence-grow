@@ -448,6 +448,82 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"statement_code_map": {
+                  Row: {
+                    "broker": string,"code": string,"created_at": string,"deleted_at": string | null,"id": string,"instrument_id": string,"price_scale": number,"updated_at": string,"user_id": string
+                  }
+                  Insert: {
+                    "broker"?: string,"code": string,"created_at"?: string,"deleted_at"?: string | null,"id"?: string,"instrument_id": string,"price_scale"?: number,"updated_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "broker"?: string,"code"?: string,"created_at"?: string,"deleted_at"?: string | null,"id"?: string,"instrument_id"?: string,"price_scale"?: number,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "statement_code_map_instrument_id_fkey"
+      columns: ["instrument_id"]
+isOneToOne: false
+      referencedRelation: "instruments"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"statement_fills": {
+                  Row: {
+                    "amount": number | null,"code": string,"contract": string,"created_at": string,"currency": string,"id": string,"price": number | null,"price_text": string,"qty": number,"section": string,"seq": number,"side": string,"statement_id": string,"trade_date": string,"type": string,"updated_at": string,"user_id": string
+                  }
+                  Insert: {
+                    "amount"?: number | null,"code": string,"contract": string,"created_at"?: string,"currency"?: string,"id"?: string,"price"?: number | null,"price_text": string,"qty": number,"section": string,"seq": number,"side": string,"statement_id": string,"trade_date": string,"type"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "amount"?: number | null,"code"?: string,"contract"?: string,"created_at"?: string,"currency"?: string,"id"?: string,"price"?: number | null,"price_text"?: string,"qty"?: number,"section"?: string,"seq"?: number,"side"?: string,"statement_id"?: string,"trade_date"?: string,"type"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "statement_fills_statement_id_fkey"
+      columns: ["statement_id"]
+isOneToOne: false
+      referencedRelation: "statements"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"statement_products": {
+                  Row: {
+                    "amount_sum": number | null,"avg_buy": number | null,"avg_sell": number | null,"code": string,"contract": string,"created_at": string,"currency": string,"default_price_scale": number,"default_symbol": string | null,"description": string,"exchange": string,"fills": number,"id": string,"implied_multiplier": number | null,"instrument_id": string | null,"long_qty": number,"price_scale": number,"realized_pnl": number | null,"short_qty": number,"statement_id": string,"trade_date": string,"updated_at": string,"user_id": string
+                  }
+                  Insert: {
+                    "amount_sum"?: number | null,"avg_buy"?: number | null,"avg_sell"?: number | null,"code": string,"contract": string,"created_at"?: string,"currency"?: string,"default_price_scale"?: number,"default_symbol"?: string | null,"description"?: string,"exchange"?: string,"fills"?: number,"id"?: string,"implied_multiplier"?: number | null,"instrument_id"?: string | null,"long_qty"?: number,"price_scale"?: number,"realized_pnl"?: number | null,"short_qty"?: number,"statement_id": string,"trade_date": string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "amount_sum"?: number | null,"avg_buy"?: number | null,"avg_sell"?: number | null,"code"?: string,"contract"?: string,"created_at"?: string,"currency"?: string,"default_price_scale"?: number,"default_symbol"?: string | null,"description"?: string,"exchange"?: string,"fills"?: number,"id"?: string,"implied_multiplier"?: number | null,"instrument_id"?: string | null,"long_qty"?: number,"price_scale"?: number,"realized_pnl"?: number | null,"short_qty"?: number,"statement_id"?: string,"trade_date"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "statement_products_instrument_id_fkey"
+      columns: ["instrument_id"]
+isOneToOne: false
+      referencedRelation: "instruments"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "statement_products_statement_id_fkey"
+      columns: ["statement_id"]
+isOneToOne: false
+      referencedRelation: "statements"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"statements": {
+                  Row: {
+                    "account": string,"broker": string,"checks": NonNullable<Json>,"client_code": string,"close_cash": number | null,"contracts": number,"created_at": string,"currency": string,"deleted_at": string | null,"file_hash": string,"file_name": string | null,"file_path": string | null,"fills": number,"format": string,"id": string,"initial_margin": number | null,"maintenance_margin": number | null,"mtd_fees": number | null,"mtd_realized_pnl": number | null,"net_liquid_value": number | null,"net_pnl": number | null,"nlv_history": NonNullable<Json>,"open_cash": number | null,"open_trade_equity": number | null,"parser_version": number,"program": string | null,"raw_text": string | null,"realized_pnl": number,"simulated": boolean,"source": string,"status": string,"summary": NonNullable<Json>,"summary_rows": NonNullable<Json>,"total_equity": number | null,"total_fees": number,"trade_date": string,"unparsed": NonNullable<Json>,"updated_at": string,"user_id": string
+                  }
+                  Insert: {
+                    "account": string,"broker"?: string,"checks"?: NonNullable<Json>,"client_code": string,"close_cash"?: number | null,"contracts"?: number,"created_at"?: string,"currency"?: string,"deleted_at"?: string | null,"file_hash": string,"file_name"?: string | null,"file_path"?: string | null,"fills"?: number,"format": string,"id"?: string,"initial_margin"?: number | null,"maintenance_margin"?: number | null,"mtd_fees"?: number | null,"mtd_realized_pnl"?: number | null,"net_liquid_value"?: number | null,"net_pnl"?: never,"nlv_history"?: NonNullable<Json>,"open_cash"?: number | null,"open_trade_equity"?: number | null,"parser_version": number,"program"?: string | null,"raw_text"?: string | null,"realized_pnl"?: number,"simulated"?: boolean,"source"?: string,"status"?: string,"summary"?: NonNullable<Json>,"summary_rows"?: NonNullable<Json>,"total_equity"?: number | null,"total_fees"?: number,"trade_date": string,"unparsed"?: NonNullable<Json>,"updated_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "account"?: string,"broker"?: string,"checks"?: NonNullable<Json>,"client_code"?: string,"close_cash"?: number | null,"contracts"?: number,"created_at"?: string,"currency"?: string,"deleted_at"?: string | null,"file_hash"?: string,"file_name"?: string | null,"file_path"?: string | null,"fills"?: number,"format"?: string,"id"?: string,"initial_margin"?: number | null,"maintenance_margin"?: number | null,"mtd_fees"?: number | null,"mtd_realized_pnl"?: number | null,"net_liquid_value"?: number | null,"net_pnl"?: never,"nlv_history"?: NonNullable<Json>,"open_cash"?: number | null,"open_trade_equity"?: number | null,"parser_version"?: number,"program"?: string | null,"raw_text"?: string | null,"realized_pnl"?: number,"simulated"?: boolean,"source"?: string,"status"?: string,"summary"?: NonNullable<Json>,"summary_rows"?: NonNullable<Json>,"total_equity"?: number | null,"total_fees"?: number,"trade_date"?: string,"unparsed"?: NonNullable<Json>,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"tag_groups": {
                   Row: {
                     "color": string | null,"created_at": string,"deleted_at": string | null,"id": string,"kind": string,"name": string,"sort": number,"updated_at": string,"user_id": string
@@ -666,6 +742,9 @@ isOneToOne: false
 "ai_serve":
 { Args: { "p_data_hash": string,"p_playbook_ids": (string)[],"p_request": string,"p_token": string,"p_trade_ids": (string)[] }; Returns: undefined
                            },
+"ai_statements":
+{ Args: { "p_token": string }; Returns: Json
+                           },
 "ai_submit":
 { Args: { "p_data_hash": string,"p_model": string,"p_output": Json,"p_request": string,"p_token": string }; Returns: string
                            },
@@ -681,6 +760,12 @@ isOneToOne: false
 "ingest_brief":
 { Args: { "p_date"?: string,"p_markdown": string,"p_session": string,"p_source"?: string,"p_token": string }; Returns: Json
                            },
+"ingest_statement":
+{ Args: { "p_replace"?: boolean,"p_statement": Json,"p_token": string }; Returns: Json
+                           },
+"map_statement_code":
+{ Args: { "p_code": string,"p_instrument": string,"p_price_scale"?: number }; Returns: number
+                           },
 "purge_trash":
 { Args: { "p_days"?: number,"p_user": string }; Returns: Json
                            },
@@ -692,6 +777,9 @@ isOneToOne: false
                            },
 "save_prep":
 { Args: { "p": Json }; Returns: string
+                           },
+"save_statement":
+{ Args: { "p_replace"?: boolean,"p_statement": Json }; Returns: Json
                            },
 "sync_generated_events":
 { Args: { "p_events": Json,"p_from": string,"p_to": string }; Returns: number
