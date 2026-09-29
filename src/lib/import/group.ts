@@ -53,8 +53,9 @@ function build(entries: TradeLeg[], exits: TradeLeg[]): GroupedTrade {
     direction: first.side === "buy" ? "long" : "short",
     entryAt: first.at,
     exitAt: exits[exits.length - 1].fill.at,
-    entryPrice: Math.round(wavg(entries) * 1e8) / 1e8,
-    exitPrice: Math.round(wavg(exits) * 1e8) / 1e8,
+    // Full precision: an average of N fills sits on the tick ÷ N grid.
+    entryPrice: Number(wavg(entries).toPrecision(15)),
+    exitPrice: Number(wavg(exits).toPrecision(15)),
     contracts: entries.reduce((a, l) => a + l.qty, 0),
     fees,
     entries,

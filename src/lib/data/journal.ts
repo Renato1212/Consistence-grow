@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { fetchAll } from "./paginate";
 
 export const JOURNAL_COLUMNS =
-  "id, kind, symbol, currency, direction, entry_at, exit_at, entry_price, exit_price, stop_price, target_price, contracts, ticks, gross_pnl, fees_total, net_pnl, r_multiple, no_stop, duration_sec, session, time_bucket, trade_date, primary_domain, secondary_domains, playbook_name, grade_context, grade_edge, grade_process, grade_context_reason, grade_edge_reason, grade_process_reason, confidence, entry_type, exit_reason, tag_names, media_count, thesis, management, lesson, move_trigger, move_phases, needs_review, mae_ticks, mfe_ticks, instrument_id, checklist";
+  "id, kind, symbol, currency, direction, entry_at, exit_at, entry_price, exit_price, stop_price, target_price, contracts, ticks, gross_pnl, fees_total, net_pnl, r_multiple, no_stop, duration_sec, session, time_bucket, trade_date, primary_domain, secondary_domains, playbook_name, grade_context, grade_edge, grade_process, grade_context_reason, grade_edge_reason, grade_process_reason, confidence, entry_type, exit_reason, tag_names, media_count, thesis, management, lesson, move_trigger, move_phases, needs_review, mae_ticks, mfe_ticks, instrument_id, checklist, time_estimated, broker_confirmed";
 
 export type JournalTrade = {
   id: string;
@@ -50,6 +50,10 @@ export type JournalTrade = {
   move_phases: string | null;
   checklist: Record<string, boolean> | null;
   needs_review: boolean;
+  /** Built from a broker statement without fill times. */
+  time_estimated: boolean;
+  /** Linked to broker fills of a statement. */
+  broker_confirmed: boolean;
   mae_ticks: number | null;
   mfe_ticks: number | null;
   instrument_id: string;

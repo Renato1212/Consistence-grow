@@ -13,6 +13,7 @@ import { createClient } from "@/lib/supabase/server";
 import { DISPLAY_TZ, formatInTz } from "@/lib/time";
 
 import { fetchAll } from "./paginate";
+import { loadUnsplitDays, type UnsplitDay } from "./statement-trades";
 
 export const STATEMENT_RANGES = ["30", "90", "ytd", "all"] as const;
 export type StatementRange = (typeof STATEMENT_RANGES)[number];
@@ -404,6 +405,8 @@ export async function loadCodeMap(): Promise<{
 }
 
 export type StatementNudge = {
+  /** The latest recent statement with products not split into trades, and how many such days. */
+  unsplit: (UnsplitDay & { days: number }) | null;
   open: number;
   missingDate: string | null;
   completeness: number | null;
@@ -425,7 +428,7 @@ export async function loadStatementNudge(today: string): Promise<StatementNudge 
   const recentFrom = new Date(`${today}T12:00:00Z`);
   recentFrom.setUTCDate(recentFrom.getUTCDate() - 14);
   const days = await loadStatementDays({ from: recentFrom.toISOString().slice(0, 10) });
-  const [trades, traded] = await Promise.all([
+  const [trades, traded, unsplit] = await Promise.all([
     loadJournalTrades(days.map((d) => d.tradeDate)),
     supabase
       .from("trade_facts")
@@ -436,6 +439,7 @@ export async function loadStatementNudge(today: string): Promise<StatementNudge 
       .lt("trade_date", today)
       .order("trade_date", { ascending: false })
       .limit(200),
+    loadUnsplitDays(recentFrom.toISOString().slice(0, 10)),
   ]);
   const summary = reconSummary(reconcile(days, trades));
   const withStatement = new Set(
@@ -452,6 +456,7 @@ export async function loadStatementNudge(today: string): Promise<StatementNudge 
       .map((t) => t.trade_date)
       .find((d): d is string => !!d && !withStatement.has(d)) ?? null;
   return {
+    unsplit: unsplit.length ? { ...unsplit[0], days: unsplit.length } : null,
     open: summary.differs + summary.missing + summary.unmapped,
     missingDate,
     completeness: summary.completeness,

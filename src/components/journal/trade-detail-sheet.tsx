@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowDownRight, ArrowUpRight, Pencil } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Pencil, ShieldCheck } from "lucide-react";
 
 import { MediaGallery, type MediaItem } from "@/components/trade/media-manager";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import type { JournalTrade } from "@/lib/data/journal";
 import { domainMeta, type DomainCode } from "@/lib/domains";
-import { fmtDuration, fmtMoney, fmtR, fmtTicks, pnlClass } from "@/lib/format";
+import { fmtDuration, fmtMoney, fmtPrice, fmtR, fmtTicks, pnlClass } from "@/lib/format";
 import { DISPLAY_TZ, TZ, formatInTz } from "@/lib/time";
 import { EXIT_REASON_LABEL } from "@/lib/trading/trade-form";
 import { cn } from "@/lib/utils";
@@ -46,9 +46,11 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 function Detail({ trade: t, media }: { trade: JournalTrade; media: MediaItem[] }) {
   const observed = t.kind === "observed";
   const when = (iso: string | null) =>
-    iso
-      ? `${formatInTz(iso, DISPLAY_TZ, "dd MMM yyyy HH:mm:ss")} · NY ${formatInTz(iso, TZ.newYork, "HH:mm")}`
-      : "—";
+    iso && t.time_estimated
+      ? `${formatInTz(iso, DISPLAY_TZ, "dd MMM yyyy")} · time not set`
+      : iso
+        ? `${formatInTz(iso, DISPLAY_TZ, "dd MMM yyyy HH:mm:ss")} · NY ${formatInTz(iso, TZ.newYork, "HH:mm")}`
+        : "—";
   return (
     <div className="flex h-full flex-col">
       <div className="border-b p-5 pr-12">
@@ -61,6 +63,11 @@ function Detail({ trade: t, media }: { trade: JournalTrade; media: MediaItem[] }
           {t.symbol} {observed ? (t.direction === "long" ? "up-move" : "down-move") : t.direction}
           {t.kind !== "taken" && (
             <Badge variant="outline">{t.kind === "missed" ? "Missed" : "Observed"}</Badge>
+          )}
+          {t.broker_confirmed && (
+            <Badge variant="outline" className="gap-1" data-testid="broker-confirmed">
+              <ShieldCheck className="size-3" aria-hidden /> Broker-confirmed
+            </Badge>
           )}
         </SheetTitle>
         <SheetDescription className="num mt-1">{when(t.entry_at)}</SheetDescription>
@@ -81,7 +88,7 @@ function Detail({ trade: t, media }: { trade: JournalTrade; media: MediaItem[] }
 
         <dl className="divide-y">
           <Row label={observed ? "Start → end" : "Entry → exit"}>
-            {t.entry_price} → {t.exit_price ?? "open"}
+            {fmtPrice(t.entry_price)} → {t.exit_price === null ? "open" : fmtPrice(t.exit_price)}
           </Row>
           {t.stop_price !== null && <Row label="Stop">{t.stop_price}</Row>}
           {t.target_price !== null && <Row label="Target">{t.target_price}</Row>}
