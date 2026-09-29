@@ -1,6 +1,6 @@
 import { closeSync, openSync, ftruncateSync } from "node:fs";
 
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 import { fillQuickTrade, pasteImage, signIn, status } from "./helpers";
 

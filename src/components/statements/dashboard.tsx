@@ -48,7 +48,7 @@ export function StatementsDashboard({
   const list = listAll ? data.list : data.list.slice(0, LIST_PAGE);
 
   return (
-    <div className="grid gap-4">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-4">
       <div className="flex flex-wrap items-center gap-3">
         {accounts.length > 1 && (
           <label className="flex items-center gap-2 text-sm">
@@ -157,7 +157,7 @@ export function StatementsDashboard({
         </Kpi>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <Section title="Account curve">
           <AccountCurve points={data.curve} ids={data.ids} />
         </Section>
@@ -228,7 +228,7 @@ export function StatementsDashboard({
         </div>
       </Section>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <Section
           title="Size vs results"
           description={
@@ -254,7 +254,10 @@ export function StatementsDashboard({
             No prep, debrief or events on these days yet.
           </p>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2" data-testid="statements-process">
+          <div
+            className="grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
+            data-testid="statements-process"
+          >
             {data.process.map((g) => (
               <div key={g.dimension}>
                 <h3 className="mb-1 text-xs font-medium">{g.dimension}</h3>

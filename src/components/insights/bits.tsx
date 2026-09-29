@@ -41,7 +41,7 @@ export function Section({
 }) {
   return (
     <section
-      className={cn("bg-card space-y-3 rounded-xl border p-4", className)}
+      className={cn("bg-card min-w-0 space-y-3 rounded-xl border p-4", className)}
       aria-label={title}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 import { prepareStatement } from "../src/lib/statements/payload";
 import { DEFAULT_PRODUCTS, buildAxiaStatementPdf } from "../tests/fixtures/axia-statement";

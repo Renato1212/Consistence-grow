@@ -71,7 +71,7 @@ export function BrokerTab({
   }
   const s = view.stats;
   return (
-    <div className="grid gap-4" data-testid="broker-tab">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-4" data-testid="broker-tab">
       <p className="text-muted-foreground text-xs">
         Account {broker.account} · only the date range of the filter applies (statements carry no
         setup data) ·{" "}
@@ -100,32 +100,34 @@ export function BrokerTab({
         </Tile>
       </div>
       <Section title="By product (broker)">
-        <table className="w-full text-sm">
-          <thead className="text-muted-foreground text-left text-xs">
-            <tr>
-              <th className="py-1 pr-3 font-normal">Instrument</th>
-              <th className="py-1 pr-3 font-normal">Days</th>
-              <th className="py-1 pr-3 text-right font-normal">Net</th>
-              <th className="py-1 pr-3 text-right font-normal">Per round turn</th>
-            </tr>
-          </thead>
-          <tbody>
-            {view.products.map((p) => (
-              <tr key={p.key} className="border-t">
-                <td className="py-1.5 pr-3">{p.key}</td>
-                <td className="py-1.5 pr-3">
-                  <N n={p.days} />
-                </td>
-                <td className={cn("num py-1.5 pr-3 text-right", pnlClass(p.net))}>
-                  {fmtMoney(p.net)}
-                </td>
-                <td className={cn("num py-1.5 pr-3 text-right", pnlClass(p.perContract))}>
-                  {fmtMoney(p.perContract)}
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="text-muted-foreground text-left text-xs">
+              <tr>
+                <th className="py-1 pr-3 font-normal">Instrument</th>
+                <th className="py-1 pr-3 font-normal">Days</th>
+                <th className="py-1 pr-3 text-right font-normal">Net</th>
+                <th className="py-1 pr-3 text-right font-normal">Per round turn</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {view.products.map((p) => (
+                <tr key={p.key} className="border-t">
+                  <td className="py-1.5 pr-3">{p.key}</td>
+                  <td className="py-1.5 pr-3">
+                    <N n={p.days} />
+                  </td>
+                  <td className={cn("num py-1.5 pr-3 text-right", pnlClass(p.net))}>
+                    {fmtMoney(p.net)}
+                  </td>
+                  <td className={cn("num py-1.5 pr-3 text-right", pnlClass(p.perContract))}>
+                    {fmtMoney(p.perContract)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </Section>
       <Section title="Volume vs results">
         <BucketTable rows={view.buckets} label="Volume" />

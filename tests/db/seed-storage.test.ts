@@ -12,8 +12,11 @@ describe("default reference data", () => {
       select
         (select count(*) from public.user_settings where user_id = ${userId})::int as settings,
         (select count(*) from public.instruments where user_id = ${userId})::int as instruments,
-        (select count(*) from public.tag_groups where user_id = ${userId})::int as groups,
-        (select count(*) from public.tags where user_id = ${userId})::int as tags,
+        (select count(*) from public.tag_groups where user_id = ${userId}
+          and name in ('Context', 'Order flow / technical', 'Mistakes', 'Emotion / state'))::int as groups,
+        (select count(*) from public.tags t join public.tag_groups g on g.id = t.group_id
+          where t.user_id = ${userId}
+            and g.name in ('Context', 'Order flow / technical', 'Mistakes', 'Emotion / state'))::int as tags,
         (select count(*) from public.rules where user_id = ${userId} and text like 'Be flat%')::int as rules,
         (select count(*) from public.playbooks where user_id = ${userId})::int as playbooks,
         (select count(*) from public.playbook_versions where user_id = ${userId})::int as versions`;

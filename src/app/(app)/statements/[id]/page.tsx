@@ -77,7 +77,7 @@ export default async function StatementPage({ params }: PageProps<"/statements/[
         </div>
       </PageHeader>
 
-      <div className="grid gap-4">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4">
         <div className="flex flex-wrap items-center gap-2 text-sm">
           <span className="font-medium">{s.account}</span>
           <span className="text-muted-foreground">client {s.clientCode}</span>

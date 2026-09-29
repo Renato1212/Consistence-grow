@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 import { signIn } from "./helpers";
 
@@ -91,6 +91,7 @@ test("mobile: every page fits the screen; Statements is reachable from Review", 
     "/playbook",
     "/statements",
     "/statements/upload",
+    "/insights?tab=broker",
     "/settings",
     "/settings/tags",
     "/settings/rules",
