@@ -22,6 +22,7 @@ import {
 
 import { EmptyState } from "@/components/shell/empty-state";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
 import {
@@ -48,6 +49,8 @@ type Filters = {
   to: string;
   review: boolean;
 };
+
+const PAGE = 100;
 
 const EMPTY: Filters = {
   q: "",
@@ -250,6 +253,8 @@ export function JournalView({
   }, []);
 
   const rows = useMemo(() => applyFilters(trades, filters), [trades, filters]);
+  // Long journals render in pages: the first PAGE rows, then "Show more".
+  const [shown, setShown] = useState(PAGE);
   const symbols = useMemo(() => [...new Set(trades.map((t) => t.symbol))].sort(), [trades]);
   const open = (id: string) => router.push(`/journal?trade=${id}`, { scroll: false });
 
@@ -270,7 +275,11 @@ export function JournalView({
     );
   }
 
-  const set = (patch: Partial<Filters>) => setFilters((f) => ({ ...f, ...patch }));
+  const set = (patch: Partial<Filters>) => {
+    setShown(PAGE);
+    setFilters((f) => ({ ...f, ...patch }));
+  };
+  const visible = table.getRowModel().rows.slice(0, shown);
   const filtered = rows.length !== trades.length;
 
   return (
@@ -367,7 +376,7 @@ export function JournalView({
           <button
             type="button"
             className="text-primary h-9 px-2 text-xs underline-offset-4 hover:underline"
-            onClick={() => setFilters(EMPTY)}
+            onClick={() => set(EMPTY)}
           >
             Clear
           </button>
@@ -406,7 +415,7 @@ export function JournalView({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows.map((row) => (
+            {visible.map((row) => (
               <TableRow
                 key={row.id}
                 tabIndex={0}
@@ -428,7 +437,7 @@ export function JournalView({
 
       {/* Phone cards */}
       <ul className="space-y-2 md:hidden">
-        {table.getRowModel().rows.map(({ original: t }) => (
+        {visible.map(({ original: t }) => (
           <li key={t.id}>
             <button
               type="button"
@@ -468,6 +477,18 @@ export function JournalView({
           </li>
         ))}
       </ul>
+
+      {rows.length > shown && (
+        <div className="flex justify-center">
+          <Button
+            variant="outline"
+            onClick={() => setShown((n) => n + PAGE)}
+            data-testid="journal-more"
+          >
+            Show {Math.min(PAGE, rows.length - shown)} more ({rows.length - shown} not shown)
+          </Button>
+        </div>
+      )}
 
       {rows.length === 0 && (
         <p className="text-muted-foreground py-8 text-center text-sm">

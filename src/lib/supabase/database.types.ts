@@ -539,13 +539,13 @@ isOneToOne: false
                   ]
                 },"tags": {
                   Row: {
-                    "color": string | null,"created_at": string,"deleted_at": string | null,"group_id": string,"id": string,"name": string,"sort": number,"updated_at": string,"user_id": string
+                    "archived_at": string | null,"color": string | null,"created_at": string,"deleted_at": string | null,"group_id": string,"id": string,"name": string,"sort": number,"updated_at": string,"user_id": string
                   }
                   Insert: {
-                    "color"?: string | null,"created_at"?: string,"deleted_at"?: string | null,"group_id": string,"id"?: string,"name": string,"sort"?: number,"updated_at"?: string,"user_id"?: string
+                    "archived_at"?: string | null,"color"?: string | null,"created_at"?: string,"deleted_at"?: string | null,"group_id": string,"id"?: string,"name": string,"sort"?: number,"updated_at"?: string,"user_id"?: string
                   }
                   Update: {
-                    "color"?: string | null,"created_at"?: string,"deleted_at"?: string | null,"group_id"?: string,"id"?: string,"name"?: string,"sort"?: number,"updated_at"?: string,"user_id"?: string
+                    "archived_at"?: string | null,"color"?: string | null,"created_at"?: string,"deleted_at"?: string | null,"group_id"?: string,"id"?: string,"name"?: string,"sort"?: number,"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -766,6 +766,9 @@ isOneToOne: false
 "map_statement_code":
 { Args: { "p_code": string,"p_instrument": string,"p_price_scale"?: number }; Returns: number
                            },
+"merge_tags":
+{ Args: { "p_from": string,"p_into": string }; Returns: Json
+                           },
 "purge_trash":
 { Args: { "p_days"?: number,"p_user": string }; Returns: Json
                            },
@@ -783,6 +786,14 @@ isOneToOne: false
                            },
 "sync_generated_events":
 { Args: { "p_events": Json,"p_from": string,"p_to": string }; Returns: number
+                           },
+"tag_usage":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "tag_id": string,"trades": number
+            }[]
+                           },
+"unmerge_tags":
+{ Args: { "p_from": string,"p_had_target": (string)[],"p_into": string,"p_links": (string)[] }; Returns: undefined
                            }
           }
           Enums: {

@@ -21,7 +21,8 @@ export type EditorTagGroup = {
   name: string;
   kind: string;
   color: string | null;
-  tags: { id: string; name: string }[];
+  /** Archived tags only show when a trade already carries them. */
+  tags: { id: string; name: string; archived: boolean }[];
 };
 
 export type EditorData = {
@@ -54,7 +55,11 @@ export async function loadEditorData(): Promise<EditorData> {
       .select("id, name, kind, color, sort")
       .is("deleted_at", null)
       .order("sort"),
-    supabase.from("tags").select("id, name, group_id, sort").is("deleted_at", null).order("sort"),
+    supabase
+      .from("tags")
+      .select("id, name, group_id, sort, archived_at")
+      .is("deleted_at", null)
+      .order("sort"),
   ]);
   for (const r of [inst, settings, pbs, groups, tags]) if (r.error) throw r.error;
 
@@ -86,7 +91,7 @@ export async function loadEditorData(): Promise<EditorData> {
       color: g.color,
       tags: (tags.data ?? [])
         .filter((t) => t.group_id === g.id)
-        .map((t) => ({ id: t.id, name: t.name })),
+        .map((t) => ({ id: t.id, name: t.name, archived: t.archived_at !== null })),
     })),
   };
 }

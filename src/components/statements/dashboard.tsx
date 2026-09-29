@@ -19,6 +19,8 @@ import { cn } from "@/lib/utils";
 
 import { AccountCurve, StatementCalendar, VolumeScatter } from "./charts";
 
+const LIST_PAGE = 60;
+
 const fmtMoneyCI = (ci: Interval | null) => (ci ? `${fmtMoney(ci.lo)} … ${fmtMoney(ci.hi)}` : "");
 
 export function StatementsDashboard({
@@ -42,6 +44,8 @@ export function StatementsDashboard({
   };
   const s = data.stats;
   const r = data.reconSummary;
+  const [listAll, setListAll] = useState(false);
+  const list = listAll ? data.list : data.list.slice(0, LIST_PAGE);
 
   return (
     <div className="grid gap-4">
@@ -263,7 +267,20 @@ export function StatementsDashboard({
 
       <Reconciliation rows={data.recon} />
 
-      <Section title="Statements">
+      <Section
+        title="Statements"
+        aside={
+          data.list.length > LIST_PAGE ? (
+            <button
+              type="button"
+              className="text-muted-foreground text-xs underline"
+              onClick={() => setListAll((v) => !v)}
+            >
+              {listAll ? `Latest ${LIST_PAGE}` : `Show all ${data.list.length}`}
+            </button>
+          ) : undefined
+        }
+      >
         <div className="overflow-x-auto">
           <table className="w-full text-sm" data-testid="statements-list">
             <thead className="text-muted-foreground text-left text-xs">
@@ -276,7 +293,7 @@ export function StatementsDashboard({
               </tr>
             </thead>
             <tbody>
-              {data.list.map((d) => (
+              {list.map((d) => (
                 <tr key={d.id} className="border-t">
                   <td className="py-1.5 pr-3">
                     <Link
@@ -508,10 +525,14 @@ export function ReconTable({ rows, showDate = true }: { rows: ReconRow[]; showDa
   );
 }
 
+const RECON_PAGE = 50;
+
 function Reconciliation({ rows }: { rows: ReconRow[] }) {
   const [all, setAll] = useState(false);
+  const [limit, setLimit] = useState(RECON_PAGE);
   const open = rows.filter((r) => r.status !== "matched");
-  const shown = all ? rows : open;
+  const list = all ? rows : open;
+  const shown = list.slice(0, limit);
   return (
     <Section
       title="Journal vs broker"
@@ -520,14 +541,29 @@ function Reconciliation({ rows }: { rows: ReconRow[] }) {
         <button
           type="button"
           className="text-muted-foreground text-xs underline"
-          onClick={() => setAll((v) => !v)}
+          onClick={() => {
+            setAll((v) => !v);
+            setLimit(RECON_PAGE);
+          }}
         >
           {all ? "Only open items" : `Show all ${rows.length}`}
         </button>
       }
     >
       {shown.length ? (
-        <ReconTable rows={shown} />
+        <>
+          <ReconTable rows={shown} />
+          {list.length > limit && (
+            <button
+              type="button"
+              className="text-muted-foreground text-xs underline"
+              onClick={() => setLimit((n) => n + RECON_PAGE)}
+            >
+              Show {Math.min(RECON_PAGE, list.length - limit)} more ({list.length - limit} not
+              shown)
+            </button>
+          )}
+        </>
       ) : (
         <p className="text-muted-foreground text-sm" data-testid="recon-clean">
           Every broker product-day matches the journal.

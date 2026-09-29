@@ -793,7 +793,12 @@ export function TradeEditor({ data, mode, initial, restoreId }: TradeEditorProps
                         <div className="text-muted-foreground mb-1.5 text-xs">{g.name}</div>
                         <ChipMulti
                           label={g.name}
-                          options={g.tags.map((t) => ({ value: t.id, label: t.name }))}
+                          options={g.tags
+                            .filter((t) => !t.archived || field.value.includes(t.id))
+                            .map((t) => ({
+                              value: t.id,
+                              label: t.archived ? `${t.name} (archived)` : t.name,
+                            }))}
                           value={field.value}
                           onChange={field.onChange}
                         />
