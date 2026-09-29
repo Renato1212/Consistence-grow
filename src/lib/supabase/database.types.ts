@@ -772,6 +772,9 @@ isOneToOne: false
 "purge_trash":
 { Args: { "p_days"?: number,"p_user": string }; Returns: Json
                            },
+"restore_rows":
+{ Args: { "p_rows": Json,"p_table": string }; Returns: number
+                           },
 "save_debrief":
 { Args: { "p": Json }; Returns: string
                            },
@@ -791,6 +794,9 @@ isOneToOne: false
 { Args: Record<PropertyKey, never>; Returns: {
               "tag_id": string,"trades": number
             }[]
+                           },
+"token_valid":
+{ Args: { "p_scope": string,"p_token": string }; Returns: boolean
                            },
 "unmerge_tags":
 { Args: { "p_from": string,"p_had_target": (string)[],"p_into": string,"p_links": (string)[] }; Returns: undefined

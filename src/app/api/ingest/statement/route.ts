@@ -31,6 +31,17 @@ export async function POST(req: NextRequest) {
   if (Number(req.headers.get("content-length") ?? 0) > 11 * 1024 * 1024)
     return fail(413, "Statements are limited to 10 MB");
 
+  const env = publicEnv();
+  const supabase = createClient<Database>(
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    { auth: { persistSession: false, autoRefreshToken: false } },
+  );
+  // Refuse bad tokens before reading or parsing anything.
+  const valid = await supabase.rpc("token_valid", { p_token: token, p_scope: "statements" });
+  if (valid.error) return fail(500, "Could not check the token — retry");
+  if (!valid.data) return fail(401, "Invalid or revoked token");
+
   let bytes: Uint8Array;
   let name: string | null = null;
   try {
@@ -49,13 +60,6 @@ export async function POST(req: NextRequest) {
   const read = await readStatementFile(bytes, name);
   if (!read.ok) return fail(read.status, read.error);
   const p = read.prepared.payload;
-
-  const env = publicEnv();
-  const supabase = createClient<Database>(
-    env.NEXT_PUBLIC_SUPABASE_URL,
-    env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
-    { auth: { persistSession: false, autoRefreshToken: false } },
-  );
   const { data, error } = await supabase.rpc("ingest_statement", {
     p_token: token,
     p_statement: p,
