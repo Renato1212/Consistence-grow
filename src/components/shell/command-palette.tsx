@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarDays, ClipboardPen, NotebookPen, Plus, Search } from "lucide-react";
+import { ClipboardPen, NotebookPen, Plus, Search } from "lucide-react";
 
 import {
   CommandDialog,
@@ -130,16 +130,16 @@ export function CommandPalette() {
               Debrief
               <CommandShortcut>D</CommandShortcut>
             </CommandItem>
-            <CommandItem onSelect={() => go("/calendar")}>
-              <CalendarDays aria-hidden />
-              Calendar
-            </CommandItem>
           </CommandGroup>
           <CommandGroup heading="Navigate">
             {ALL_NAV.map((item) => {
               const Icon = item.icon;
               return (
-                <CommandItem key={item.href} onSelect={() => go(item.href)}>
+                <CommandItem
+                  key={item.href}
+                  keywords={item.keywords}
+                  onSelect={() => go(item.href)}
+                >
                   <Icon aria-hidden />
                   {item.label}
                   <CommandShortcut>G {item.chord.toUpperCase()}</CommandShortcut>

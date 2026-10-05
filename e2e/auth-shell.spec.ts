@@ -43,7 +43,7 @@ test("sign in, navigate with shortcuts and palette, sign out", async ({ page }) 
 
   // Deep link survives login redirect and session persists across reloads.
   await page.reload();
-  await expect(page.getByRole("heading", { name: "Playbook", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Setups", exact: true })).toBeVisible();
 
   // Sign out from Settings.
   await page.getByRole("link", { name: "Settings" }).click();

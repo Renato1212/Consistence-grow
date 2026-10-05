@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -51,23 +51,32 @@ export type TradeBuilderProps = {
   products: BuildProduct[];
   tradeDate: string;
   currency: string;
+  /** The routine's setups, offered as one-tap chips per trade. */
+  setups?: { id: string; name: string }[];
 };
+
+const SetupsContext = createContext<{ id: string; name: string }[]>([]);
+
+/** "Midday scalp — 1-min supply/demand" → "Midday scalp". */
+const shortName = (name: string) => name.split(" — ")[0];
 
 /**
  * Split each statement product's day into trades and add them to the journal.
  * The statement has no fill times, so every split is a suggestion the owner
  * confirms; the day always adds up to the broker's realized P/L.
  */
-export function TradeBuilder({ products, tradeDate, currency }: TradeBuilderProps) {
+export function TradeBuilder({ products, tradeDate, currency, setups = [] }: TradeBuilderProps) {
   const traded = products.filter((p) => p.fills.length > 0);
   if (!traded.length)
     return <p className="text-muted-foreground text-sm">No fills on this trading day.</p>;
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)] gap-4">
-      {traded.map((p) => (
-        <ProductCard key={p.productId} product={p} tradeDate={tradeDate} currency={currency} />
-      ))}
-    </div>
+    <SetupsContext value={setups}>
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4">
+        {traded.map((p) => (
+          <ProductCard key={p.productId} product={p} tradeDate={tradeDate} currency={currency} />
+        ))}
+      </div>
+    </SetupsContext>
   );
 }
 
@@ -285,6 +294,7 @@ function SplitEditor({
   tradeDate: string;
   currency: string;
 }) {
+  const setups = useContext(SetupsContext);
   const router = useRouter();
   const fillsById = useMemo(() => new Map(p.fills.map((f) => [f.id, f])), [p.fills]);
   const finest = useMemo(() => finestSplit(p.fills), [p.fills]);
@@ -603,6 +613,34 @@ function SplitEditor({
                     onChange={(e) => patch(d.key, { exit: e.target.value })}
                   />
                 </label>
+                {setups.length > 0 && (
+                  <div
+                    className="flex flex-wrap items-center gap-1.5"
+                    role="group"
+                    aria-label={`Trade ${i + 1} setup`}
+                  >
+                    {setups.map((su) => {
+                      const on = d.playbookId === su.id;
+                      return (
+                        <button
+                          key={su.id}
+                          type="button"
+                          aria-pressed={on}
+                          title={su.name}
+                          onClick={() => patch(d.key, { playbookId: on ? null : su.id })}
+                          className={cn(
+                            "h-8 rounded-md border px-2.5 text-xs font-medium transition-colors",
+                            on
+                              ? "border-primary bg-primary/15 text-foreground"
+                              : "text-muted-foreground hover:text-foreground",
+                          )}
+                        >
+                          {shortName(su.name)}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
                 {linked && (
                   <span className="text-muted-foreground text-xs">
                     Links your{" "}

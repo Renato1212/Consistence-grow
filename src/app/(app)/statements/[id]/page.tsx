@@ -11,6 +11,7 @@ import { TradeBuilderClient } from "@/components/statements/trade-builder-client
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { loadSetupOptions } from "@/lib/data/routine";
 import { loadStatementBuild } from "@/lib/data/statement-trades";
 import { loadJournalTrades, loadStatement } from "@/lib/data/statements";
 import { fmtMoney, pnlClass } from "@/lib/format";
@@ -30,9 +31,10 @@ export default async function StatementPage({ params }: PageProps<"/statements/[
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const s = await loadStatement(id);
   if (!s) notFound();
-  const [trades, build] = await Promise.all([
+  const [trades, build, setups] = await Promise.all([
     loadJournalTrades([s.tradeDate]),
     loadStatementBuild(s.id, s.tradeDate),
+    loadSetupOptions(),
   ]);
   const recon = reconcile(
     [
@@ -156,7 +158,12 @@ export default async function StatementPage({ params }: PageProps<"/statements/[
           className="scroll-mt-16"
         >
           <div id="trades" />
-          <TradeBuilderClient products={build} tradeDate={s.tradeDate} currency={s.currency} />
+          <TradeBuilderClient
+            products={build}
+            tradeDate={s.tradeDate}
+            currency={s.currency}
+            setups={setups}
+          />
         </Section>
 
         <Section title="Products">

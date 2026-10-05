@@ -14,7 +14,7 @@ import { STATUS_LABEL } from "@/lib/playbook/form";
 import { DISPLAY_TZ, formatInTz } from "@/lib/time";
 import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = { title: "Playbook" };
+export const metadata: Metadata = { title: "Setups" };
 
 export default async function PlaybookPage({ searchParams }: PageProps<"/playbook">) {
   const sp = await searchParams;
@@ -25,7 +25,7 @@ export default async function PlaybookPage({ searchParams }: PageProps<"/playboo
 
   return (
     <>
-      <PageHeader title="Playbook">
+      <PageHeader title="Setups">
         {retiredCount > 0 && (
           <Button variant="ghost" size="sm" asChild>
             <Link href={showRetired ? "/playbook" : "/playbook?retired=1"}>

@@ -83,6 +83,17 @@ describe("toPayload", () => {
     const noTimes = toPayload(d, "2026-09-28");
     expect(noTimes.ok && noTimes.trades[0].entry_at).toBeUndefined();
   });
+
+  it("carries the trade's setup, which survives moving fills", () => {
+    let d = one();
+    d[0].direction = "short";
+    d[0].playbookId = "pb-1";
+    const p = toPayload(d, "2026-09-28");
+    expect(p.ok && p.trades[0].playbook_id).toBe("pb-1");
+    d = moveFill(d, "s2", d[0].key, "new", 1);
+    expect(d[0].playbookId).toBe("pb-1");
+    expect(d[1].playbookId).toBeNull();
+  });
 });
 
 describe("restoreDraft", () => {

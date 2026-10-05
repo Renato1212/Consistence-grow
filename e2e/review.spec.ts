@@ -50,7 +50,7 @@ test("daily loop: prep → trade → debrief → action item in Today and next p
   await saved(page);
 
   // Debrief.
-  await page.goto(`/review/${date}`);
+  await page.goto(`/review/${date}?full=1`);
   await expect(page.getByRole("heading", { name: "Debrief" })).toBeVisible();
   await expect(page.getByTestId("day-stats")).toContainText("1");
   await expect(page.getByRole("link", { name: /ES long/ })).toBeVisible();

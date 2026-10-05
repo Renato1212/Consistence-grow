@@ -18,6 +18,18 @@ export default async function SettingsPage() {
       <PageHeader title="Settings" />
       <div className="grid max-w-xl gap-6">
         <Link
+          href="/settings/routine"
+          className="bg-card hover:border-primary/60 flex items-center justify-between rounded-xl border p-5 transition-colors"
+        >
+          <div>
+            <div className="font-semibold">Daily routine</div>
+            <div className="text-muted-foreground text-sm">
+              Prep and trade blocks, setups, limits, alerts
+            </div>
+          </div>
+          <ChevronRight className="text-muted-foreground size-5" aria-hidden />
+        </Link>
+        <Link
           href="/settings/instruments"
           className="bg-card hover:border-primary/60 flex items-center justify-between rounded-xl border p-5 transition-colors"
         >

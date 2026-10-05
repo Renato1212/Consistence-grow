@@ -16,6 +16,8 @@ export type DraftTrade = {
   exit: string;
   /** Journal trade this group links to (instead of creating one). */
   linkTradeId: string | null;
+  /** Setup (playbook) of the trade, one tap in the builder. */
+  playbookId: string | null;
 };
 
 let counter = 0;
@@ -32,6 +34,7 @@ export function draftsFromGroups(
     entry: "",
     exit: "",
     linkTradeId: null,
+    playbookId: null,
     ...extra(i),
   }));
 }
@@ -69,6 +72,7 @@ export function moveFill(
       entry: "",
       exit: "",
       linkTradeId: null,
+      playbookId: null,
     });
   } else if (to !== null) {
     const dst = out.find((d) => d.key === to);
@@ -88,6 +92,7 @@ export type RpcTrade = {
   entry_at?: string;
   exit_at?: string;
   link_trade_id?: string;
+  playbook_id?: string;
   allocations: { fill_id: string; qty: number }[];
 };
 
@@ -108,6 +113,7 @@ export function toPayload(drafts: DraftTrade[], tradeDate: string, tz?: string):
       allocations: d.allocations.map((a) => ({ fill_id: a.fillId, qty: a.qty })),
     };
     if (d.linkTradeId) t.link_trade_id = d.linkTradeId;
+    if (d.playbookId) t.playbook_id = d.playbookId;
     if (d.entry || d.exit) {
       if (!HHMM.test(d.entry) || (d.exit && !HHMM.test(d.exit))) {
         errors.push({ key: d.key, message: `Trade ${n}: times are HH:MM (exit optional).` });
@@ -156,6 +162,7 @@ export function restoreDraft(raw: string | null, fills: SplitFill[]): StoredDraf
         entry: typeof t.entry === "string" ? t.entry : "",
         exit: typeof t.exit === "string" ? t.exit : "",
         linkTradeId: typeof t.linkTradeId === "string" ? t.linkTradeId : null,
+        playbookId: typeof t.playbookId === "string" ? t.playbookId : null,
       })),
     };
   } catch {

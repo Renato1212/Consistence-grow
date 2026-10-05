@@ -165,12 +165,12 @@ export function DebriefEditor({ data }: { data: DebriefPageData }) {
         </span>
         <div className="flex items-center">
           <Button variant="ghost" size="icon" asChild>
-            <Link href={`/review/${shiftWeekday(date, -1)}`} aria-label="Previous day">
+            <Link href={`/review/${shiftWeekday(date, -1)}?full=1`} aria-label="Previous day">
               <ChevronLeft aria-hidden />
             </Link>
           </Button>
           <Button variant="ghost" size="icon" asChild>
-            <Link href={`/review/${shiftWeekday(date, 1)}`} aria-label="Next day">
+            <Link href={`/review/${shiftWeekday(date, 1)}?full=1`} aria-label="Next day">
               <ChevronRight aria-hidden />
             </Link>
           </Button>
