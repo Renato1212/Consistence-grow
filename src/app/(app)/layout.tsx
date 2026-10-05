@@ -4,6 +4,7 @@ import { Settings } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Clock } from "@/components/shell/clock";
+import { BlockAlerts } from "@/components/routine/block-alerts";
 import { BeFlatBanner } from "@/components/today/be-flat-banner";
 import { CommandPalette } from "@/components/shell/command-palette";
 import { LogTradeFab } from "@/components/shell/log-trade-fab";
@@ -41,6 +42,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
       </header>
 
       <BeFlatBanner />
+      <BlockAlerts />
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-6 pb-36 md:pb-24">{children}</main>
 

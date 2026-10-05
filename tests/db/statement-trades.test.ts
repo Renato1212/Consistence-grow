@@ -309,6 +309,39 @@ describe("build_statement_trades", () => {
     expect(still.data).toMatchObject({ deleted_at: null, broker_confirmed: false });
   });
 
+  it("gives each trade its setup", async () => {
+    const day = randomDay();
+    const s = await saveDay(day);
+    const pbs = await me.client
+      .from("playbooks")
+      .select("id, notes_json")
+      .is("deleted_at", null)
+      .not("notes_json->>routine_setup", "is", null);
+    const scalp = pbs.data!.find(
+      (p) => (p.notes_json as { routine_setup: string }).routine_setup === "scalp",
+    )!.id as string;
+    const bad = await me.client.rpc("build_statement_trades", {
+      p_product: s.productId,
+      p_build: crypto.randomUUID(),
+      p_method: "suggested",
+      p_trades: finestTrades(s.fills, () => ({ playbook_id: crypto.randomUUID() })),
+    });
+    expect(bad.error?.code).toBe("22023");
+    const trades = finestTrades(s.fills, (i) => (i === 0 ? { playbook_id: scalp } : {}));
+    const r = await me.client.rpc("build_statement_trades", {
+      p_product: s.productId,
+      p_build: crypto.randomUUID(),
+      p_method: "suggested",
+      p_trades: trades,
+    });
+    expect(r.error).toBeNull();
+    const ids = (r.data as { trade_ids: string[] }).trade_ids;
+    const rows = await me.client.from("trades").select("id, playbook_id").in("id", ids);
+    const bySetup = rows.data!.filter((t) => t.playbook_id === scalp);
+    expect(bySetup).toHaveLength(1);
+    expect(rows.data!.filter((t) => t.playbook_id === null)).toHaveLength(2);
+  });
+
   it("shares statement fees by contract and instrument fee", async () => {
     const s = await saveDay(randomDay());
     await me.client.from("statements").update({ total_fees: 10 }).eq("id", s.statementId);

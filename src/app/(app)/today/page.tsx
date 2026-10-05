@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { EventRowButton } from "@/components/calendar/calendar-view";
+import { RoutineTimeline } from "@/components/routine/timeline";
 import { PageHeader } from "@/components/shell/empty-state";
 import { ActionItemsList } from "@/components/review/action-items-list";
 import { AiNotes } from "@/components/today/ai-notes";
@@ -21,13 +22,18 @@ import { PlanView } from "@/components/today/plan-view";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { sessionRequest } from "@/lib/ai/requests";
+import { extractTldr } from "@/lib/briefs/tldr";
 import { addDays, isWeekend } from "@/lib/calendar/dates";
+import { HolidayCalendar } from "@/lib/calendar/holidays";
 import { loadAiInsights, loadPlaybookOptions } from "@/lib/data/ai";
 import { countNeedsReview } from "@/lib/data/import";
+import { loadDayEvents } from "@/lib/data/prep";
+import { loadGuardTrades, loadQuickPreps, loadRoutine, loadRoutineDay } from "@/lib/data/routine";
 import { loadStatementNudge } from "@/lib/data/statements";
 import { loadToday, type DayResult } from "@/lib/data/today";
 import { fmtMoney, fmtR, pnlClass } from "@/lib/format";
 import type { SessionCode } from "@/lib/prep/prep-form";
+import { blocksForDay } from "@/lib/routine/schedule";
 import { dateInTz, DISPLAY_TZ, formatInTz } from "@/lib/time";
 import type { TodayPhase } from "@/lib/today/state";
 import { cn } from "@/lib/utils";
@@ -43,7 +49,13 @@ const PHASE_LABEL: Record<TodayPhase, string> = {
 };
 
 function loadNow() {
-  return loadToday(new Date());
+  const now = new Date();
+  return loadToday(now).then((d) => ({ ...d, now }));
+}
+
+/** The Pre-Open TL;DR as a one-line narrative to start the 60-second prep from. */
+function narrativeFrom(markdown: string) {
+  return extractTldr(markdown, 2).join(" · ").slice(0, 300);
 }
 
 /** Latest pre-session analysis of today's current session, if the routine ran today. */
@@ -87,6 +99,7 @@ function ActionCard({
   href,
   cta,
   done,
+  compact,
 }: {
   icon: typeof ClipboardPen;
   title: string;
@@ -94,7 +107,25 @@ function ActionCard({
   href: string;
   cta: string;
   done?: boolean;
+  /** A quiet row in the housekeeping list. */
+  compact?: boolean;
 }) {
+  if (compact)
+    return (
+      <li
+        className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center"
+        data-testid="today-action"
+      >
+        <Icon className="text-muted-foreground hidden size-4 shrink-0 sm:block" aria-hidden />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold">{title}</p>
+          <p className="text-muted-foreground text-xs">{description}</p>
+        </div>
+        <Button asChild variant="outline" size="sm" className="self-start sm:self-auto">
+          <Link href={href}>{cta}</Link>
+        </Button>
+      </li>
+    );
   return (
     <div
       className={cn(
@@ -121,11 +152,42 @@ function ActionCard({
 export default async function TodayPage() {
   const data = await loadNow();
   const { state, preps, result } = data;
-  const [aiNotes, needsReview, statements] = await Promise.all([
+  const [aiNotes, needsReview, statements, routine] = await Promise.all([
     loadSessionNotes(state.date, state.phase),
     countNeedsReview(),
     loadStatementNudge(state.date),
+    loadRoutine(),
   ]);
+  // Today's routine; on a closed day, the next trading day's (to prepare ahead).
+  const cal = new HolidayCalendar(data.holidays);
+  let routineDate = state.date;
+  let blocks = blocksForDay(routine.routine, routineDate, cal);
+  for (let i = 0; blocks.length === 0 && i < 7; i++) {
+    routineDate = addDays(routineDate, 1);
+    blocks = blocksForDay(routine.routine, routineDate, cal);
+  }
+  const upcoming = routineDate !== state.date;
+  const [routineDay, guardTrades, quickPreps, routineEvents] = await Promise.all([
+    loadRoutineDay(routineDate),
+    loadGuardTrades(routineDate),
+    loadQuickPreps(routineDate),
+    upcoming ? loadDayEvents(routineDate, cal) : data.events,
+  ]);
+  const late = state.phase === "us" || state.phase === "post";
+  const primaryBrief = late
+    ? (data.briefs.US ?? data.briefs.EU)
+    : (data.briefs.EU ?? data.briefs.US);
+  const briefInTimeline = new Set(
+    (upcoming ? [] : blocks)
+      .filter((b) => b.steps.some((st) => st.kind === "brief"))
+      .map((b) => b.session),
+  );
+  const briefNode = (s: SessionCode) => {
+    const b = upcoming ? undefined : data.briefs[s];
+    if (!b) return undefined;
+    return <BriefCard brief={b} testId={b === primaryBrief ? "brief-card" : "brief-card-other"} />;
+  };
+  const hasDebriefBlock = blocks.some((b) => b.kind === "debrief");
   const prepHref = (s: SessionCode) => `/prep/${state.date}/${s.toLowerCase()}`;
   const eu = preps.EU;
   const us = preps.US;
@@ -212,66 +274,109 @@ export default async function TodayPage() {
           </section>
         )}
 
-        {(() => {
-          const late = state.phase === "us" || state.phase === "post";
-          const brief = late
-            ? (data.briefs.US ?? data.briefs.EU)
-            : (data.briefs.EU ?? data.briefs.US);
-          return brief ? <BriefCard brief={brief} /> : null;
-        })()}
+        {blocks.length > 0 && (
+          <RoutineTimeline
+            date={routineDate}
+            upcoming={upcoming}
+            nowIso={data.now.toISOString()}
+            blocks={blocks}
+            days={routineDay}
+            trades={guardTrades}
+            dayMaxLossUsd={routine.routine.dayMaxLossUsd}
+            newsMinImportance={routine.routine.newsMinImportance}
+            events={routineEvents.map((e) => ({
+              id: e.id,
+              title: e.title,
+              startsAt: e.startsAt,
+              importance: e.importance,
+              instruments: e.instruments,
+            }))}
+            instruments={data.instruments
+              .filter((i) => i.active)
+              .map((i) => ({ id: i.id, symbol: i.symbol, name: i.name }))}
+            quickPreps={quickPreps}
+            briefs={{ EU: briefNode("EU"), US: briefNode("US") }}
+            suggestions={{
+              EU: !upcoming && data.briefs.EU ? narrativeFrom(data.briefs.EU.markdown) : undefined,
+              US: !upcoming && data.briefs.US ? narrativeFrom(data.briefs.US.markdown) : undefined,
+            }}
+            setups={Object.fromEntries(data.playbooks.map((p) => [p.id, p.name]))}
+            debriefDone={!upcoming && data.debrief === "complete"}
+          />
+        )}
+
+        {primaryBrief && !briefInTimeline.has(primaryBrief.session) && (
+          <BriefCard brief={primaryBrief} />
+        )}
 
         {aiNotes && <AiNotes insight={aiNotes.insight} playbooks={aiNotes.playbooks} />}
 
         <ActionItemsList items={data.actionItems} />
 
-        {needsReview > 0 && (
-          <ActionCard
-            icon={Tags}
-            title={`${needsReview} imported trade${needsReview === 1 ? "" : "s"} need${needsReview === 1 ? "s" : ""} tagging`}
-            description="Add the domain (and grades) so they count in Insights by domain and playbook."
-            href="/journal?review=1"
-            cta="Review trades"
-          />
-        )}
+        {(needsReview > 0 ||
+          statements?.missingDate ||
+          statements?.unsplit ||
+          (statements?.open ?? 0) > 0 ||
+          (data.missingDebrief && state.phase !== "post")) && (
+          <section className="bg-card rounded-xl border" aria-label="Housekeeping">
+            <h2 className="heading-caps border-b px-4 py-3 text-xs">Housekeeping</h2>
+            <ul className="divide-y">
+              {needsReview > 0 && (
+                <ActionCard
+                  icon={Tags}
+                  title={`${needsReview} imported trade${needsReview === 1 ? "" : "s"} need${needsReview === 1 ? "s" : ""} tagging`}
+                  description="Add the domain (and grades) so they count in Insights by domain and playbook."
+                  href="/journal?review=1"
+                  cta="Review trades"
+                  compact
+                />
+              )}
 
-        {statements?.missingDate && (
-          <ActionCard
-            icon={Landmark}
-            title={`Upload the statement of ${formatInTz(`${statements.missingDate}T12:00:00Z`, "UTC", "EEE d MMM")}`}
-            description="You traded that day and the broker statement isn't in yet — it confirms the day's P/L."
-            href="/statements/upload"
-            cta="Upload statement"
-          />
-        )}
+              {statements?.missingDate && (
+                <ActionCard
+                  icon={Landmark}
+                  title={`Upload the statement of ${formatInTz(`${statements.missingDate}T12:00:00Z`, "UTC", "EEE d MMM")}`}
+                  description="You traded that day and the broker statement isn't in yet — it confirms the day's P/L."
+                  href="/statements/upload"
+                  cta="Upload statement"
+                  compact
+                />
+              )}
 
-        {statements?.unsplit && (
-          <ActionCard
-            icon={Landmark}
-            title={`Split the statement of ${formatInTz(`${statements.unsplit.tradeDate}T12:00:00Z`, "UTC", "EEE d MMM")} into trades`}
-            description={`${statements.unsplit.products} product${statements.unsplit.products === 1 ? "" : "s"} still one block per instrument${statements.unsplit.days > 1 ? ` (${statements.unsplit.days} days in the last 14)` : ""}. Confirm the suggested split to log each trade.`}
-            href={`/statements/${statements.unsplit.id}#trades`}
-            cta="Split into trades"
-          />
-        )}
+              {statements?.unsplit && (
+                <ActionCard
+                  icon={Landmark}
+                  title={`Split the statement of ${formatInTz(`${statements.unsplit.tradeDate}T12:00:00Z`, "UTC", "EEE d MMM")} into trades`}
+                  description={`${statements.unsplit.products} product${statements.unsplit.products === 1 ? "" : "s"} still one block per instrument${statements.unsplit.days > 1 ? ` (${statements.unsplit.days} days in the last 14)` : ""}. Confirm the suggested split to log each trade.`}
+                  href={`/statements/${statements.unsplit.id}#trades`}
+                  cta="Split into trades"
+                  compact
+                />
+              )}
 
-        {statements && statements.open > 0 && (
-          <ActionCard
-            icon={Landmark}
-            title={`${statements.open} broker product-day${statements.open === 1 ? "" : "s"} not matching the journal`}
-            description={`Last 14 days · journal completeness ${statements.completeness === null ? "—" : `${Math.round(statements.completeness * 100)}%`}. Log or fix the trades so playbook stats rest on complete data.`}
-            href="/statements"
-            cta="Reconcile"
-          />
-        )}
+              {statements && statements.open > 0 && (
+                <ActionCard
+                  icon={Landmark}
+                  title={`${statements.open} broker product-day${statements.open === 1 ? "" : "s"} not matching the journal`}
+                  description={`Last 14 days · journal completeness ${statements.completeness === null ? "—" : `${Math.round(statements.completeness * 100)}%`}. Log or fix the trades so playbook stats rest on complete data.`}
+                  href="/statements"
+                  cta="Reconcile"
+                  compact
+                />
+              )}
 
-        {data.missingDebrief && state.phase !== "post" && (
-          <ActionCard
-            icon={NotebookPen}
-            title={`Debrief ${formatInTz(`${data.missingDebrief}T12:00:00Z`, "UTC", "EEE d MMM")}`}
-            description="You traded that day and the debrief isn't complete yet."
-            href={`/review/${data.missingDebrief}`}
-            cta="Open debrief"
-          />
+              {data.missingDebrief && state.phase !== "post" && (
+                <ActionCard
+                  icon={NotebookPen}
+                  title={`Debrief ${formatInTz(`${data.missingDebrief}T12:00:00Z`, "UTC", "EEE d MMM")}`}
+                  description="You traded that day and the debrief isn't complete yet."
+                  href={`/review/${data.missingDebrief}`}
+                  cta="Open debrief"
+                  compact
+                />
+              )}
+            </ul>
+          </section>
         )}
 
         {state.phase === "closed" && (
@@ -289,18 +394,19 @@ export default async function TodayPage() {
           />
         )}
 
-        {state.phase === "pre_eu" && prepCard("EU")}
+        {blocks.length === 0 && state.phase === "pre_eu" && prepCard("EU")}
 
-        {state.phase === "eu" && (
+        {blocks.length === 0 && state.phase === "eu" && (
           <>
             {!eu && prepCard("EU")}
             {!state.usHoliday && prepCard("US")}
           </>
         )}
 
-        {state.phase === "us" && !us && prepCard("US")}
+        {blocks.length === 0 && state.phase === "us" && !us && prepCard("US")}
 
         {state.phase === "post" &&
+          !hasDebriefBlock &&
           (data.debrief === "complete" ? (
             <ActionCard
               icon={CheckCircle2}
@@ -320,19 +426,38 @@ export default async function TodayPage() {
             />
           ))}
 
-        {(state.phase === "eu" || state.phase === "us" || state.phase === "pre_eu") && planPrep && (
-          <PlanView
-            prep={planPrep.snapshot}
-            events={data.events}
-            instruments={data.instruments}
-            playbooks={data.playbooks}
-            rules={data.rules}
-            result={result}
-            editHref={prepHref(planPrep.snapshot.session)}
-          />
-        )}
+        {(state.phase === "eu" || state.phase === "us" || state.phase === "pre_eu") &&
+          planPrep &&
+          (blocks.length > 0 ? (
+            <details className="bg-card rounded-xl border" data-testid="full-plan">
+              <summary className="heading-caps cursor-pointer px-4 py-3 text-xs">
+                Full plan — levels, scenarios, risk, rules
+              </summary>
+              <div className="border-t p-2">
+                <PlanView
+                  prep={planPrep.snapshot}
+                  events={data.events}
+                  instruments={data.instruments}
+                  playbooks={data.playbooks}
+                  rules={data.rules}
+                  result={result}
+                  editHref={prepHref(planPrep.snapshot.session)}
+                />
+              </div>
+            </details>
+          ) : (
+            <PlanView
+              prep={planPrep.snapshot}
+              events={data.events}
+              instruments={data.instruments}
+              playbooks={data.playbooks}
+              rules={data.rules}
+              result={result}
+              editHref={prepHref(planPrep.snapshot.session)}
+            />
+          ))}
 
-        {(state.phase === "eu" || state.phase === "us") && (
+        {blocks.length === 0 && (state.phase === "eu" || state.phase === "us") && (
           <div className="flex justify-center">
             <Button asChild size="lg" className="h-14 px-10 text-sm">
               <Link href="/journal/new">

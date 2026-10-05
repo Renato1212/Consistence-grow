@@ -60,6 +60,14 @@ export type TradeEditorProps = {
   };
   /** New-trade mode: id of an unconfirmed local draft to continue. */
   restoreId?: string;
+  /** New-trade mode: defaults from the routine block the trade is logged from. */
+  preset?: TradePreset;
+};
+
+export type TradePreset = {
+  playbookId?: string;
+  instrumentId?: string;
+  direction?: "long" | "short";
 };
 
 /** Find the most recent unconfirmed draft left on this device (crash, closed tab…). */
@@ -83,7 +91,7 @@ function findOrphanDraft(exceptId: string): { values: TradeFormValues; at: numbe
   }
 }
 
-export function TradeEditor({ data, mode, initial, restoreId }: TradeEditorProps) {
+export function TradeEditor({ data, mode, initial, restoreId, preset }: TradeEditorProps) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const instruments = data.instruments;
@@ -118,7 +126,15 @@ export function TradeEditor({ data, mode, initial, restoreId }: TradeEditorProps
     if (restored) return restored;
     const active = instruments.filter((i) => i.active);
     const last = active.find((i) => i.id === data.lastInstrumentId);
-    return emptyTradeForm({ id, instrumentId: (last ?? active[0])?.id });
+    const presetInst = active.find((i) => i.id === preset?.instrumentId);
+    const empty = emptyTradeForm({ id, instrumentId: (presetInst ?? last ?? active[0])?.id });
+    const pb = data.playbooks.find((p) => p.id === preset?.playbookId);
+    return {
+      ...empty,
+      playbookId: pb?.id ?? "",
+      primaryDomain: pb?.primaryDomain ?? null,
+      direction: preset?.direction ?? null,
+    };
   });
   const [recoveredOnLoad] = useState(
     () => (!!initial && startValues !== initial.values) || !!restored,
