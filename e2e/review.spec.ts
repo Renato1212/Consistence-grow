@@ -139,7 +139,7 @@ test("D opens today's debrief; the review page lists weeks", async ({ page }) =>
   await signIn(page);
   await page.keyboard.press("d");
   await expect(page).toHaveURL(/\/review\/\d{4}-\d{2}-\d{2}$/);
-  await expect(page.getByRole("heading", { name: "Debrief" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Debrief", exact: true })).toBeVisible();
   await page.goto("/review");
   await expect(page.getByTestId("review-weeks").getByRole("link")).toHaveCount(8);
 });
