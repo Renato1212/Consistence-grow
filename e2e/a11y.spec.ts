@@ -17,6 +17,7 @@ const PAGES = [
   "/prep",
   "/review",
   "/review/today",
+  "/review/today?full=1",
   "/insights",
   "/playbook",
   "/statements",
@@ -30,6 +31,7 @@ const PAGES = [
   "/settings/data",
   "/settings/import",
   "/settings/calendar",
+  "/settings/routine",
 ];
 
 async function scan(page: Page, path: string) {

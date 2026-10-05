@@ -332,17 +332,31 @@ export function TradeEditor({ data, mode, initial, restoreId, preset }: TradeEdi
   const isObserved = values.kind === "observed";
   const quickInstruments = useMemo(() => {
     const active = instruments.filter((i) => i.active);
-    const last = active.find((i) => i.id === data.lastInstrumentId);
+    const last =
+      active.find((i) => i.id === preset?.instrumentId) ??
+      active.find((i) => i.id === data.lastInstrumentId);
     const rest = active.filter((i) => i.id !== last?.id).slice(0, last ? 5 : 6);
     return last ? [last, ...rest] : rest;
-  }, [instruments, data.lastInstrumentId]);
+  }, [instruments, data.lastInstrumentId, preset?.instrumentId]);
+  const presetSetup =
+    mode === "new" && values.playbookId && values.playbookId === preset?.playbookId
+      ? data.playbooks.find((p) => p.id === values.playbookId)
+      : undefined;
   const priceHint = inst?.priceFormat === "thirty_seconds" ? "e.g. 110'16.5" : undefined;
   const priceMode = inst?.priceFormat === "thirty_seconds" ? "text" : "decimal";
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="heading-caps text-lg">{mode === "new" ? "Log trade" : "Edit trade"}</h1>
+        <div>
+          <h1 className="heading-caps text-lg">{mode === "new" ? "Log trade" : "Edit trade"}</h1>
+          {presetSetup && (
+            <p className="text-muted-foreground text-xs" data-testid="preset-setup">
+              Setup: <span className="text-foreground font-medium">{presetSetup.name}</span> (from
+              your routine — change it under More details)
+            </p>
+          )}
+        </div>
         <div className="flex items-center gap-2">
           <SaveStatus
             status={status}

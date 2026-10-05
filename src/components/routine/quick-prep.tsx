@@ -40,15 +40,12 @@ export function QuickPrepForm({
   onChange: (prep: QuickPrep) => void;
   save: (key: string, run: () => PromiseLike<{ error: unknown }>, immediate?: boolean) => void;
 }) {
-  const [prep, setPrep] = useState<QuickPrep>(
-    () =>
-      initial ?? {
-        narrative: suggestion,
-        instrumentIds: [],
-        bias: {},
-        completed: false,
-      },
-  );
+  // An empty narrative (no prep yet, or a full prep without one) starts from the TL;DR.
+  const prefilled = !initial?.narrative.trim() && !!suggestion;
+  const [prep, setPrep] = useState<QuickPrep>(() => ({
+    ...(initial ?? { instrumentIds: [], bias: {}, completed: false }),
+    narrative: prefilled ? suggestion : (initial?.narrative ?? ""),
+  }));
 
   function update(next: QuickPrep, immediate = false) {
     setPrep(next);
@@ -96,7 +93,7 @@ export function QuickPrepForm({
           placeholder="What is the market trading on today?"
           onChange={(e) => update({ ...prep, narrative: e.target.value })}
         />
-        {!initial && suggestion && (
+        {prefilled && prep.narrative === suggestion && (
           <p className="text-muted-foreground text-xs">Prefilled from the Pre-Open TL;DR.</p>
         )}
       </div>
