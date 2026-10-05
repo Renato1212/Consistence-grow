@@ -161,20 +161,36 @@ function onTick(value: number, tick: number) {
   return Math.abs(q - Math.round(q)) < 1e-6;
 }
 
+/**
+ * A price on the tick grid — or, with `contracts`, the average of that many
+ * contracts' fills (scale-ins, imports, broker statements): a multiple of
+ * tick ÷ contracts.
+ */
+export function onPriceGrid(value: number, tick: number, contracts?: number | null) {
+  if (onTick(value, tick)) return true;
+  return (
+    !!contracts && contracts > 1 && Number.isInteger(contracts) && onTick(value * contracts, tick)
+  );
+}
+
 export function parsePrice(
   raw: string,
   inst: Pick<FormInstrument, "tickSize" | "priceFormat">,
+  contracts?: number | null,
 ): { value: number | null; error?: string } {
   if (!raw.trim()) return { value: null };
+  const offTick = `Not on a ${inst.tickSize} tick${contracts && contracts > 1 ? ` (or an average of ${contracts} contracts)` : ""}`;
   if (inst.priceFormat === "thirty_seconds") {
-    const r = parseTreasuryPrice(raw.replace(",", "."), inst.tickSize);
-    return r.ok ? { value: r.value } : { value: null, error: r.error };
+    const r = parseTreasuryPrice(raw.replace(",", "."));
+    if (!r.ok) return { value: null, error: r.error };
+    if (!onPriceGrid(r.value, inst.tickSize, contracts)) return { value: null, error: offTick };
+    return { value: r.value };
   }
   const n = parseDecimal(raw);
   if (n === "invalid") return { value: null, error: "Not a number" };
   if (n === null) return { value: null };
   if (n <= 0) return { value: null, error: "Must be above 0" };
-  if (!onTick(n, inst.tickSize)) return { value: null, error: `Not on a ${inst.tickSize} tick` };
+  if (!onPriceGrid(n, inst.tickSize, contracts)) return { value: null, error: offTick };
   return { value: n };
 }
 
@@ -192,6 +208,8 @@ export function formatPrice(
   inst: Pick<FormInstrument, "tickSize" | "priceFormat">,
 ): string {
   if (value === null || value === undefined) return "";
+  // Averages are shown in full so saving never rounds them.
+  if (!onTick(value, inst.tickSize)) return String(value);
   if (inst.priceFormat === "thirty_seconds") return formatTreasuryPrice(value, inst.tickSize);
   return value.toFixed(tickDecimals(inst.tickSize));
 }
@@ -262,14 +280,17 @@ export function toTradePayload(
 
   if (!inst) return { errors, missing, payload: null };
 
-  const price = (field: keyof TradeFormValues, raw: string) => {
-    const r = parsePrice(raw, inst);
+  const price = (field: keyof TradeFormValues, raw: string, avgOf?: number | null) => {
+    const r = parsePrice(raw, inst, avgOf);
     if (r.error) errors[field] = r.error;
     return r.value;
   };
 
-  const entryPrice = price("entryPrice", v.entryPrice);
-  const exitPrice = price("exitPrice", v.exitPrice);
+  // Entry and exit may be averages of the contracts' fills.
+  const avgOf = isObserved ? null : parseDecimal(v.contracts);
+  const n = typeof avgOf === "number" ? avgOf : null;
+  const entryPrice = price("entryPrice", v.entryPrice, n);
+  const exitPrice = price("exitPrice", v.exitPrice, n);
   const stopPrice = price("stopPrice", v.stopPrice);
   const targetPrice = price("targetPrice", v.targetPrice);
 

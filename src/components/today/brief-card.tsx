@@ -7,13 +7,20 @@ import type { Brief } from "@/lib/data/briefs";
 import { DISPLAY_TZ, formatInTz } from "@/lib/time";
 
 /** TL;DR of the delivered Macro Desk brief, with a link to the full brief in the prep. */
-export function BriefCard({ brief }: { brief: Brief }) {
+export function BriefCard({
+  brief,
+  testId = "brief-card",
+}: {
+  brief: Brief;
+  /** Only one card per page carries the default test id. */
+  testId?: string;
+}) {
   const tldr = extractTldr(brief.markdown);
   return (
     <section
       className="bg-card space-y-2 rounded-xl border p-4"
       aria-label="Macro Desk brief"
-      data-testid="brief-card"
+      data-testid={testId}
     >
       <div className="flex flex-wrap items-center gap-2">
         <Newspaper className="text-primary-ink size-4" aria-hidden />

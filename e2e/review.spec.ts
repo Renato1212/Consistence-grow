@@ -50,7 +50,7 @@ test("daily loop: prep → trade → debrief → action item in Today and next p
   await saved(page);
 
   // Debrief.
-  await page.goto(`/review/${date}`);
+  await page.goto(`/review/${date}?full=1`);
   await expect(page.getByRole("heading", { name: "Debrief" })).toBeVisible();
   await expect(page.getByTestId("day-stats")).toContainText("1");
   await expect(page.getByRole("link", { name: /ES long/ })).toBeVisible();
@@ -139,7 +139,7 @@ test("D opens today's debrief; the review page lists weeks", async ({ page }) =>
   await signIn(page);
   await page.keyboard.press("d");
   await expect(page).toHaveURL(/\/review\/\d{4}-\d{2}-\d{2}$/);
-  await expect(page.getByRole("heading", { name: "Debrief" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Debrief", exact: true })).toBeVisible();
   await page.goto("/review");
   await expect(page.getByTestId("review-weeks").getByRole("link")).toHaveCount(8);
 });

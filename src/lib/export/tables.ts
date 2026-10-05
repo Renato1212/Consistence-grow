@@ -32,6 +32,9 @@ export const EXPORT_TABLES = [
   "statement_products",
   "statement_fills",
   "statement_code_map",
+  "statement_trades",
+  "statement_allocations",
+  "routine_days",
   "api_tokens",
 ] as const;
 export type ExportTable = (typeof EXPORT_TABLES)[number];

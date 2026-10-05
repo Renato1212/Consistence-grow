@@ -51,9 +51,23 @@ const FIELD_LABEL: Partial<Record<keyof TradeFormValues, string>> = {
 export type TradeEditorProps = {
   data: EditorData;
   mode: "new" | "edit";
-  initial?: { values: TradeFormValues; updatedAt: string; media: MediaItem[] };
+  initial?: {
+    values: TradeFormValues;
+    updatedAt: string;
+    media: MediaItem[];
+    /** Times not known (built from a broker statement) until the owner edits them. */
+    timeEstimated?: boolean;
+  };
   /** New-trade mode: id of an unconfirmed local draft to continue. */
   restoreId?: string;
+  /** New-trade mode: defaults from the routine block the trade is logged from. */
+  preset?: TradePreset;
+};
+
+export type TradePreset = {
+  playbookId?: string;
+  instrumentId?: string;
+  direction?: "long" | "short";
 };
 
 /** Find the most recent unconfirmed draft left on this device (crash, closed tab…). */
@@ -77,7 +91,7 @@ function findOrphanDraft(exceptId: string): { values: TradeFormValues; at: numbe
   }
 }
 
-export function TradeEditor({ data, mode, initial, restoreId }: TradeEditorProps) {
+export function TradeEditor({ data, mode, initial, restoreId, preset }: TradeEditorProps) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const instruments = data.instruments;
@@ -112,7 +126,15 @@ export function TradeEditor({ data, mode, initial, restoreId }: TradeEditorProps
     if (restored) return restored;
     const active = instruments.filter((i) => i.active);
     const last = active.find((i) => i.id === data.lastInstrumentId);
-    return emptyTradeForm({ id, instrumentId: (last ?? active[0])?.id });
+    const presetInst = active.find((i) => i.id === preset?.instrumentId);
+    const empty = emptyTradeForm({ id, instrumentId: (presetInst ?? last ?? active[0])?.id });
+    const pb = data.playbooks.find((p) => p.id === preset?.playbookId);
+    return {
+      ...empty,
+      playbookId: pb?.id ?? "",
+      primaryDomain: pb?.primaryDomain ?? null,
+      direction: preset?.direction ?? null,
+    };
   });
   const [recoveredOnLoad] = useState(
     () => (!!initial && startValues !== initial.values) || !!restored,
@@ -123,6 +145,10 @@ export function TradeEditor({ data, mode, initial, restoreId }: TradeEditorProps
 
   const form = useForm<TradeFormValues>({ defaultValues: startValues });
   const values = useWatch({ control: form.control }) as TradeFormValues;
+  const timeEstimated =
+    !!initial?.timeEstimated &&
+    values.entryAt === initial.values.entryAt &&
+    values.exitAt === initial.values.exitAt;
   const inst = findInst(values.instrumentId);
   const result = useMemo(() => toTradePayload(values, inst), [values, inst]);
 
@@ -306,17 +332,31 @@ export function TradeEditor({ data, mode, initial, restoreId }: TradeEditorProps
   const isObserved = values.kind === "observed";
   const quickInstruments = useMemo(() => {
     const active = instruments.filter((i) => i.active);
-    const last = active.find((i) => i.id === data.lastInstrumentId);
+    const last =
+      active.find((i) => i.id === preset?.instrumentId) ??
+      active.find((i) => i.id === data.lastInstrumentId);
     const rest = active.filter((i) => i.id !== last?.id).slice(0, last ? 5 : 6);
     return last ? [last, ...rest] : rest;
-  }, [instruments, data.lastInstrumentId]);
+  }, [instruments, data.lastInstrumentId, preset?.instrumentId]);
+  const presetSetup =
+    mode === "new" && values.playbookId && values.playbookId === preset?.playbookId
+      ? data.playbooks.find((p) => p.id === values.playbookId)
+      : undefined;
   const priceHint = inst?.priceFormat === "thirty_seconds" ? "e.g. 110'16.5" : undefined;
   const priceMode = inst?.priceFormat === "thirty_seconds" ? "text" : "decimal";
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="heading-caps text-lg">{mode === "new" ? "Log trade" : "Edit trade"}</h1>
+        <div>
+          <h1 className="heading-caps text-lg">{mode === "new" ? "Log trade" : "Edit trade"}</h1>
+          {presetSetup && (
+            <p className="text-muted-foreground text-xs" data-testid="preset-setup">
+              Setup: <span className="text-foreground font-medium">{presetSetup.name}</span> (from
+              your routine — change it under More details)
+            </p>
+          )}
+        </div>
         <div className="flex items-center gap-2">
           <SaveStatus
             status={status}
@@ -482,6 +522,12 @@ export function TradeEditor({ data, mode, initial, restoreId }: TradeEditorProps
             </Field>
           )}
         </div>
+        {timeEstimated && (
+          <p className="text-warn text-xs" data-testid="time-estimated">
+            Times are placeholders: this trade was built from a broker statement, which has no fill
+            times. Set the real entry and exit times so time-of-day stats can use it.
+          </p>
+        )}
         <div className="grid gap-3 sm:grid-cols-2">
           <Field
             id="entryAt"
@@ -540,7 +586,7 @@ export function TradeEditor({ data, mode, initial, restoreId }: TradeEditorProps
           />
         </fieldset>
 
-        <LivePreview values={values} inst={inst} />
+        <LivePreview values={values} inst={inst} timeEstimated={timeEstimated} />
 
         {/* Media */}
         <MediaManager

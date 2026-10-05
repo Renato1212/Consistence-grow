@@ -14,16 +14,26 @@ import {
 import { cn } from "@/lib/utils";
 
 /** Instant P&L/R preview from the TS mirror of the DB maths. R first, then money. */
-export function LivePreview({ values, inst }: { values: TradeFormValues; inst?: FormInstrument }) {
+export function LivePreview({
+  values,
+  inst,
+  timeEstimated = false,
+}: {
+  values: TradeFormValues;
+  inst?: FormInstrument;
+  /** Times not known yet (built from a broker statement). */
+  timeEstimated?: boolean;
+}) {
   if (!inst || !values.direction) {
     return <PreviewShell>Pick instrument and direction to see ticks, R and P&L.</PreviewShell>;
   }
-  const entry = parsePrice(values.entryPrice, inst).value;
-  const exit = parsePrice(values.exitPrice, inst).value;
+  const contracts = parseDecimal(values.contracts);
+  const n = typeof contracts === "number" ? contracts : null;
+  const entry = parsePrice(values.entryPrice, inst, n).value;
+  const exit = parsePrice(values.exitPrice, inst, n).value;
   const stop = parsePrice(values.stopPrice, inst).value;
   const entryAt = localInputToIso(values.entryAt);
   const exitAt = localInputToIso(values.exitAt);
-  const contracts = parseDecimal(values.contracts);
   const fees = parseDecimal(values.fees);
   if (entry === null || !entryAt) {
     return <PreviewShell>Add the entry price to see the preview.</PreviewShell>;
@@ -37,7 +47,8 @@ export function LivePreview({ values, inst }: { values: TradeFormValues; inst?: 
     entryPrice: entry,
     exitPrice: exit,
     stopPrice: stop,
-    contracts: typeof contracts === "number" ? contracts : null,
+    contracts: n,
+    timeEstimated,
     fees: typeof fees === "number" ? fees : null,
   });
 
@@ -69,7 +80,7 @@ export function LivePreview({ values, inst }: { values: TradeFormValues; inst?: 
           {fmtMoney(c.feesTotal === null ? null : -c.feesTotal, inst.currency).replace("+", "")}
         </Stat>
       )}
-      <Stat label="Session">{c.session}</Stat>
+      <Stat label="Session">{c.session ?? "—"}</Stat>
       <Stat label="Duration">{fmtDuration(c.durationSec)}</Stat>
       {!isObserved && inst.feePerContract === 0 && fees === null && (
         <p className="text-muted-foreground col-span-full flex items-center gap-1.5 text-xs">

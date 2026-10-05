@@ -73,7 +73,12 @@ export default async function EditTradePage({ params }: PageProps<"/journal/[id]
       key={id}
       data={data}
       mode="edit"
-      initial={{ values, updatedAt: trade.updated_at, media: media[id] ?? [] }}
+      initial={{
+        values,
+        updatedAt: trade.updated_at,
+        media: media[id] ?? [],
+        timeEstimated: trade.time_estimated,
+      }}
     />
   );
 }

@@ -70,6 +70,19 @@ describe("parsePrice", () => {
     expect(parsePrice("110'165", ZN)).toEqual({ value: 110.515625 });
     expect(parsePrice("110'16.25", ZN).error).toBeDefined();
   });
+  it("accepts averages of several contracts' fills, and keeps them exact", () => {
+    const avg = (7755.25 + 7759.25 + 7762.25) / 3;
+    expect(parsePrice(String(avg), ES, 3)).toEqual({ value: avg });
+    expect(parsePrice(String(avg), ES).error).toMatch(/tick/);
+    expect(parsePrice("5000.10", ES, 3).error).toMatch(/average of 3 contracts/);
+    expect(formatPrice(avg, ES)).toBe(String(avg));
+    const zAvg = (110.515625 + 110.53125) / 2;
+    expect(parsePrice(formatPrice(zAvg, ZN), ZN, 2)).toEqual({ value: zAvg });
+    const jpy = (5 * 0.0063925 + 2 * 0.0064155) / 7;
+    expect(parsePrice(String(jpy), { tickSize: 0.0000005, priceFormat: "decimal" }, 7).value).toBe(
+      jpy,
+    );
+  });
   it("formats back for editing", () => {
     expect(formatPrice(5000.25, ES)).toBe("5000.25");
     expect(formatPrice(110.515625, ZN)).toBe("110'165");

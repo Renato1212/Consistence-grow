@@ -317,6 +317,19 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"routine_days": {
+                  Row: {
+                    "bias": NonNullable<Json>,"block_key": string,"checks": NonNullable<Json>,"created_at": string,"date": string,"deleted_at": string | null,"followed": string | null,"id": string,"lesson": string | null,"no_trade": boolean,"updated_at": string,"user_id": string
+                  }
+                  Insert: {
+                    "bias"?: NonNullable<Json>,"block_key": string,"checks"?: NonNullable<Json>,"created_at"?: string,"date": string,"deleted_at"?: string | null,"followed"?: string | null,"id"?: string,"lesson"?: string | null,"no_trade"?: boolean,"updated_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "bias"?: NonNullable<Json>,"block_key"?: string,"checks"?: NonNullable<Json>,"created_at"?: string,"date"?: string,"deleted_at"?: string | null,"followed"?: string | null,"id"?: string,"lesson"?: string | null,"no_trade"?: boolean,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"rule_checks": {
                   Row: {
                     "context": string,"created_at": string,"day_id": string,"deleted_at": string | null,"followed": boolean | null,"id": string,"note": string | null,"prep_id": string | null,"rule_id": string,"updated_at": string,"user_id": string
@@ -419,13 +432,13 @@ isOneToOne: false
                   ]
                 },"session_preps": {
                   Row: {
-                    "brief_md": string | null,"completed_at": string | null,"copied_from_id": string | null,"created_at": string,"day_id": string,"deleted_at": string | null,"energy": number | null,"focus": number | null,"focus_instrument_ids": (string)[],"focus_playbook_ids": (string)[],"how_am_i": string | null,"id": string,"intention": string | null,"max_loss_r": number | null,"max_loss_usd": number | null,"max_size": number | null,"max_trades": number | null,"narrative": string | null,"options_notes": string | null,"prior_day_type": string | null,"regime": string | null,"session": string,"sleep": number | null,"started_at": string,"updated_at": string,"user_id": string,"vol_state": string | null
+                    "brief_md": string | null,"completed_at": string | null,"copied_from_id": string | null,"created_at": string,"day_id": string,"deleted_at": string | null,"energy": number | null,"focus": number | null,"focus_instrument_ids": (string)[],"focus_playbook_ids": (string)[],"how_am_i": string | null,"id": string,"instrument_bias": NonNullable<Json>,"intention": string | null,"max_loss_r": number | null,"max_loss_usd": number | null,"max_size": number | null,"max_trades": number | null,"narrative": string | null,"options_notes": string | null,"prior_day_type": string | null,"regime": string | null,"session": string,"sleep": number | null,"started_at": string,"updated_at": string,"user_id": string,"vol_state": string | null
                   }
                   Insert: {
-                    "brief_md"?: string | null,"completed_at"?: string | null,"copied_from_id"?: string | null,"created_at"?: string,"day_id": string,"deleted_at"?: string | null,"energy"?: number | null,"focus"?: number | null,"focus_instrument_ids"?: (string)[],"focus_playbook_ids"?: (string)[],"how_am_i"?: string | null,"id"?: string,"intention"?: string | null,"max_loss_r"?: number | null,"max_loss_usd"?: number | null,"max_size"?: number | null,"max_trades"?: number | null,"narrative"?: string | null,"options_notes"?: string | null,"prior_day_type"?: string | null,"regime"?: string | null,"session": string,"sleep"?: number | null,"started_at"?: string,"updated_at"?: string,"user_id"?: string,"vol_state"?: string | null
+                    "brief_md"?: string | null,"completed_at"?: string | null,"copied_from_id"?: string | null,"created_at"?: string,"day_id": string,"deleted_at"?: string | null,"energy"?: number | null,"focus"?: number | null,"focus_instrument_ids"?: (string)[],"focus_playbook_ids"?: (string)[],"how_am_i"?: string | null,"id"?: string,"instrument_bias"?: NonNullable<Json>,"intention"?: string | null,"max_loss_r"?: number | null,"max_loss_usd"?: number | null,"max_size"?: number | null,"max_trades"?: number | null,"narrative"?: string | null,"options_notes"?: string | null,"prior_day_type"?: string | null,"regime"?: string | null,"session": string,"sleep"?: number | null,"started_at"?: string,"updated_at"?: string,"user_id"?: string,"vol_state"?: string | null
                   }
                   Update: {
-                    "brief_md"?: string | null,"completed_at"?: string | null,"copied_from_id"?: string | null,"created_at"?: string,"day_id"?: string,"deleted_at"?: string | null,"energy"?: number | null,"focus"?: number | null,"focus_instrument_ids"?: (string)[],"focus_playbook_ids"?: (string)[],"how_am_i"?: string | null,"id"?: string,"intention"?: string | null,"max_loss_r"?: number | null,"max_loss_usd"?: number | null,"max_size"?: number | null,"max_trades"?: number | null,"narrative"?: string | null,"options_notes"?: string | null,"prior_day_type"?: string | null,"regime"?: string | null,"session"?: string,"sleep"?: number | null,"started_at"?: string,"updated_at"?: string,"user_id"?: string,"vol_state"?: string | null
+                    "brief_md"?: string | null,"completed_at"?: string | null,"copied_from_id"?: string | null,"created_at"?: string,"day_id"?: string,"deleted_at"?: string | null,"energy"?: number | null,"focus"?: number | null,"focus_instrument_ids"?: (string)[],"focus_playbook_ids"?: (string)[],"how_am_i"?: string | null,"id"?: string,"instrument_bias"?: NonNullable<Json>,"intention"?: string | null,"max_loss_r"?: number | null,"max_loss_usd"?: number | null,"max_size"?: number | null,"max_trades"?: number | null,"narrative"?: string | null,"options_notes"?: string | null,"prior_day_type"?: string | null,"regime"?: string | null,"session"?: string,"sleep"?: number | null,"started_at"?: string,"updated_at"?: string,"user_id"?: string,"vol_state"?: string | null
                   }
                   Relationships: [
                     {
@@ -445,6 +458,31 @@ isOneToOne: false
       columns: ["day_id"]
 isOneToOne: false
       referencedRelation: "trading_days"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"statement_allocations": {
+                  Row: {
+                    "created_at": string,"deleted_at": string | null,"fill_id": string,"id": string,"qty": number,"statement_trade_id": string,"updated_at": string,"user_id": string
+                  }
+                  Insert: {
+                    "created_at"?: string,"deleted_at"?: string | null,"fill_id": string,"id"?: string,"qty": number,"statement_trade_id": string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"deleted_at"?: string | null,"fill_id"?: string,"id"?: string,"qty"?: number,"statement_trade_id"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "statement_allocations_fill_id_fkey"
+      columns: ["fill_id"]
+isOneToOne: false
+      referencedRelation: "statement_fills"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "statement_allocations_statement_trade_id_fkey"
+      columns: ["statement_trade_id"]
+isOneToOne: false
+      referencedRelation: "statement_trades"
       referencedColumns: ["id"]
     }
                   ]
@@ -508,6 +546,43 @@ isOneToOne: false
       columns: ["statement_id"]
 isOneToOne: false
       referencedRelation: "statements"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"statement_trades": {
+                  Row: {
+                    "avg_buy": number,"avg_sell": number,"build_id": string,"contracts": number,"created_at": string,"deleted_at": string | null,"direction": string,"fees": number,"gross_pnl": number,"id": string,"method": string,"origin": string,"product_id": string,"seq": number,"statement_id": string,"time_estimated": boolean,"trade_id": string | null,"updated_at": string,"user_id": string
+                  }
+                  Insert: {
+                    "avg_buy": number,"avg_sell": number,"build_id": string,"contracts": number,"created_at"?: string,"deleted_at"?: string | null,"direction": string,"fees"?: number,"gross_pnl": number,"id"?: string,"method": string,"origin": string,"product_id": string,"seq": number,"statement_id": string,"time_estimated"?: boolean,"trade_id"?: string | null,"updated_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "avg_buy"?: number,"avg_sell"?: number,"build_id"?: string,"contracts"?: number,"created_at"?: string,"deleted_at"?: string | null,"direction"?: string,"fees"?: number,"gross_pnl"?: number,"id"?: string,"method"?: string,"origin"?: string,"product_id"?: string,"seq"?: number,"statement_id"?: string,"time_estimated"?: boolean,"trade_id"?: string | null,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "statement_trades_product_id_fkey"
+      columns: ["product_id"]
+isOneToOne: false
+      referencedRelation: "statement_products"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "statement_trades_statement_id_fkey"
+      columns: ["statement_id"]
+isOneToOne: false
+      referencedRelation: "statements"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "statement_trades_trade_id_fkey"
+      columns: ["trade_id"]
+isOneToOne: false
+      referencedRelation: "trade_facts"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "statement_trades_trade_id_fkey"
+      columns: ["trade_id"]
+isOneToOne: false
+      referencedRelation: "trades"
       referencedColumns: ["id"]
     }
                   ]
@@ -589,13 +664,13 @@ isOneToOne: false
                   ]
                 },"trades": {
                   Row: {
-                    "calendar_event_id": string | null,"checklist": NonNullable<Json>,"confidence": number | null,"contracts": number | null,"created_at": string,"day_id": string | null,"deleted_at": string | null,"direction": string,"duration_sec": number | null,"entry_at": string,"entry_price": number,"entry_type": string | null,"exit_at": string | null,"exit_price": number | null,"exit_reason": string | null,"fees": number | null,"fees_total": number | null,"grade_context": string | null,"grade_context_reason": string | null,"grade_edge": string | null,"grade_edge_reason": string | null,"grade_process": string | null,"grade_process_reason": string | null,"gross_pnl": number | null,"id": string,"import_hash": string | null,"instrument_id": string,"key_level_id": string | null,"kind": string,"lesson": string | null,"mae_ticks": number | null,"management": string | null,"mfe_ticks": number | null,"minutes_from_event": number | null,"move_phases": string | null,"move_trigger": string | null,"needs_review": boolean,"net_pnl": number | null,"no_stop": boolean,"planned_r": number | null,"playbook_id": string | null,"playbook_version": number | null,"primary_domain": string | null,"r_multiple": number | null,"risk_usd": number | null,"scenario_id": string | null,"secondary_domains": (string)[],"session": string | null,"stop_price": number | null,"target_price": number | null,"thesis": string | null,"ticks": number | null,"time_bucket": string | null,"updated_at": string,"user_id": string,"weekday": number | null
+                    "calendar_event_id": string | null,"checklist": NonNullable<Json>,"confidence": number | null,"contracts": number | null,"created_at": string,"day_id": string | null,"deleted_at": string | null,"direction": string,"duration_sec": number | null,"entry_at": string,"entry_price": number,"entry_type": string | null,"exit_at": string | null,"exit_price": number | null,"exit_reason": string | null,"fees": number | null,"fees_total": number | null,"grade_context": string | null,"grade_context_reason": string | null,"grade_edge": string | null,"grade_edge_reason": string | null,"grade_process": string | null,"grade_process_reason": string | null,"gross_pnl": number | null,"id": string,"import_hash": string | null,"instrument_id": string,"key_level_id": string | null,"kind": string,"lesson": string | null,"mae_ticks": number | null,"management": string | null,"mfe_ticks": number | null,"minutes_from_event": number | null,"move_phases": string | null,"move_trigger": string | null,"needs_review": boolean,"net_pnl": number | null,"no_stop": boolean,"planned_r": number | null,"playbook_id": string | null,"playbook_version": number | null,"primary_domain": string | null,"r_multiple": number | null,"risk_usd": number | null,"scenario_id": string | null,"secondary_domains": (string)[],"session": string | null,"stop_price": number | null,"target_price": number | null,"thesis": string | null,"ticks": number | null,"time_bucket": string | null,"time_estimated": boolean,"updated_at": string,"user_id": string,"weekday": number | null
                   }
                   Insert: {
-                    "calendar_event_id"?: string | null,"checklist"?: NonNullable<Json>,"confidence"?: number | null,"contracts"?: number | null,"created_at"?: string,"day_id"?: string | null,"deleted_at"?: string | null,"direction": string,"duration_sec"?: number | null,"entry_at": string,"entry_price": number,"entry_type"?: string | null,"exit_at"?: string | null,"exit_price"?: number | null,"exit_reason"?: string | null,"fees"?: number | null,"fees_total"?: number | null,"grade_context"?: string | null,"grade_context_reason"?: string | null,"grade_edge"?: string | null,"grade_edge_reason"?: string | null,"grade_process"?: string | null,"grade_process_reason"?: string | null,"gross_pnl"?: number | null,"id"?: string,"import_hash"?: string | null,"instrument_id": string,"key_level_id"?: string | null,"kind"?: string,"lesson"?: string | null,"mae_ticks"?: number | null,"management"?: string | null,"mfe_ticks"?: number | null,"minutes_from_event"?: number | null,"move_phases"?: string | null,"move_trigger"?: string | null,"needs_review"?: boolean,"net_pnl"?: number | null,"no_stop"?: boolean,"planned_r"?: number | null,"playbook_id"?: string | null,"playbook_version"?: number | null,"primary_domain"?: string | null,"r_multiple"?: number | null,"risk_usd"?: number | null,"scenario_id"?: string | null,"secondary_domains"?: (string)[],"session"?: string | null,"stop_price"?: number | null,"target_price"?: number | null,"thesis"?: string | null,"ticks"?: number | null,"time_bucket"?: string | null,"updated_at"?: string,"user_id"?: string,"weekday"?: number | null
+                    "calendar_event_id"?: string | null,"checklist"?: NonNullable<Json>,"confidence"?: number | null,"contracts"?: number | null,"created_at"?: string,"day_id"?: string | null,"deleted_at"?: string | null,"direction": string,"duration_sec"?: number | null,"entry_at": string,"entry_price": number,"entry_type"?: string | null,"exit_at"?: string | null,"exit_price"?: number | null,"exit_reason"?: string | null,"fees"?: number | null,"fees_total"?: number | null,"grade_context"?: string | null,"grade_context_reason"?: string | null,"grade_edge"?: string | null,"grade_edge_reason"?: string | null,"grade_process"?: string | null,"grade_process_reason"?: string | null,"gross_pnl"?: number | null,"id"?: string,"import_hash"?: string | null,"instrument_id": string,"key_level_id"?: string | null,"kind"?: string,"lesson"?: string | null,"mae_ticks"?: number | null,"management"?: string | null,"mfe_ticks"?: number | null,"minutes_from_event"?: number | null,"move_phases"?: string | null,"move_trigger"?: string | null,"needs_review"?: boolean,"net_pnl"?: number | null,"no_stop"?: boolean,"planned_r"?: number | null,"playbook_id"?: string | null,"playbook_version"?: number | null,"primary_domain"?: string | null,"r_multiple"?: number | null,"risk_usd"?: number | null,"scenario_id"?: string | null,"secondary_domains"?: (string)[],"session"?: string | null,"stop_price"?: number | null,"target_price"?: number | null,"thesis"?: string | null,"ticks"?: number | null,"time_bucket"?: string | null,"time_estimated"?: boolean,"updated_at"?: string,"user_id"?: string,"weekday"?: number | null
                   }
                   Update: {
-                    "calendar_event_id"?: string | null,"checklist"?: NonNullable<Json>,"confidence"?: number | null,"contracts"?: number | null,"created_at"?: string,"day_id"?: string | null,"deleted_at"?: string | null,"direction"?: string,"duration_sec"?: number | null,"entry_at"?: string,"entry_price"?: number,"entry_type"?: string | null,"exit_at"?: string | null,"exit_price"?: number | null,"exit_reason"?: string | null,"fees"?: number | null,"fees_total"?: number | null,"grade_context"?: string | null,"grade_context_reason"?: string | null,"grade_edge"?: string | null,"grade_edge_reason"?: string | null,"grade_process"?: string | null,"grade_process_reason"?: string | null,"gross_pnl"?: number | null,"id"?: string,"import_hash"?: string | null,"instrument_id"?: string,"key_level_id"?: string | null,"kind"?: string,"lesson"?: string | null,"mae_ticks"?: number | null,"management"?: string | null,"mfe_ticks"?: number | null,"minutes_from_event"?: number | null,"move_phases"?: string | null,"move_trigger"?: string | null,"needs_review"?: boolean,"net_pnl"?: number | null,"no_stop"?: boolean,"planned_r"?: number | null,"playbook_id"?: string | null,"playbook_version"?: number | null,"primary_domain"?: string | null,"r_multiple"?: number | null,"risk_usd"?: number | null,"scenario_id"?: string | null,"secondary_domains"?: (string)[],"session"?: string | null,"stop_price"?: number | null,"target_price"?: number | null,"thesis"?: string | null,"ticks"?: number | null,"time_bucket"?: string | null,"updated_at"?: string,"user_id"?: string,"weekday"?: number | null
+                    "calendar_event_id"?: string | null,"checklist"?: NonNullable<Json>,"confidence"?: number | null,"contracts"?: number | null,"created_at"?: string,"day_id"?: string | null,"deleted_at"?: string | null,"direction"?: string,"duration_sec"?: number | null,"entry_at"?: string,"entry_price"?: number,"entry_type"?: string | null,"exit_at"?: string | null,"exit_price"?: number | null,"exit_reason"?: string | null,"fees"?: number | null,"fees_total"?: number | null,"grade_context"?: string | null,"grade_context_reason"?: string | null,"grade_edge"?: string | null,"grade_edge_reason"?: string | null,"grade_process"?: string | null,"grade_process_reason"?: string | null,"gross_pnl"?: number | null,"id"?: string,"import_hash"?: string | null,"instrument_id"?: string,"key_level_id"?: string | null,"kind"?: string,"lesson"?: string | null,"mae_ticks"?: number | null,"management"?: string | null,"mfe_ticks"?: number | null,"minutes_from_event"?: number | null,"move_phases"?: string | null,"move_trigger"?: string | null,"needs_review"?: boolean,"net_pnl"?: number | null,"no_stop"?: boolean,"planned_r"?: number | null,"playbook_id"?: string | null,"playbook_version"?: number | null,"primary_domain"?: string | null,"r_multiple"?: number | null,"risk_usd"?: number | null,"scenario_id"?: string | null,"secondary_domains"?: (string)[],"session"?: string | null,"stop_price"?: number | null,"target_price"?: number | null,"thesis"?: string | null,"ticks"?: number | null,"time_bucket"?: string | null,"time_estimated"?: boolean,"updated_at"?: string,"user_id"?: string,"weekday"?: number | null
                   }
                   Relationships: [
                     {
@@ -651,13 +726,13 @@ isOneToOne: false
                   ]
                 },"user_settings": {
                   Row: {
-                    "created_at": string,"currency_display": string,"deleted_at": string | null,"display_tz": string,"eu_prep_by": string,"eu_prep_tz": string,"eu_session_start": string,"eu_session_tz": string,"event_banner_minutes": number,"id": string,"last_instrument_id": string | null,"pattern_min_n": number,"secondary_tz": string | null,"updated_at": string,"us_cash_open": string,"us_session_end": string,"us_session_start": string,"us_session_tz": string,"user_id": string
+                    "created_at": string,"currency_display": string,"deleted_at": string | null,"display_tz": string,"eu_prep_by": string,"eu_prep_tz": string,"eu_session_start": string,"eu_session_tz": string,"event_banner_minutes": number,"id": string,"last_instrument_id": string | null,"pattern_min_n": number,"routine": Json | null,"secondary_tz": string | null,"updated_at": string,"us_cash_open": string,"us_session_end": string,"us_session_start": string,"us_session_tz": string,"user_id": string
                   }
                   Insert: {
-                    "created_at"?: string,"currency_display"?: string,"deleted_at"?: string | null,"display_tz"?: string,"eu_prep_by"?: string,"eu_prep_tz"?: string,"eu_session_start"?: string,"eu_session_tz"?: string,"event_banner_minutes"?: number,"id"?: string,"last_instrument_id"?: string | null,"pattern_min_n"?: number,"secondary_tz"?: string | null,"updated_at"?: string,"us_cash_open"?: string,"us_session_end"?: string,"us_session_start"?: string,"us_session_tz"?: string,"user_id"?: string
+                    "created_at"?: string,"currency_display"?: string,"deleted_at"?: string | null,"display_tz"?: string,"eu_prep_by"?: string,"eu_prep_tz"?: string,"eu_session_start"?: string,"eu_session_tz"?: string,"event_banner_minutes"?: number,"id"?: string,"last_instrument_id"?: string | null,"pattern_min_n"?: number,"routine"?: Json | null,"secondary_tz"?: string | null,"updated_at"?: string,"us_cash_open"?: string,"us_session_end"?: string,"us_session_start"?: string,"us_session_tz"?: string,"user_id"?: string
                   }
                   Update: {
-                    "created_at"?: string,"currency_display"?: string,"deleted_at"?: string | null,"display_tz"?: string,"eu_prep_by"?: string,"eu_prep_tz"?: string,"eu_session_start"?: string,"eu_session_tz"?: string,"event_banner_minutes"?: number,"id"?: string,"last_instrument_id"?: string | null,"pattern_min_n"?: number,"secondary_tz"?: string | null,"updated_at"?: string,"us_cash_open"?: string,"us_session_end"?: string,"us_session_start"?: string,"us_session_tz"?: string,"user_id"?: string
+                    "created_at"?: string,"currency_display"?: string,"deleted_at"?: string | null,"display_tz"?: string,"eu_prep_by"?: string,"eu_prep_tz"?: string,"eu_session_start"?: string,"eu_session_tz"?: string,"event_banner_minutes"?: number,"id"?: string,"last_instrument_id"?: string | null,"pattern_min_n"?: number,"routine"?: Json | null,"secondary_tz"?: string | null,"updated_at"?: string,"us_cash_open"?: string,"us_session_end"?: string,"us_session_start"?: string,"us_session_tz"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -670,13 +745,13 @@ isOneToOne: false
                   ]
                 },"weekly_reviews": {
                   Row: {
-                    "created_at": string,"deleted_at": string | null,"goals": (string)[],"id": string,"iso_week": number,"iso_year": number,"reflection": string | null,"updated_at": string,"user_id": string
+                    "created_at": string,"deleted_at": string | null,"goals": (string)[],"id": string,"iso_week": number,"iso_year": number,"reflection": string | null,"setup_notes": NonNullable<Json>,"updated_at": string,"user_id": string
                   }
                   Insert: {
-                    "created_at"?: string,"deleted_at"?: string | null,"goals"?: (string)[],"id"?: string,"iso_week": number,"iso_year": number,"reflection"?: string | null,"updated_at"?: string,"user_id"?: string
+                    "created_at"?: string,"deleted_at"?: string | null,"goals"?: (string)[],"id"?: string,"iso_week": number,"iso_year": number,"reflection"?: string | null,"setup_notes"?: NonNullable<Json>,"updated_at"?: string,"user_id"?: string
                   }
                   Update: {
-                    "created_at"?: string,"deleted_at"?: string | null,"goals"?: (string)[],"id"?: string,"iso_week"?: number,"iso_year"?: number,"reflection"?: string | null,"updated_at"?: string,"user_id"?: string
+                    "created_at"?: string,"deleted_at"?: string | null,"goals"?: (string)[],"id"?: string,"iso_week"?: number,"iso_year"?: number,"reflection"?: string | null,"setup_notes"?: NonNullable<Json>,"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     
@@ -686,7 +761,7 @@ isOneToOne: false
           Views: {
             "trade_facts": {
                   Row: {
-                    "asset_class": string | null,"calendar_event_id": string | null,"checklist": Json | null,"confidence": number | null,"contracts": number | null,"created_at": string | null,"currency": string | null,"day_id": string | null,"deleted_at": string | null,"direction": string | null,"domain_count": number | null,"duration_sec": number | null,"entry_at": string | null,"entry_price": number | null,"entry_type": string | null,"event_category": string | null,"event_domain": string | null,"event_importance": number | null,"event_title": string | null,"exchange": string | null,"exit_at": string | null,"exit_price": number | null,"exit_reason": string | null,"fees": number | null,"fees_total": number | null,"grade_context": string | null,"grade_context_reason": string | null,"grade_edge": string | null,"grade_edge_reason": string | null,"grade_process": string | null,"grade_process_reason": string | null,"gross_pnl": number | null,"id": string | null,"import_hash": string | null,"instrument_id": string | null,"is_win": boolean | null,"key_level_id": string | null,"kind": string | null,"lesson": string | null,"level_strength": number | null,"level_type": string | null,"mae_ticks": number | null,"management": string | null,"media_count": number | null,"mfe_ticks": number | null,"minutes_from_event": number | null,"move_phases": string | null,"move_trigger": string | null,"needs_review": boolean | null,"net_pnl": number | null,"no_stop": boolean | null,"planned_r": number | null,"playbook_id": string | null,"playbook_name": string | null,"playbook_status": string | null,"playbook_version": number | null,"prep_done": boolean | null,"prep_id": string | null,"primary_domain": string | null,"prior_day_type": string | null,"r_multiple": number | null,"readiness": number | null,"regime": string | null,"risk_usd": number | null,"scenario_id": string | null,"secondary_domains": (string)[] | null,"session": string | null,"stop_price": number | null,"symbol": string | null,"tag_ids": (string)[] | null,"tag_names": (string)[] | null,"target_price": number | null,"thesis": string | null,"ticks": number | null,"time_bucket": string | null,"trade_date": string | null,"updated_at": string | null,"user_id": string | null,"vol_state": string | null,"weekday": number | null
+                    "asset_class": string | null,"broker_confirmed": boolean | null,"calendar_event_id": string | null,"checklist": Json | null,"confidence": number | null,"contracts": number | null,"created_at": string | null,"currency": string | null,"day_id": string | null,"deleted_at": string | null,"direction": string | null,"domain_count": number | null,"duration_sec": number | null,"entry_at": string | null,"entry_price": number | null,"entry_type": string | null,"event_category": string | null,"event_domain": string | null,"event_importance": number | null,"event_title": string | null,"exchange": string | null,"exit_at": string | null,"exit_price": number | null,"exit_reason": string | null,"fees": number | null,"fees_total": number | null,"grade_context": string | null,"grade_context_reason": string | null,"grade_edge": string | null,"grade_edge_reason": string | null,"grade_process": string | null,"grade_process_reason": string | null,"gross_pnl": number | null,"id": string | null,"import_hash": string | null,"instrument_id": string | null,"is_win": boolean | null,"key_level_id": string | null,"kind": string | null,"lesson": string | null,"level_strength": number | null,"level_type": string | null,"mae_ticks": number | null,"management": string | null,"media_count": number | null,"mfe_ticks": number | null,"minutes_from_event": number | null,"move_phases": string | null,"move_trigger": string | null,"needs_review": boolean | null,"net_pnl": number | null,"no_stop": boolean | null,"planned_r": number | null,"playbook_id": string | null,"playbook_name": string | null,"playbook_status": string | null,"playbook_version": number | null,"prep_done": boolean | null,"prep_id": string | null,"primary_domain": string | null,"prior_day_type": string | null,"r_multiple": number | null,"readiness": number | null,"regime": string | null,"risk_usd": number | null,"scenario_id": string | null,"secondary_domains": (string)[] | null,"session": string | null,"stop_price": number | null,"symbol": string | null,"tag_ids": (string)[] | null,"tag_names": (string)[] | null,"target_price": number | null,"thesis": string | null,"ticks": number | null,"time_bucket": string | null,"time_estimated": boolean | null,"trade_date": string | null,"updated_at": string | null,"user_id": string | null,"vol_state": string | null,"weekday": number | null
                   }
                   Relationships: [
                     {
@@ -751,6 +826,9 @@ isOneToOne: false
 "append_playbook_note":
 { Args: { "p_playbook": string,"p_text": string }; Returns: boolean
                            },
+"build_statement_trades":
+{ Args: { "p_build": string,"p_method": string,"p_product": string,"p_trades": Json }; Returns: Json
+                           },
 "ensure_trading_day":
 { Args: { "p_date": string }; Returns: string
                            },
@@ -784,6 +862,15 @@ isOneToOne: false
 "save_prep":
 { Args: { "p": Json }; Returns: string
                            },
+"save_quick_debrief":
+{ Args: { "p_blocks": Json,"p_complete": boolean,"p_date": string,"p_grade": string,"p_lesson": string }; Returns: string
+                           },
+"save_quick_prep":
+{ Args: { "p_bias": Json,"p_date": string,"p_instrument_ids": (string)[],"p_narrative": string,"p_session": string }; Returns: string
+                           },
+"save_routine_day":
+{ Args: { "p_block": string,"p_date": string,"p_patch": Json }; Returns: undefined
+                           },
 "save_statement":
 { Args: { "p_replace"?: boolean,"p_statement": Json }; Returns: Json
                            },
@@ -797,6 +884,9 @@ isOneToOne: false
                            },
 "token_valid":
 { Args: { "p_scope": string,"p_token": string }; Returns: boolean
+                           },
+"undo_statement_build":
+{ Args: { "p_product": string }; Returns: Json
                            },
 "unmerge_tags":
 { Args: { "p_from": string,"p_had_target": (string)[],"p_into": string,"p_links": (string)[] }; Returns: undefined

@@ -7,9 +7,12 @@ import { Section } from "@/components/insights/bits";
 import { PageHeader } from "@/components/shell/empty-state";
 import { ReconTable } from "@/components/statements/dashboard";
 import { DeleteStatement } from "@/components/statements/statement-actions";
+import { TradeBuilderClient } from "@/components/statements/trade-builder-client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { loadSetupOptions } from "@/lib/data/routine";
+import { loadStatementBuild } from "@/lib/data/statement-trades";
 import { loadJournalTrades, loadStatement } from "@/lib/data/statements";
 import { fmtMoney, pnlClass } from "@/lib/format";
 import { reconcile } from "@/lib/statements/analysis";
@@ -28,7 +31,11 @@ export default async function StatementPage({ params }: PageProps<"/statements/[
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const s = await loadStatement(id);
   if (!s) notFound();
-  const trades = await loadJournalTrades([s.tradeDate]);
+  const [trades, build, setups] = await Promise.all([
+    loadJournalTrades([s.tradeDate]),
+    loadStatementBuild(s.id, s.tradeDate),
+    loadSetupOptions(),
+  ]);
   const recon = reconcile(
     [
       {
@@ -145,6 +152,20 @@ export default async function StatementPage({ params }: PageProps<"/statements/[
           </ul>
         )}
 
+        <Section
+          title="Trades"
+          description="The statement lists fills per product without times. Split each product's day into your trades: the sum always equals the broker's realized P/L."
+          className="scroll-mt-16"
+        >
+          <div id="trades" />
+          <TradeBuilderClient
+            products={build}
+            tradeDate={s.tradeDate}
+            currency={s.currency}
+            setups={setups}
+          />
+        </Section>
+
         <Section title="Products">
           <div className="overflow-x-auto">
             <table className="w-full text-sm" data-testid="statement-products">
@@ -234,7 +255,11 @@ export default async function StatementPage({ params }: PageProps<"/statements/[
 
         <Collapsible>
           <CollapsibleTrigger asChild>
-            <Button variant="outline" size="sm" className="w-fit">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-auto w-fit py-1.5 text-left whitespace-normal"
+            >
               Fills ({conf.length} confirmations · {ps.length} purchase &amp; sale) and all{" "}
               {s.checks.length} checks
             </Button>

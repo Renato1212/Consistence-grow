@@ -31,6 +31,12 @@ export function fmtDuration(sec: number | null | undefined): string {
   return s ? `${m}m ${s}s` : `${m}m`;
 }
 
+/** A price for display: averages (scale-ins, statements) trimmed to 10 significant digits. */
+export function fmtPrice(p: number | null | undefined): string {
+  if (p === null || p === undefined) return "—";
+  return String(Number(Number(p).toPrecision(10)));
+}
+
 /** Tailwind class for a P&L number: green/red only for P&L. */
 export function pnlClass(n: number | null | undefined): string {
   if (n === null || n === undefined || n === 0) return "text-muted-foreground";

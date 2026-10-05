@@ -13,6 +13,7 @@ import {
   parseRange,
   rangeStart,
 } from "@/lib/data/statements";
+import { loadUnsplitDays } from "@/lib/data/statement-trades";
 import { buildDashboard } from "@/lib/statements/dashboard";
 import { lisbonToday } from "@/lib/time";
 
@@ -50,9 +51,10 @@ export default async function StatementsPage({ searchParams }: PageProps<"/state
   const range = parseRange(sp.range);
   const days = await loadStatementDays({ account, from: rangeStart(range, lisbonToday()) });
   const dates = days.map((d) => d.tradeDate);
-  const [trades, ctx] = await Promise.all([
+  const [trades, ctx, unsplit] = await Promise.all([
     loadJournalTrades(dates),
     dates.length ? loadDayContext(dates[0], dates.at(-1)!) : Promise.resolve(new Map()),
+    loadUnsplitDays(rangeStart(range, lisbonToday())),
   ]);
 
   return (
@@ -64,6 +66,7 @@ export default async function StatementsPage({ searchParams }: PageProps<"/state
           accounts={accounts}
           account={account}
           range={range}
+          unsplit={unsplit.map((u) => u.id)}
         />
       ) : (
         <EmptyState

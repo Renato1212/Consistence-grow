@@ -1,6 +1,7 @@
 import { expect, test } from "./fixtures";
 
 import { signIn } from "./helpers";
+import { seedStatementPage } from "./seed-statement";
 
 test("mobile: bottom nav and log-trade button are reachable", async ({ page }) => {
   await signIn(page);
@@ -11,6 +12,11 @@ test("mobile: bottom nav and log-trade button are reachable", async ({ page }) =
 
   await page.getByRole("link", { name: /Log trade/ }).click();
   await expect(page).toHaveURL(/\/journal\/new$/);
+
+  // Everything else sits under "More".
+  await bottomNav.getByRole("button", { name: "More" }).click();
+  await page.getByRole("link", { name: "Insights" }).click();
+  await expect(page).toHaveURL(/\/insights/);
 });
 
 test("mobile: log a trade one-handed and see it as a card", async ({ page }) => {
@@ -84,6 +90,7 @@ test("mobile: every page fits the screen; Statements is reachable from Review", 
   await page.getByRole("link", { name: /Broker statements/ }).click();
   await expect(page).toHaveURL(/\/statements$/);
   const pages = [
+    await seedStatementPage(),
     "/today",
     "/journal",
     "/calendar",
@@ -99,6 +106,8 @@ test("mobile: every page fits the screen; Statements is reachable from Review", 
     "/settings/instruments",
     "/settings/integrations",
     "/settings/data",
+    "/settings/routine",
+    "/review/today",
   ];
   const wide: string[] = [];
   for (const path of pages) {

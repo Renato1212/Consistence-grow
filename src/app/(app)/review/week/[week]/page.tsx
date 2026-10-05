@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { WeeklyAi } from "@/components/ai/weekly-ai";
 import { ActionItemsList } from "@/components/review/action-items-list";
 import { EquityCurve } from "@/components/review/equity-curve";
+import { SetupScorecard } from "@/components/review/setup-scorecard";
 import { SampleBadge, weakClass } from "@/components/review/stat-bits";
 import { WeekReflectionClient } from "@/components/review/week-reflection-client";
 import { BrokerCard } from "@/components/statements/broker-card";
@@ -14,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { addDays, parseIsoWeekKey } from "@/lib/calendar/dates";
 import { hasAiToken, loadAiInsights, loadAiRequests, loadPlaybookOptions } from "@/lib/data/ai";
+import { loadSetupScorecard } from "@/lib/data/routine";
 import { loadWeek } from "@/lib/data/week";
 import { domainMeta, type DomainCode } from "@/lib/domains";
 import { fmtMoney, fmtR, pnlClass } from "@/lib/format";
@@ -133,6 +135,7 @@ export default async function WeekPage({ params }: PageProps<"/review/week/[week
     loadPlaybookOptions(),
     hasAiToken(),
   ]);
+  const scorecard = await loadSetupScorecard(w.year, w.week, w.start, w.end);
   const s = summarize(w.trades);
   const curve = equityCurve(w.trades);
   const byId = new Map(w.trades.map((t) => [t.id, t]));
@@ -211,6 +214,10 @@ export default async function WeekPage({ params }: PageProps<"/review/week/[week
             })}
           />
         </Card>
+
+        <div className="empty:hidden md:col-span-2">
+          <SetupScorecard year={w.year} week={w.week} rows={scorecard} />
+        </div>
 
         <Card title="By domain">
           <BreakdownTable

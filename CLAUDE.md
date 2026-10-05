@@ -58,7 +58,7 @@ Cloud sandbox: Docker daemon may need `sudo dockerd &` before `pnpm db:start`.
 
 ## Data model (Phase 1)
 
-- 25 user tables in `public` (27 after Phase 3, 28 after Phase 7, 32 with Statements), all with `user_id default auth.uid()`, RLS `user_id = auth.uid()`,
+- 25 user tables in `public` (27 after Phase 3, 28 after Phase 7, 32 with Statements, 34 with statement trades, 35 with routine_days), all with `user_id default auth.uid()`, RLS `user_id = auth.uid()`,
   `updated_at` trigger and (except `trade_tags`) `deleted_at` soft delete. See
   `supabase/migrations/*_phase1_core.sql`.
 - `public.compute_trade()` trigger derives ticks, fees_total, gross/net P&L, risk, R, duration,
@@ -185,8 +185,40 @@ Cloud sandbox: Docker daemon may need `sudo dockerd &` before `pnpm db:start`.
 - Routes: `POST /api/statements` (session; `mode=preview|save`, `replace=1`), `POST /api/ingest/statement`
   (token scope `statements`, raw PDF body). SQL: `save_statement`, `ingest_statement`, `map_statement_code`,
   `ai_statements` (migration `*_statements.sql`); bucket `statements`.
-- Test fixture: `tests/fixtures/axia-statement.ts` builds anonymised PDFs with the real layout. Never commit a
-  real statement.
+- Test fixture: `tests/fixtures/axia-statement.ts` builds anonymised PDFs with the real layout
+  (`fillsFromTrades`, `MES_THREE_TRADES_PRODUCT` for multi-trade days). Never commit a real statement.
+- Trade builder (split a product's day into trades — the PDF has no fill times): pure logic
+  `src/lib/statements/split.ts` (flat-group solver, suggestions, `checkSplit`, `matchJournal`) and
+  `builder.ts` (draft moves, payload, local draft `cg:split:<productId>`); UI
+  `src/components/statements/trade-builder.tsx` (client-only) on `/statements/[id]#trades`; loader
+  `src/lib/data/statement-trades.ts`. SQL `build_statement_trades` / `undo_statement_build`, tables
+  `statement_trades` + `statement_allocations` (migration `*_statement_trades.sql`).
+  `trades.time_estimated` = no known time (no session/bucket/duration); `trade_facts.broker_confirmed`.
+
+## Daily routine (Today timeline)
+
+- The routine lives in `user_settings.routine` (jsonb, null = default). Model + zod schema
+  `src/lib/routine/routine.ts` (blocks prep/trade/debrief, steps link/brief/charts/prep/check, gate
+  none/news/bias, limits; times in the block's native zone), scheduling `schedule.ts`
+  (`blocksForDay` with holidays/early close, `blockStatuses`, `focusBlock`, `qualifyingEvents`,
+  `blockUsage`, `dayStopped`), `bias.ts` (3-tap scalp check), `scorecard.ts`. DST tests in
+  `routine.test.ts`. Loader `src/lib/data/routine.ts` (routine with seeded setups, day rows, guard
+  trades, quick preps, quick debrief, scorecard, setup options).
+- Setups = playbooks marked `notes_json.routine_setup` (euNews/usOpen/scalp/moc), seeded by
+  `private.seed_routine_defaults` (also on signup). Matched by marker, then by name.
+- Per-day state: `routine_days` (date, block_key, checks, bias, no_trade, followed, lesson) via
+  `save_routine_day` (merge patch). `save_quick_prep` (narrative, instruments,
+  `session_preps.instrument_bias`) and `save_quick_debrief` (grade_process + lesson + per-block
+  followed; completes the debrief). Migration `*_routine.sql`.
+- UI: `src/components/routine/timeline.tsx` (Today; `<details>` per block, one `useSaveQueue`
+  status), `quick-prep.tsx`, `block-alerts.tsx` (in the app layout, localStorage `cg:block-alerts`).
+  `/review/[date]` = 2-minute debrief (`src/components/review/quick-debrief.tsx`); the full editor is
+  `?full=1` (separate load, so neither overwrites the other). Weekly `setup-scorecard.tsx`
+  (`weekly_reviews.setup_notes`). Settings → Daily routine (`src/components/settings/routine-editor.tsx`).
+  `/journal/new?playbook=&instrument=&direction=` prefills the trade form (`TradePreset`).
+- Nav: `PRIMARY_NAV` Today/Journal/Review/Setups, `MORE_NAV` Insights/Statements/Calendar/Settings
+  (`src/lib/nav.ts`). The builder offers setup chips (`playbook_id` per trade in `build_statement_trades`).
+- `src/lib/hooks/use-save-queue.ts`: debounced keyed writes with one Saved/Saving…/Error status.
 
 ## Hardening (Phase 9)
 
